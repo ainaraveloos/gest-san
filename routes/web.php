@@ -2,19 +2,28 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MedecinController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+    if (Auth::check()) {
+        $user = Auth::user();
+
+        return match($user->role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'medecin' => redirect()->route('medecin.dashboard'),
+            default => redirect()->route('login')
+        };
+    }
+
+    return redirect()->route('login');
+})->name('home');
 
     //     return Inertia::render('Welcome'
 // Route::get('/dashboard', function () {
@@ -32,34 +41,43 @@ Route::middleware('auth')->group(function () {
 
 
 
-//Route pour admin
+//Route pour User admin
 Route::middleware(['auth','role:admin'])->group(function () {
-Route::get('/admin/dashboard',[AdminController::class, 'index'])->middleware('verified')->name('admin.dashboard');
+    //Routes affichage de l'admin dashboard
+    Route::get('/admin/dashboard',[AdminController::class, 'index'])->middleware('verified')->name('admin.dashboard');
+    //Routes pour la gestion des sociétés
     Route::get('admin/societes',[AdminController::class,'showSocietes'])->name('admin.societe.index');
     Route::post('admin/societes', [AdminController::class, 'storeSociete'])->name('admin.societe.store');
     Route::get('admin/societes/{societe}/edit', [AdminController::class, 'editSociete'])->name('admin.societe.edit');
     Route::delete('admin/societes/{societe}', [AdminController::class, 'deleteSociete'])->name('admin.societe.delete');
     Route::patch('admin/societes/{societe}', [AdminController::class, 'updateSociete'])->name('admin.societe.update');
     Route::get('admin/patients', [AdminController::class, 'showPatients'])->name('admin.patient.index');
+    Route::get('admin/patient/{patient}',[AdminController::class,'patientDossier'])->name('admin.patient.view');
     // Routes pour la gestion des patients
     Route::post('admin/patients', [AdminController::class, 'storePatient'])->name('admin.patient.store');
-    Route::get('admin/patients/{patient}/edit', [AdminController::class, 'editPatient'])->name('admin.patient.edit');
+    Route::get('admin/salaries/search', [AdminController::class, 'searchSalaries'])->name('admin.salaries.search');
     Route::patch('admin/patients/{patient}', [AdminController::class, 'updatePatient'])->name('admin.patient.update');
     Route::delete('admin/patients/{patient}', [AdminController::class, 'deletePatient'])->name('admin.patient.delete');
-    // Routes pour les dossiers médicaux
-    Route::get('admin/dossiers', [AdminController::class, 'showDossiers'])->name('admin.dossiers');
     // Route pour les paramètres
     Route::get('admin/parametres', [AdminController::class, 'showParametres'])->name('admin.parametres');
+    Route::post('user/store', [AdminController::class, 'storeUser'])->name('register.store');
 }
 );
 
-//Route pour medecin
+//Route pour User medecin
 Route::middleware(['auth','role:medecin'])->group(function () {
     Route::get('/medecin/dashboard', [MedecinController::class, 'index'])->name('medecin.dashboard');
-    Route::get('medecin/patients', [MedecinController::class, 'patient'])->name('medecin.patients.index');
-    Route::get('medecin/consultation', [MedecinController::class, 'consultation'])->name('medecin.consultation');
+    Route::get('medecin/dossier_medical', [MedecinController::class, 'patientDossier'])->name('patient.dossier');
+Route::get('/patients/{id}/dossier', [MedecinController::class, 'showDossier'])->name('patient.dossier.details');
+    Route::get('medecin/consultation/create', [MedecinController::class, 'createConsultation'])->name('medecin.consultation.create');
+    Route::get('medecin/patients/search', [MedecinController::class, 'searchPatients'])->name('patients.search');
+    Route::post('medecin/consultation', [MedecinController::class, 'store'])->name('consultations.store');
     Route::get('medecin/parametres', [MedecinController::class, 'parametre'])->name('medecin.parametre');
+    Route::post('medecin/parametres/update', [MedecinController::class, 'updateParameters'])->name('medecin.parametre.update');
+    Route::delete('medecin/consultations/{consultation}', [MedecinController::class, 'destroyConsultation'])->name('consultation.destroy');
+    Route::patch('medecin/consultations/{consultation}', [MedecinController::class, 'updateConsultation'])->name('consultation.update');
     });
+
 
 
 require __DIR__.'/auth.php';

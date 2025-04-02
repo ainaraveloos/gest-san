@@ -1,12 +1,14 @@
 <template>
     <button
-        :class="`inline-flex items-center rounded-md border border-transparent transition-colors  duration-300 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white  ease-in-out ${bgColor} hover:${hoverColor} focus:${focusColor} focus:outline-none focus:ring-2 focus:ring-offset-2 active:${activeColor}`"
+    :disabled="disabled"
+        :class="`group inline-flex gap-2 disabled:bg-gray-500 items-center rounded-md border disabled:bg-gray-500 border-transparent transition-colors duration-500   px-4 py-1 text-xs font-semibold uppercase tracking-widest text-white ease-in-out ${bgColor} hover:${hoverColor} focus:${focusColor} focus:outline-none focus:ring-2 focus:ring-offset-2 active:${activeColor}`"
     >
         <slot />
     </button>
 </template>
 <script setup>
 import { defineProps } from "vue";
+
 
 const props = defineProps({
     bgColor: {
@@ -25,5 +27,7 @@ const props = defineProps({
         type: String,
         default: "bg-blue-800",
     },
+    disabled: Boolean,
+
 });
 </script>

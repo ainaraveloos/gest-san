@@ -1,4 +1,5 @@
 import '../css/app.css';
+import 'animate.css';
 import './bootstrap';
 import '@/Icons/icons';
 
@@ -34,6 +35,6 @@ createInertiaApp({
             .mount(el);
     },
     progress: {
-        color: 'blue',
+        color: 'white',
     },
 });

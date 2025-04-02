@@ -40,25 +40,22 @@ class RegisteredUserController extends Controller
         'specialite' => 'required_if:role,medecin|string|max:255|nullable',
         'type' => 'required_if:role,medecin|in:GENERALISTE,ENTREPRISE|nullable',
     ]);
-
-    // Créer l'utilisateur
+       // Créer l'utilisateur
     $user = User::create([
         'name' => $validated['name'],
         'email' => $validated['email'],
         'password' => Hash::make($validated['password']),
         'role' => $validated['role'],
     ]);
-
-    // Créer le médecin si nécessaire
+      // Créer le médecin si nécessaire
     if ($validated['role'] === 'medecin') {
         Medecin::create([
-            'nom' => $validated['name'],
             'user_id' => $user->id,
+            'nom' => $validated['name'],
             'specialite' => $validated['specialite'],
             'type' => $validated['type'],
         ]);
     }
-
     event(new Registered($user));
     Auth::login($user);
 return redirect()->to('/');

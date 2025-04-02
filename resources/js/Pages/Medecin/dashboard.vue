@@ -3,7 +3,7 @@
         class="grid lg:grid-cols-4 md:grid-cols-3 gap-4 grid-cols-1 mb-8 sm:grid-cols-2 text-white"
     >
         <div
-            class="bg-blue-600 h-36 content-center text-center shadow-sm rounded-lg"
+            class="bg-blue-500 h-36 content-center text-center shadow-sm rounded-lg"
         >
             <h1>1</h1>
         </div>

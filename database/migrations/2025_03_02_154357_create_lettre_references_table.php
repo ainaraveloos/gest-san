@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('lettre_references', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('consultation_id')->constrained();
-            $table->text('motif');
+            $table->foreignId('consultation_id')->constrained('consultations')->onDelete('cascade');
+            $table->foreignId('refere_med_id')->constrained('medecins')->onDelete('cascade');
+            $table->string('motif_ref');
             $table->timestamps();
         });
     }

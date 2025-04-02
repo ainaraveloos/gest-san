@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('ordonnances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('consultation_id')->constrained('consultations')->onDelete('cascade');
-            $table->enum('recommandation', ['medicament', 'repos_medical','conseil','soin']);
-            $table->integer('nbr_jours_repos')->nullable();//seulement pour repos medical
-            $table->json('medicaments')->nullable();
+            $table->integer('nbr_jours_repos')->nullable();
+            $table->json('medicament')->nullable();
             $table->timestamps();
         });
     }

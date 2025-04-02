@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('medecin_id')->constrained();
             $table->foreignId('patient_id')->constrained();
+            $table->text('motif');
+            $table->text('diagnostic');
             $table->enum('type',['maladie','visite_aptitude']);
-            $table->dateTime('date-_consultation');
-            $table->integer('duree');
-            $table->text('observations')->nullable();
+            $table->dateTime('date_consultation');
             $table->timestamps();
         });
     }

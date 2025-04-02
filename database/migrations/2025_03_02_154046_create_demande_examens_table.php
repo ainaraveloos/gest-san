@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('demande_examens', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('consultation_id')->constrained();
-            $table->dateTime('date_demande')->useCurrent();
-            $table->text('liste_examens');
-            $table->text('renseignements_cliniques')->nullable();
+            $table->foreignId('consultation_id')->constrained('consultations')->onDelete('cascade');
+            $table->json('liste_examens')->nullable();
+            $table->text('remarques')->nullable();
             $table->timestamps();
         });
     }

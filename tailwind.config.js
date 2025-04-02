@@ -17,14 +17,7 @@ export default {
             },
             colors: {
                 // Couleurs principales
-                primary: '#2E7D32',          // Couleur principale
-                'primary-dark': '#1B5E20',     // Pour état actif/focus ou nuances plus foncées
-                secondary: '#0288D1',
-                'secondary-dark': '#01579B',
-                accent: '#FBC02D',
-                'accent-dark': '#F9A825',
-                danger: '#C62828',
-                'danger-dark': '#8E0000',
+            
 
                 // Couleurs de fond et textes
                 background: '#F1F8E9',

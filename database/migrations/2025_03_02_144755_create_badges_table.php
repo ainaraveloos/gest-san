@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('badges', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')->constrained()->unique();
+            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
             $table->string('numero');
             $table->string('qr_code')->unique();
             $table->date('date_emission');

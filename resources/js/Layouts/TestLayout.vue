@@ -22,38 +22,62 @@
         >
             <div class="h-16 flex items-center justify-center mb-8">
                 <h1
-                    class="!text-3xl mt-4 flex items-center justify-center font-semibold text-slate-600"
+                    class="text-3xl mt-4 flex items-center justify-center font-semibold text-slate-600"
                 >
-                    <img src="../../assets/healthcare.png" alt="" />
+                    <img src="../../assets/logo.svg" alt="" class="w-16" />
                     <span v-if="!collapsed">medicare</span>
                 </h1>
             </div>
 
-            <a-menu
-                mode="inline"
-                :inline-collapsed="collapsed"
-                class="!border-r-0 flex flex-col !gap-4"
-            >
-                <!-- Boucle sur asideMenu pour générer les items -->
-                <a-menu-item
-                    v-for="item in asideMenu"
-                    :key="item.key"
-                    class="!flex items-center justify-between !py-4 text-sm font-medium !gap-2"
-                    :class="[
-                        '!flex items-center justify-between hover:bg-gray-100',
-                        isActive(item.path)
-                            ? '!bg-blue-600 !text-white' // Styles Tailwind pour l'élément actif
-                            : 'text-gray-700 ', // Styles Tailwind par défaut
-                    ]"
-                >
-                    <template #icon>
-                        <component :is="item.icon" class="!text-xl" />
-                    </template>
-                    <!-- Utilisation de Inertia Link -->
-                    <Link :href="route(item.path)">
-                        <span>{{ item.label }}</span>
-                    </Link>
-                </a-menu-item>
+            <a-menu mode="inline" class="!border-r-0 flex flex-col !gap-4">
+                <template v-for="item in asideMenu" :key="item.key">
+                    <!-- Sous-menu -->
+
+                    <a-sub-menu v-if="item.children" :key="item.key">
+                        <template #title>
+                            <div class="flex items-center gap-2">
+                                <component :is="item.icon" class="!text-xl" />
+                                <span>{{ item.label }}</span>
+                            </div>
+                        </template>
+
+                        <!-- Items enfants -->
+                        <a-menu-item
+                            v-for="child in item.children"
+                            :key="child.key"
+                            class="!flex items-center justify-between !py-4 text-sm font-medium !gap-2"
+                            :class="[
+                                'hover:bg-gray-100',
+                                isActive(child.path)
+                                    ? '!bg-blue-500 !text-white'
+                                    : 'text-gray-700',
+                            ]"
+                        >
+                            <Link :href="route(child.path)">
+                                <span>{{ child.label }}</span>
+                            </Link>
+                        </a-menu-item>
+                    </a-sub-menu>
+
+                    <!-- Item simple -->
+                    <a-menu-item
+                        v-else
+                        class="!flex items-center justify-between !py-4 text-sm font-medium !gap-2"
+                        :class="[
+                            'hover:bg-gray-100',
+                            isActive(item.path)
+                                ? '!bg-blue-500 !text-white'
+                                : 'text-gray-700',
+                        ]"
+                    >
+                        <template #icon>
+                            <component :is="item.icon" class="!text-xl" />
+                        </template>
+                        <Link :href="route(item.path)">
+                            <span>{{ item.label }}</span>
+                        </Link>
+                    </a-menu-item>
+                </template>
             </a-menu>
         </a-layout-sider>
     </a-layout>
@@ -92,8 +116,7 @@
                     </div>
                 </a-button>
                 <template #overlay>
-                    <a-menu class="!mt-1  ">
-
+                    <a-menu class="!mt-1">
                         <a-menu-item
                             key="logout"
                             @click="logout"
@@ -102,7 +125,6 @@
                             <LogoutOutlined class="mr-2 text-lg" />
                             <span class="">Déconnexion</span>
                         </a-menu-item>
-
                     </a-menu>
                 </template>
             </a-dropdown>
@@ -118,20 +140,22 @@
         class="relative transition-all duration-300 bg-gray-100 mt-16 min-h-[calc(100vh-120px)] p-4"
     >
         <slot />
+        <a-back-top :visibility-height="15" :duration="800" />
     </a-layout-content>
 
     <!-- Footer corrigé -->
     <a-layout-footer
-        class="relative flex shadow-md items-center transition-all duration-300 justify-end text-gray-500 justify-center p-4 bg-white border-t-2 border-gray-100"
+        class="relative flex shadow-md items-center transition-all duration-300 justify-center p-4 bg-white border-t-2 border-gray-200"
         :style="{
             width: `calc(100% - ${collapsed ? 80 : 240}px)`,
             left: `${collapsed ? 80 : 240}px`,
         }"
     >
-        ©2025 Gestion Sanitaire Inter-Entreprise
+        <h1 class="text-lg font-light text-gray-400">
+            ©2025 Gestion Sanitaire Inter-Entreprise
+        </h1>
     </a-layout-footer>
     <!-- Drawer de modification -->
-
 </template>
 
 <script setup>
@@ -148,10 +172,10 @@ import {
 } from "@ant-design/icons-vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 
-import { ref} from "vue";
+import { ref } from "vue";
 
 const logout = () => {
-router.post(route("logout"));
+    router.post(route("logout"));
 };
 const page = usePage();
 const collapsed = ref(false);
@@ -162,10 +186,11 @@ const toggleCollapse = () => {
 
 // Fonction pour vérifier si un lien est actif
 const isActive = (path) => {
-    const currentUrl = usePage().url;
-    // Génère l'URL à partir du nom de la route et supprime le domaine si présent
-    const routeUrl = route(path).replace(window.location.origin, "");
-    return currentUrl === routeUrl;
+    const currentUrl = usePage().url.split("?")[0]; // Get the base URL without query parameters
+    const routeUrl = route(path)
+        .replace(window.location.origin, "")
+        .split("?")[0];
+    return currentUrl === routeUrl; // Compare base URLs
 };
 
 // Données du menu
@@ -189,14 +214,9 @@ const adminMenu = [
         label: "Gestion des Patients",
         path: "admin.patient.index",
     },
+
     {
         key: "4",
-        icon: CarryOutFilled,
-        label: "Dossiers Medicaux",
-        path: "admin.dossiers",
-    },
-    {
-        key: "5",
         icon: SettingFilled,
         label: "Parametres",
         path: "admin.parametres",
@@ -210,20 +230,29 @@ const medecinMenu = [
         label: "Dashboard",
         path: "medecin.dashboard",
     },
+
     {
         key: "2",
-        icon: UsergroupAddOutlined,
-        label: "Mes Patients",
-        path: "medecin.patients.index",
+        icon: CarryOutFilled,
+        label: "Mes Consultations",
+        children: [
+
+
+            {
+                key: "3-1",
+                label: "Nouvelle Consultation",
+                path: "medecin.consultation.create",
+            },
+            {
+                key: "3-2",
+                label: "Dossiers Medicals",
+                path: "patient.dossier",
+            },
+        ],
     },
+
     {
         key: "3",
-        icon: CarryOutFilled,
-        label: "Nouveau Consultation ",
-        path: "medecin.consultation",
-    },
-    {
-        key: "4",
         icon: SettingFilled,
         label: "Parametres",
         path: "medecin.parametre",
@@ -232,7 +261,6 @@ const medecinMenu = [
 
 // Menu à utiliser selon le rôle
 const asideMenu = userRole === "admin" ? adminMenu : medecinMenu;
-
 </script>
 
 <style>
@@ -245,13 +273,16 @@ const asideMenu = userRole === "admin" ? adminMenu : medecinMenu;
     background: transparent;
     border-right: none !important;
 }
+.ant-menu-light .ant-menu-item-selected {
+    @apply bg-transparent text-gray-600;
+}
 
 .ant-menu-item {
-    color: rgb(119, 119, 119);
+    @apply text-gray-600;
 }
 
 .ant-menu-item:hover {
-    @apply !bg-gray-100 !text-gray-800 transition-colors duration-300;
+    @apply !bg-gray-100 !text-gray-600 transition-colors duration-300;
 }
 
 .ant-layout-header {
@@ -259,5 +290,13 @@ const asideMenu = userRole === "admin" ? adminMenu : medecinMenu;
     padding: 0 24px !important;
     line-height: normal !important;
 }
-
+.ant-menu .ant-menu-submenu-title .anticon + span {
+    @apply text-gray-600 font-semibold;
+}
+.ant-modal-confirm .ant-modal-confirm-btns .ant-btn-default.ant-btn-dangerous {
+    @apply !bg-red-500 text-white hover:bg-opacity-70;
+}
+.ant-modal-confirm .ant-btn-default {
+    @apply hover:bg-gray-50 border-none hover:text-gray-800;
+}
 </style>

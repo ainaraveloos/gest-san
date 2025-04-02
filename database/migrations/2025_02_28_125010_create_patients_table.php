@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('societe_id')->constrained('societes')->onDelete('cascade');
             $table->enum('type', ['SALARIE', 'FAMILLE']);//type de pations
             $table->foreignId('parent_id')->nullable()->constrained('patients')->onDelete('cascade');//Pour le type Famille,reference vers le patient salarié
+            $table->string('lien_parente')->nullable();
+            $table->string('numero');
 
             //information personnelles (type salarié et famille)
             $table->string('nom');
@@ -24,6 +26,14 @@ return new class extends Migration
             $table->string('adresse')->nullable();
             $table->string('telephone')->nullable();
             $table->string('email')->nullable();
+            //information après consultation
+            $table->integer('poids')->nullable();
+            $table->integer('taille')->nullable();
+            $table->integer('freq_card')->nullable();
+            $table->integer('press_art')->nullable();
+            $table->integer('temperature')->nullable();
+            $table->text('observation')->nullable();
+            $table->float('imc')->nullable(); // IMC (Indice de Masse Corporelle)
             //information profesionnelles(type salarié)
             $table->string('poste')->nullable();
             $table->date('date_entree_entreprise')->nullable();
@@ -33,8 +43,7 @@ return new class extends Migration
             $table->string('numero_travailleur')->nullable();
             //Status de l'adhesion
             $table->date('date_adhesion')->nullable();
-            $table->string('type_adhesion')->nullable();
-            $table->enum('statut_actuel',['famille','association','formelle'])->nullable();
+            $table->enum('type_adhesion',['famille','association','formelle'])->nullable();
             $table->date('date_debauche')->nullable();
             $table->string('motif_debauche')->nullable();
             $table->timestamps();

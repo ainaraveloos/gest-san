@@ -22,23 +22,35 @@ class Patient extends Model
         'societe_id',
         'parent_id',
         'lien_parente',
-        'type' // 'SALARIE' ou 'FAMILLE'
+        'date_entree_entreprise',
+        'statut_emploi',
+        'date_fin_contrat',
+
+
+
+        'type', // 'SALARIE' ou 'FAMILLE'
+        'poids',
+        'taille',
+        'freq_card',
+        'press_art',
+        'temperature',
+        'imc', // Indice de masse corporelle
     ];
 
     public function societe()
     {
         return $this->belongsTo(Societe::class);
     }
+    public function consultations()
+    {
+        return $this->hasMany(Consultation::class);
+    }
 
     public function salarie()
     {
-        return $this->belongsTo(Patient::class, 'salarie_id');
+        return $this->belongsTo(Patient::class, 'parent_id');
     }
 
-    public function beneficiaires()
-    {
-        return $this->hasMany(Patient::class, 'salarie_id');
-    }
 
     // Scope pour filtrer les types
     public function scopeSalaries($query)

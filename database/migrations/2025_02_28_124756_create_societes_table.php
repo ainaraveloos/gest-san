@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->date('date_adhesion');
+            $table->text('description')->nullable();
             $table->string('email')->unique()->nullable();
             $table->timestamps();
         });
