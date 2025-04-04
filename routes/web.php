@@ -51,13 +51,20 @@ Route::middleware(['auth','role:admin'])->group(function () {
     Route::get('admin/societes/{societe}/edit', [AdminController::class, 'editSociete'])->name('admin.societe.edit');
     Route::delete('admin/societes/{societe}', [AdminController::class, 'deleteSociete'])->name('admin.societe.delete');
     Route::patch('admin/societes/{societe}', [AdminController::class, 'updateSociete'])->name('admin.societe.update');
-    Route::get('admin/patients', [AdminController::class, 'showPatients'])->name('admin.patient.index');
-    Route::get('admin/patient/{patient}',[AdminController::class,'patientDossier'])->name('admin.patient.view');
+    //Liste des medecins
+    Route::get('admin/medecins_list',[AdminController::class,'medecinsList'])->name('medecins.list');
     // Routes pour la gestion des patients
+    Route::get('admin/patients', [AdminController::class, 'showPatients'])->name('admin.patient.index');
     Route::post('admin/patients', [AdminController::class, 'storePatient'])->name('admin.patient.store');
-    Route::get('admin/salaries/search', [AdminController::class, 'searchSalaries'])->name('admin.salaries.search');
+
+    // Routes pour la gestion des badges
+    Route::post('admin/badge/renew', [AdminController::class, 'renewBadge'])->name('admin.badge.renew');
+    Route::post('admin/badge/check-expired', [AdminController::class, 'checkExpiredBadges'])->name('admin.badge.checkExpired');
+
+    Route::get('admin/patient/{patient}',[AdminController::class,'patientDossier'])->name('admin.patient.view');
     Route::patch('admin/patients/{patient}', [AdminController::class, 'updatePatient'])->name('admin.patient.update');
     Route::delete('admin/patients/{patient}', [AdminController::class, 'deletePatient'])->name('admin.patient.delete');
+    Route::get('admin/salaries/search', [AdminController::class, 'searchSalaries'])->name('admin.salaries.search');
     // Route pour les paramètres
     Route::get('admin/parametres', [AdminController::class, 'showParametres'])->name('admin.parametres');
     Route::post('user/store', [AdminController::class, 'storeUser'])->name('register.store');

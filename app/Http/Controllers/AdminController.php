@@ -20,14 +20,45 @@ class AdminController extends Controller
 {
     public function index()
     {
-        return Inertia::render("Admin/dashboard");
+        return inertia("Admin/dashboard");
     }
-    public function showSocietes(  )
+    public function showSocietes(Request $request)
     {
-         // Récupérer toutes les sociétés avec le compte des patients
-        $societes = Societe::withCount('patients')->get();
-        return Inertia::render('Admin/Societes/Index', [
-        'societes' => $societes,
+        // Récupérer le paramètre de tri depuis la requête, sans valeur par défaut
+        $sort = $request->input('sort');
+
+        // Démarrer la requête avec withCount pour compter les patients
+        $query = Societe::withCount('patients');
+
+        // Appliquer le tri en fonction du paramètre, seulement si un tri est spécifié
+        if ($sort) {
+            switch ($sort) {
+                case 'oldest':
+                    $query->orderBy('created_at', 'asc');
+                    break;
+                case 'name_asc':
+                    $query->orderBy('nom', 'asc');
+                    break;
+                case 'name_desc':
+                    $query->orderBy('nom', 'desc');
+                    break;
+                case 'patients_count':
+                    $query->orderBy('patients_count', 'desc');
+                    break;
+                case 'newest':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+        }
+
+        // Paginer les résultats
+        $societes = $query->paginate(5)->appends($request->query());
+
+        return inertia('Admin/Societes/Index', [
+            'societes' => $societes,
+            'filters' => [
+                'sort' => $sort
+            ]
         ]);
     }
     public function storeSociete(Request $request)
@@ -51,7 +82,7 @@ class AdminController extends Controller
     }
     public function editSociete(Societe $societe)
     {
-        return Inertia::render('Admin/Societes/Edit', [
+        return inertia('Admin/Societes/Edit', [
             'societe' => $societe
         ]);
     }
@@ -75,51 +106,111 @@ class AdminController extends Controller
         return to_route('admin.societe.index')
                 ->with('success', 'Société mise à jour avec succès');
     }
-    public function showPatients(Request $request )
+    public function showPatients(Request $request)
     {
         // On démarre la query avec le eager loading
-    $query = Patient::with(['societe', 'salarie','badge']);
+        $query = Patient::with(['societe', 'salarie', 'badge']);
 
-    // Filtrer par nom, prénom ou numéro
-    if ($request->filled('search')) {
-        $search = $request->input('search');
-        $query->where(function ($q) use ($search) {
-            $q->where('nom', 'like', "%{$search}%")
-              ->orWhere('prenom', 'like', "%{$search}%")
-              ->orWhere('numero', 'like', "%{$search}%");
-        });
-    }
+        // Filtrer par nom, prénom ou numéro
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('nom', 'like', "%{$search}%")
+                  ->orWhere('prenom', 'like', "%{$search}%")
+                  ->orWhere('numero', 'like', "%{$search}%");
+            });
+        }
 
-    // Filtrer par société
-   if ($request->filled('societes')) {
-    $query->whereIn('societe_id', $request->input('societes'));
-}
+        // Filtrer par société
+        if ($request->filled('societes')) {
+            $query->whereIn('societe_id', $request->input('societes'));
+        }
 
-    // Filtrer par type de patient (SALARIE ou FAMILLE)
-    if ($request->filled('types')) {
-        $query->whereIn('type', $request->input('types'));
-    }
+        // Filtrer par type de patient (SALARIE ou FAMILLE)
+        if ($request->filled('types')) {
+            $query->whereIn('type', $request->input('types'));
+        }
 
-    $patients = $query->orderBy('created_at', 'desc')->paginate(4)->appends($request->query());
+        // Filtrer par statut de badge
+        if ($request->filled('badgeStatuses')) {
+            $badgeStatuses = $request->input('badgeStatuses');
 
-    return Inertia::render('Admin/Patients/Index', [
-        'filters'   => $request->only(['search', 'societes', 'types']), // Changer 'type' en 'types'
-        'patients'  => $patients,
-        'societes'  => Societe::all(),
-        'salaries'  => Patient::where('type', 'SALARIE')->get(),
-    ]);
+            $query->whereHas('badge', function($q) use ($badgeStatuses) {
+                // Si 'expired' est dans les statuts sélectionnés, nous devons le traiter spécialement
+                $hasExpired = in_array('expired', $badgeStatuses);
+                $actualStatuses = array_filter($badgeStatuses, function($status) {
+                    return $status !== 'expired';
+                });
+
+                $q->where(function($subq) use ($actualStatuses, $hasExpired) {
+                    if (!empty($actualStatuses)) {
+                        $subq->whereIn('status', $actualStatuses);
+                    }
+
+                    if ($hasExpired) {
+                        if (!empty($actualStatuses)) {
+                            $subq->orWhere(function($expiredQ) {
+                                $expiredQ->where('status', 'actif')
+                                         ->where('validite', '<', now());
+                            });
+                        } else {
+                            $subq->where('status', 'actif')
+                                 ->where('validite', '<', now());
+                        }
+                    }
+                });
+            });
+        }
+
+        // Récupérer le paramètre de tri depuis la requête
+        $sort = $request->input('sort', 'newest');
+
+        // Appliquer le tri en fonction du paramètre
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'name_asc':
+                $query->orderBy('nom', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('nom', 'desc');
+                break;
+            case 'societe':
+                $query->leftJoin('societes', 'patients.societe_id', '=', 'societes.id')
+                      ->orderBy('societes.nom', 'asc')
+                      ->select('patients.*');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $patients = $query->paginate(5)->appends($request->query());
+
+        return inertia('Admin/Patients/Index', [
+            'filters'   => $request->only(['search', 'societes', 'types', 'badgeStatuses', 'sort']),
+            'patients'  => $patients,
+            'societes'  => Societe::all(),
+            'salaries'  => Patient::where('type', 'SALARIE')->get(),
+        ]);
     }
     public function patientDossier($id)
     {
 
         // Récupère le patient avec toutes ses consultations et les relations associées
     $patient = Patient::with([
+        'consultations' => function ($query) {
+            $query->orderBy('date_consultation', 'desc');
+        },
         'consultations.medecin',
-        'consultations.ordonnance',
+        'consultations.ordonnance.medicaments',
         'consultations.demande_examen',
-        'consultations.lettre_reference',
+        'consultations.lettre_reference.refereMed',
         'societe',
-        'salarie'
+        'salarie',
+        'badge'
     ])->withCount('consultations')->find($id);
         // Récupère toutes les consultations du patient
     $consultations = $patient->consultations;
@@ -141,7 +232,42 @@ class AdminController extends Controller
             'lastConsultationDate'=>$lastConsultationDate
         ]);
     }
+/**
+ * Renouvelle un badge pour un mois supplémentaire
+ */
+public function renewBadge(Request $request)
+{
+    $validated = $request->validate([
+        'badge_id' => 'required|exists:badges,id',
+    ]);
 
+    $badge = Badge::findOrFail($validated['badge_id']);
+
+    // Nouvelle validité: 1 mois à partir d'aujourd'hui
+    $badge->validite = now()->addMonth();
+    $badge->status = 'actif';
+    $badge->save();
+
+    return redirect()->back();
+}
+
+/**
+ * Vérifie et met à jour automatiquement les badges expirés
+ */
+public function checkExpiredBadges(Request $request)
+{
+    // Recherche tous les badges actifs mais expirés
+    $expiredBadges = Badge::where('status', 'actif')
+                         ->where('validite', '<', now())
+                         ->get();
+
+    foreach ($expiredBadges as $badge) {
+        $badge->status = 'desactive';
+        $badge->save();
+    }
+
+    return redirect()->back();
+}
     public function searchSalaries(Request $request)
 {
     $searchTerm = $request->input('search');
@@ -245,7 +371,7 @@ public function updatePatient(Request $request, Patient $patient)
 }
 public function showParametres(Request $request, Patient $patient)
 {
-    return Inertia::render('Admin/parametre');
+    return inertia('Admin/parametre');
 }
 
  public function storeUser(Request $request): RedirectResponse
@@ -279,6 +405,13 @@ public function showParametres(Request $request, Patient $patient)
     }
     event(new Registered($user));
 return redirect()->back()->with('Utilisateur enregistrer avec succes');
+}
+public function medecinsList(Request $request)
+{
+    $medecins = Medecin::with(['user'])
+    ->withCount('consultations')
+    ->get();
+return inertia('Admin/Medecins/index',['medecins'=>$medecins]);
 }
 }
 ?>

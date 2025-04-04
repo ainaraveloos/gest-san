@@ -26,7 +26,7 @@
                     <input
                         type="text"
                         v-model="search"
-                        class="mt-1 block w-full pl-10  p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        class="mt-1 block w-full pl-10 p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="Rechercher un nom, prenom, numero ..."
                     />
                     <div
@@ -55,25 +55,25 @@
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-4 py-3.5 text-left text-md font-semibold"
+                                        class="px-4 py-3.5 text-left text-md lg:table-cell hidden font-semibold"
                                     >
                                         Numéro
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-4 py-3.5 text-left text-md font-semibold"
+                                        class="px-4 py-3.5 text-left text-md font-semibold hidden xl:table-cell"
                                     >
                                         Societe
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-4 py-3.5 text-center text-md font-semibold"
+                                        class="px-4 py-3.5 text-center text-md hidden md:table-cell font-semibold"
                                     >
                                         Dernière consultation
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-4 py-3.5 text-center text-md font-semibold cursor-pointer hover:bg-blue-600 transition-colors"
+                                        class="px-4 py-3.5 text-center text-md font-semibold cursor-pointer hover:bg-blue-600/25 duration-500 transition-colors"
                                         @click="toggleSort"
                                     >
                                         <div
@@ -131,9 +131,9 @@
                                                     </span>
                                                 </span>
                                             </div>
-                                            <div class="ml-4">
+                                            <div class="ml-4 flex flex-col">
                                                 <div
-                                                    class="font-bold text-gray-900"
+                                                    class="font-bold text-gray-600 gap-1"
                                                 >
                                                     {{ patient.nom }}
                                                     {{ patient.prenom }}
@@ -147,20 +147,20 @@
                                         </div>
                                     </td>
                                     <td
-                                        class="whitespace-nowrap px-3 py-4 text-sm"
+                                        class="whitespace-nowrap px-3 hidden lg:table-cell py-4 text-sm"
                                     >
                                         <span
-                                            class="p-1 bg-green-50 rounded-full text-green-600 text-xs border border-green-600"
+                                            class="p-1 bg-green-50 rounded-full  text-green-600 text-xs border border-green-600"
                                             >{{ patient.numero }}</span
                                         >
                                     </td>
                                     <td
-                                        class="whitespace-nowrap px-3 py-4 font-bold text-gray-900"
+                                        class="whitespace-nowrap px-3 hidden xl:table-cell py-4 font-medium text-gray-500"
                                     >
                                         {{ patient.societe?.nom || "N/A" }}
                                     </td>
                                     <td
-                                        class="whitespace-nowrap px-3 py-4 text-sm text-center text-gray-500"
+                                        class="whitespace-nowrap px-3 py-4 text-sm text-center hidden md:table-cell text-gray-500"
                                     >
                                         {{
                                             patient.consultations[0]
@@ -199,7 +199,7 @@
 
             <!-- Pagination -->
             <div
-                v-if="patients.links.length > 0"
+                v-if="patients.data.length > 0 && patients.links.length > 3"
                 class="bg-white border-t border-gray-200"
             >
                 <div

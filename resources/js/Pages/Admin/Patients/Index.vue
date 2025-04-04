@@ -1,19 +1,20 @@
 <template>
     <div class="px-2 py-6 bg-white rounded-lg shadow">
         <div
-            class="flex flex-col md:flex-row justify-between items-center mb-6 gap-8"
+            class="flex flex-col md:flex-row justify-between items-center mb-6 px-4"
         >
             <h1 class="font-bold text-2xl text-gray-600">
                 Liste des Patients <fonta class="ml-4" icon="users" />
             </h1>
             <!-- Boutton ouvrir modal de registre patient -->
-            <BaseButton class="py-2" @click="showFormModal">
+            <BaseButton class="py-3" @click="showFormModal">
                 <span>Ajouter nouveau patient</span>
-                <fonta icon="user-plus" class="text-lg" />
+                <fonta icon="user-plus" class="text-md" />
             </BaseButton>
         </div>
+
         <!-- Input recherche -->
-        <div class="flex items-center mb-4 px-4">
+        <div class="flex items-center mb-4 px-4 gap-4">
             <!-- Recherche par nom, prénom ou numéro du patient -->
             <div class="relative w-full md:w-1/3">
                 <BaseInput
@@ -23,6 +24,68 @@
                     v-model="searchTerm"
                 />
             </div>
+
+            <!-- Sélecteur de tri avec Ant Design Vue -->
+            <a-dropdown :trigger="['click']" overlay-class-name="sort-dropdown">
+                <div
+                    class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 transition-all duration-300 px-4 py-2.5 rounded-lg border border-gray-200 cursor-pointer shadow-sm hover:shadow"
+                >
+                    <SortAscendingOutlined
+                        class="text-blue-500 transition-transform duration-300"
+                    />
+                    <span class="text-gray-500 font-normal hidden md:inline">{{
+                        getSortLabel()
+                    }}</span>
+                    <DownOutlined
+                        class="text-gray-400 text-xs transition-all duration-300"
+                    />
+                </div>
+
+                <template #overlay>
+                    <a-menu class="sort-menu">
+                        <div class="p-3 border-b border-gray-100 bg-gray-50">
+                            <h4 class="font-semibold text-gray-700">
+                                Trier par
+                            </h4>
+                        </div>
+                        <a-menu-item
+                            v-for="option in sortOptions"
+                            :key="option.value"
+                            @click="changeSortOrder(option.value)"
+                            :class="
+                                sortOrder === option.value
+                                    ? 'ant-menu-item-active bg-blue-50'
+                                    : ''
+                            "
+                        >
+                            <div class="flex items-center gap-2">
+                                <component
+                                    :is="option.icon"
+                                    class="text-sm"
+                                    :class="
+                                        sortOrder === option.value
+                                            ? 'text-blue-500'
+                                            : 'text-gray-400'
+                                    "
+                                />
+                                <span
+                                    :class="
+                                        sortOrder === option.value
+                                            ? 'text-blue-600 font-medium'
+                                            : 'text-gray-600'
+                                    "
+                                >
+                                    {{ option.label }}
+                                </span>
+                                <CheckOutlined
+                                    v-if="sortOrder === option.value"
+                                    class="ml-auto text-blue-500"
+                                />
+                            </div>
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+            </a-dropdown>
         </div>
 
         <!-- Table patient -->
@@ -32,7 +95,9 @@
                     <tr
                         class="text-sm text-gray-200 font-bold uppercase tracking-tight"
                     >
-                        <th class="px-4 py-4 text-left">Numéro</th>
+                        <th class="px-4 py-4 text-left hidden sm:table-cell">
+                            Numéro
+                        </th>
                         <th class="py-4 px-4 text-left">Nom Complet</th>
                         <th class="py-4 px-4 text-left">
                             <div
@@ -105,7 +170,7 @@
                                 </a-dropdown>
                             </div>
                         </th>
-                        <th class="py-4 px-4">
+                        <th class="py-4 px-4 hidden lg:table-cell">
                             <div
                                 class="relative flex items-center justify-center gap-4"
                             >
@@ -179,7 +244,93 @@
                                 </a-dropdown>
                             </div>
                         </th>
-                        <th class="py-4 text-center">status</th>
+                        <th class="py-4 text-center hidden md:table-cell">
+                            <div class="flex items-center justify-center gap-2">
+                                <span>Statut badge</span>
+                                <a-dropdown
+                                    v-model:open="dropdownFilterBadgeVisible"
+                                    :trigger="['click']"
+                                >
+                                    <FilterFilled
+                                        class="hover:text-white hover:shadow-md transition-colors duration-300 text-gray-300"
+                                    />
+                                    <template #overlay>
+                                        <div
+                                            class="bg-white rounded-lg shadow-xl border border-gray-100 w-56"
+                                        >
+                                            <div
+                                                class="p-4 border-b border-gray-100"
+                                            >
+                                                <h4
+                                                    class="font-semibold text-gray-800"
+                                                >
+                                                    Filtrer par statut
+                                                </h4>
+                                            </div>
+                                            <div
+                                                class="p-2 max-h-60 overflow-y-auto"
+                                            >
+                                                <a-checkbox-group
+                                                    v-model:value="
+                                                        selectedBadgeStatuses
+                                                    "
+                                                    class="flex flex-col gap-2"
+                                                >
+                                                    <a-checkbox
+                                                        v-for="status in badgeStatuses"
+                                                        :key="status.value"
+                                                        :value="status.value"
+                                                        class="!flex items-center p-2 hover:bg-gray-50 rounded-md transition-colors"
+                                                    >
+                                                        <div
+                                                            class="flex items-center gap-2"
+                                                        >
+                                                            <div
+                                                                :class="[
+                                                                    'w-3 h-3 rounded-full',
+                                                                    status.value ===
+                                                                    'actif'
+                                                                        ? 'bg-green-500 pulse-green'
+                                                                        : status.value ===
+                                                                          'desactive'
+                                                                        ? 'bg-red-500 pulse-red'
+                                                                        : status.value ===
+                                                                          'expired'
+                                                                        ? 'bg-orange-500 pulse-orange'
+                                                                        : 'bg-gray-500',
+                                                                ]"
+                                                            ></div>
+                                                            <span
+                                                                class="text-gray-700"
+                                                                >{{
+                                                                    status.label
+                                                                }}</span
+                                                            >
+                                                        </div>
+                                                    </a-checkbox>
+                                                </a-checkbox-group>
+                                            </div>
+                                            <div
+                                                class="p-2 border-t border-gray-100 flex justify-end"
+                                            >
+                                                <a-button
+                                                    type="link"
+                                                    size="small"
+                                                    @click="
+                                                        selectedBadgeStatuses =
+                                                            []
+                                                    "
+                                                    class="!text-gray-500 hover:!text-red-500 !h-8"
+                                                >
+                                                    Réinitialiser
+                                                </a-button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </a-dropdown>
+                            </div>
+                        </th>
+
                         <th class="py-4 text-center">Actions</th>
                     </tr>
                 </thead>
@@ -192,25 +343,29 @@
                             index % 2 === 0 ? 'bg-gray-50' : 'bg-white',
                         ]"
                     >
-                        <td class="p-4 whitespace-nowrap">
+                        <td class="p-4 whitespace-nowrap sm:table-cell hidden">
                             <div class="text-sm text-gray-900">
                                 {{ patient.numero }}
                             </div>
                         </td>
-                        <td class="p-4 whitespace-nowrap text-left">
-                            <div class="text-md font-bold text-gray-900">
-                                {{ patient.nom }} {{ patient.prenom }}
-                            </div>
+                        <td
+                            class="p-4 whitespace-nowrap text-left font-semibold text-sm text-gray-600"
+                        >
+                            <div>{{ patient.nom }} {{ patient.prenom }}</div>
                         </td>
-                        <td class="p-4 whitespace-nowrap text-left">
-                            <div class="text-md font-bold text-gray-900">
+                        <td
+                            class="p-4 whitespace-nowrap text-sm font-medium text-gray-600 text-left"
+                        >
+                            <div>
                                 {{ patient.societe?.nom }}
                             </div>
                         </td>
-                        <td class="p-4 whitespace-nowrap text-center">
+                        <td
+                            class="p-4 whitespace-nowrap hidden lg:table-cell text-center"
+                        >
                             <span
                                 :class="[
-                                    'px-2 py-1 text-xs font-semibold rounded-full',
+                                    'px-2 py-1 text-xs font-semibold rounded-full shadow',
                                     patient.type === 'SALARIE'
                                         ? 'bg-blue-100 text-blue-800'
                                         : 'bg-green-100 text-green-800',
@@ -219,24 +374,180 @@
                                 {{ patient.type.toUpperCase() }}
                             </span>
                         </td>
-                        <td class="text-center">
-                            <span
-                                :class="[
-            'px-2 py-2 rounded-md shadow-md text-sm font-semibold',
-            patient.badge.status === 'actif' ? 'bg-green-200 text-green-700' :
-            patient.badge.status === 'desactive' ? 'bg-red-200 text-red-700' :
-            patient.badge.status === 'en_renouvellement' ? 'bg-yellow-200 text-yellow-700' :
-            'bg-gray-200 text-gray-700' // Valeur par défaut
-        ]"
+                        <td class="text-center hidden md:table-cell">
+                            <a-dropdown
+                                :trigger="['click']"
+                                overlay-class-name="badge-dropdown"
+                                placement="bottomLeft"
                             >
-                                {{ patient.badge.status }}
-                            </span>
-                        </td>
+                                <span
+                                    :class="[
+                                        'px-4 py-2 rounded-full  text-sm font-semibold cursor-pointer  hover:shadow transition-all duration-300 flex items-center gap-2 justify-center',
+                                        patient.badge.status === 'actif' &&
+                                        !isExpired(patient.badge.validite)
+                                            ? 'bg-green-100 hover:bg-green-200 text-green-500'
+                                            : patient.badge.status ===
+                                              'desactive'
+                                            ? 'bg-red-100 hover:bg-red-200 text-red-500'
+                                            : isExpired(patient.badge.validite)
+                                            ? 'bg-orange-100 hover:bg-orange-200 text-orange-500'
+                                            : 'bg-gray-100 hover:bg-gray-200 text-gray-500',
+                                    ]"
+                                >
+                                    <span
+                                        :class="[
+                                            'w-3 h-3 rounded-full mr-2 pulse-circle',
+                                            patient.badge.status === 'actif' &&
+                                            !isExpired(patient.badge.validite)
+                                                ? 'bg-green-500 pulse-green'
+                                                : patient.badge.status ===
+                                                  'desactive'
+                                                ? 'bg-red-500 pulse-red'
+                                                : isExpired(
+                                                      patient.badge.validite
+                                                  )
+                                                ? 'bg-orange-500 pulse-orange'
+                                                : 'bg-gray-500',
+                                        ]"
+                                    ></span>
+                                    {{ patient.badge.status }}
+                                </span>
 
-                        <td
-                            class="py-4 place-items-end  whitespace-nowrap text-sm font-medium"
-                        >
-                            <div class="flex gap-2">
+                                <template #overlay>
+                                    <a-menu class="p-0 rounded-xl shadow-xl">
+                                        <div
+                                            class="px-5 py-4 font-semibold text-gray-700 border-b border-gray-100 mb-2 bg-gray-50 rounded-t-xl"
+                                        >
+                                            Statut du badge
+                                        </div>
+
+                                        <!-- Bouton "Renouveler" visible uniquement quand le badge est désactivé -->
+                                        <a-menu-item
+                                            v-if="
+                                                patient.badge.status ===
+                                                'desactive'
+                                            "
+                                            key="renew"
+                                            @click="
+                                                renewBadge(patient.badge.id)
+                                            "
+                                            class="!my-2 !mx-2 !rounded-lg !hover:bg-blue-50"
+                                        >
+                                            <div
+                                                class="flex items-center gap-3 font-medium text-blue-600 px-3 py-2"
+                                            >
+                                                <div
+                                                    class="w-4 h-4 rounded-full bg-blue-500 pulse-blue"
+                                                ></div>
+                                                <span
+                                                    >Renouveler pour 1
+                                                    mois</span
+                                                >
+                                            </div>
+                                        </a-menu-item>
+
+                                        <div
+                                            class="p-4 m-3 rounded-lg bg-gray-50 text-sm border border-gray-200"
+                                        >
+                                            <div
+                                                v-if="
+                                                    patient.badge.status ===
+                                                    'desactive'
+                                                "
+                                                class="flex items-center gap-3"
+                                            >
+                                                <div
+                                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-red-100"
+                                                >
+                                                    <div
+                                                        class="w-3 h-3 rounded-full bg-red-500 pulse-red"
+                                                    ></div>
+                                                </div>
+                                                <div>
+                                                    <span
+                                                        class="text-red-600 font-medium"
+                                                        >Badge inactif</span
+                                                    >
+                                                    <p
+                                                        class="text-sm text-gray-400 mt-1"
+                                                    >
+                                                        Veuillez renouveler le
+                                                        badge pour l'activer
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div
+                                                v-else-if="
+                                                    isExpired(
+                                                        patient.badge.validite
+                                                    )
+                                                "
+                                                class="flex items-center gap-3"
+                                            >
+                                                <div
+                                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-orange-100"
+                                                >
+                                                    <div
+                                                        class="w-3 h-3 rounded-full bg-orange-500 pulse-orange"
+                                                    ></div>
+                                                </div>
+                                                <div>
+                                                    <span
+                                                        class="text-orange-600 font-medium"
+                                                        >Badge expiré</span
+                                                    >
+                                                    <p
+                                                        class="text-sm text-gray-400 mt-1"
+                                                    >
+                                                        Validité terminée le
+                                                        {{
+                                                            formatDate(
+                                                                patient.badge
+                                                                    .validite
+                                                            )
+                                                        }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div
+                                                v-else
+                                                class="flex items-center gap-3"
+                                            >
+                                                <div
+                                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-green-100"
+                                                >
+                                                    <div
+                                                        class="w-3 h-3 rounded-full bg-green-500 pulse-green"
+                                                    ></div>
+                                                </div>
+                                                <div>
+                                                    <span
+                                                        class="text-green-600 font-medium"
+                                                        >Badge actif</span
+                                                    >
+                                                    <p
+                                                        class="text-xs text-gray-600 mt-1"
+                                                    >
+                                                        Valide jusqu'au
+                                                        {{
+                                                            formatDate(
+                                                                patient.badge
+                                                                    .validite
+                                                            )
+                                                        }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a-menu>
+                                </template>
+                            </a-dropdown>
+                        </td>
+                        <td class="py-4 whitespace-nowrap text-sm font-medium">
+                            <!-- Version desktop -->
+                            <div
+                                class="hidden lg:flex gap-2 justify-center items-center"
+                            >
                                 <button
                                     @click="editingPatient(patient)"
                                     class="text-blue-500 hover:bg-gray-100 group px-2 py-1 hover:scale-110 overflow-hidden hover:shadow-sm transition-all duration-300 rounded-md hover:underline"
@@ -247,24 +558,110 @@
                                 </button>
 
                                 <button
-                                    danger
-                                    @click="confirmDelete(route('admin.patient.delete', patient))"
+                                    @click="
+                                        confirmDelete(
+                                            route(
+                                                'admin.patient.delete',
+                                                patient
+                                            )
+                                        )
+                                    "
                                     class="text-red-500 hover:bg-gray-100 group hover:scale-110 overflow-hidden px-2 py-1 hover:shadow-sm transition-all duration-500 rounded-md hover:underline"
                                 >
                                     <DeleteFilled
                                         class="text-lg group-hover:scale-125 duration-500"
                                     />
                                 </button>
+
                                 <button
-                                            @click="viewDossier(patient)"
-                                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 hover:scale-110 transition-all duration-500 ease-in-out border border-blue-200"
+                                    @click="viewDossier(patient)"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 hover:scale-110 transition-all duration-500 ease-in-out border border-blue-200"
+                                >
+                                    <fonta
+                                        icon="folder-open"
+                                        class="text-blue-500"
+                                    />
+                                    <span>Dossier</span>
+                                </button>
+                            </div>
+
+                            <!-- Version mobile avec dropdown -->
+                            <div class="lg:hidden flex justify-center">
+                                <a-dropdown
+                                    placement="bottomRight"
+                                    :trigger="['click']"
+                                >
+                                    <button
+                                        class="text-blue-500 hover:bg-blue-100 bg-blue-50 group px-2 py-1 hover:scale-110 overflow-hidden hover:shadow-sm transition-all duration-300 rounded-md hover:underline"
+                                    >
+                                        <fonta
+                                            icon="ellipsis"
+                                            class="text-lg text-gray-400"
+                                        />
+                                    </button>
+                                    <template #overlay>
+                                        <a-menu
+                                            class="!min-w-[120px] space-y-4"
                                         >
-                                            <fonta
-                                                icon="folder-open"
-                                                class="text-blue-500"
-                                            />
-                                            <span>Dossier</span>
-                                        </button>
+                                            <a-menu-item
+                                                @click="editingPatient(patient)"
+                                                class="!py-2"
+                                            >
+                                                <div
+                                                    class="flex items-center gap-2"
+                                                >
+                                                    <EditFilled
+                                                        class="text-blue-500 text-lg"
+                                                    />
+                                                    <span
+                                                        class="text-blue-500 font-medium"
+                                                        >Modifier</span
+                                                    >
+                                                </div>
+                                            </a-menu-item>
+                                            <a-menu-item
+                                                @click="
+                                                    confirmDelete(
+                                                        route(
+                                                            'admin.patient.delete',
+                                                            patient
+                                                        )
+                                                    )
+                                                "
+                                                class="!py-2"
+                                            >
+                                                <div
+                                                    class="flex items-center gap-2"
+                                                >
+                                                    <DeleteFilled
+                                                        class="text-red-500 text-lg"
+                                                    />
+                                                    <span
+                                                        class="text-red-500 font-medium"
+                                                        >Supprimer</span
+                                                    >
+                                                </div>
+                                            </a-menu-item>
+                                            <a-menu-item
+                                                @click="viewDossier(patient)"
+                                                class="!py-2"
+                                            >
+                                                <div
+                                                    class="flex items-center gap-2"
+                                                >
+                                                    <fonta
+                                                        icon="folder-open"
+                                                        class="text-blue-500 text-lg"
+                                                    />
+                                                    <span
+                                                        class="text-blue-500 font-medium"
+                                                        >Dossier</span
+                                                    >
+                                                </div>
+                                            </a-menu-item>
+                                        </a-menu>
+                                    </template>
+                                </a-dropdown>
                             </div>
                         </td>
                     </tr>
@@ -273,7 +670,7 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="patients.links.length > 0">
+        <div v-if="patients.data.length > 0 && patients.links.length > 3">
             <div class="flex flex-wrap mt-4 items-center justify-end">
                 <div
                     v-for="(link, linkIndex) in patients.links"
@@ -286,10 +683,14 @@
                     ></div>
                     <Link
                         v-else
-                        preserve-scroll
+                        :preserve-state="true"
+                        :preserve-scroll="true"
                         class="mr-1 shadow-sm transition-all duration-300 hover:scale-110 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block px-4 py-3 focus:text-blue-500"
-                        :class="{ 'bg-slate-600 text-white': link.active }"
+                        :class="{
+                            'bg-slate-600 !text-white border-none': link.active,
+                        }"
                         :href="link.url"
+                        @click.prevent="navigateToPage(link.url)"
                     >
                         <span v-html="link.label"></span>
                     </Link>
@@ -605,14 +1006,24 @@ import BaseInput from "@/Components/BaseInput.vue";
 import Button from "@/Components/Button.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import TestLayout from "@/Layouts/TestLayout.vue";
-import { DeleteFilled, EditFilled, FilterFilled } from "@ant-design/icons-vue";
 import useConfirmDialog from "@/composables/useConfirmDialog";
+import TestLayout from "@/Layouts/TestLayout.vue";
+import {
+    CalendarOutlined,
+    CheckOutlined,
+    DeleteFilled,
+    DownOutlined,
+    EditFilled,
+    FilterFilled,
+    SortAscendingOutlined,
+    SortDescendingOutlined,
+    TeamOutlined,
+} from "@ant-design/icons-vue";
 import { Link, router, useForm } from "@inertiajs/vue3";
 import { debounce } from "lodash";
 import Swal from "sweetalert2";
-import { defineOptions, ref, watch } from "vue";
-const {confirmDelete} = useConfirmDialog();
+import { defineOptions, onMounted, ref, watch } from "vue";
+const { confirmDelete } = useConfirmDialog();
 
 defineOptions({
     layout: TestLayout,
@@ -624,6 +1035,7 @@ const props = defineProps({
     filters: Object,
     badge: Array,
 });
+//Pour l'ajout ou edit patient
 const form = useForm({
     type: "SALARIE",
     parent_id: null,
@@ -640,10 +1052,10 @@ const form = useForm({
     statut_emploi: "CDI",
     date_fin_contrat: null,
 });
+//Variable pour le formulaire modal
 const showModal = ref(false);
 const isEditing = ref(false);
 const editingPatientId = ref(null);
-
 const patientOptions = ref([
     {
         value: "SALARIE",
@@ -658,10 +1070,6 @@ const patientOptions = ref([
         class: "!text-green-800 hover:!bg-green-50",
     },
 ]);
-const patientTypes = [
-    { value: "SALARIE", label: "Salarié" },
-    { value: "FAMILLE", label: "Bénéficiaire" },
-];
 // Variables pour la recherche de salarié dans modal
 const employeeSearchTerm = ref("");
 const dropdownVisible = ref(false);
@@ -677,15 +1085,15 @@ function selectSalarie(salarie) {
 }
 const searchSalaries = async () => {
     if (employeeSearchTerm.value.length < 2) {
-        filteredSalaries.value = []; // Clear results if input is too short
+        filteredSalaries.value = []; //Si l'input du champ de recherche est trop court on ne return pas
         return;
     }
 
-    const response = await fetch(
+    const response = await fetch(//sinon on retourne une correspondance
         `/admin/salaries/search?search=${employeeSearchTerm.value}`
     );
     const data = await response.json();
-    filteredSalaries.value = data; // Update the filtered salaries
+    filteredSalaries.value = data; // mise à jour du salarié referent
 };
 
 //Fermeture du Modal
@@ -727,11 +1135,11 @@ const handleSubmit = () => {
                 form.reset();
                 showModal.value = false;
                 Swal.fire({
-                            title: "Mis à jour !",
-                            text: "Information du patient mis à jour avec succès",
-                            icon: "success",
-                            confirmButtonColor: "#3b82f6",
-                        });
+                    title: "Mis à jour !",
+                    text: "Information du patient mis à jour avec succès",
+                    icon: "success",
+                    confirmButtonColor: "#3b82f6",
+                });
             },
             onError: (e) => {
                 console.log(e);
@@ -741,11 +1149,11 @@ const handleSubmit = () => {
         form.post(route("admin.patient.store"), {
             onSuccess: () => {
                 Swal.fire({
-                            title: "Ajout !",
-                            text: "Patient ajouter avec succès",
-                            icon: "success",
-                            confirmButtonColor: "#3b82f6",
-                        });
+                    title: "Ajout !",
+                    text: "Patient ajouter avec succès",
+                    icon: "success",
+                    confirmButtonColor: "#3b82f6",
+                });
                 form.reset();
                 showModal.value = false;
             },
@@ -755,54 +1163,166 @@ const handleSubmit = () => {
         });
     }
 };
-const handleDelete = (patient) => {
-    Modal.confirm({
-        title: "Confirmer la suppression",
-        content: `Voulez-vous vraiment supprimer le patient  ${patient.numero} ?`,
-        okText: "Supprimer",
-        okType: "danger",
-        cancelText: "Annuler",
-        onOk() {
-            router.delete(route("admin.patient.delete", patient), {
-                preserveScroll: true,
-                onSuccess: () => {
-                    message.success("le patient a été supprimé");
-                },
-                onError: () => {
-                    message.error("Erreur lors de la suppression");
-                },
-            });
-        },
-    });
-};
-
 // Initialisation des filtres à partir des valeurs envoyées par le contrôleur (s'il y en a)
+//filtre selon le societe,type de patient et recherche
 const searchTerm = ref(props.filters.search || "");
-const selectedSocietes = ref(props.filters.societes || []);
+const selectedSocietes = ref(
+    props.filters.societes ? props.filters.societes.map((id) => Number(id)) : []
+);
+const patientTypes = [
+    { value: "SALARIE", label: "Salarié" },
+    { value: "FAMILLE", label: "Bénéficiaire" },
+];
 const dropdownFilterTypeVisible = ref(false);
 const dropdownFilterSocieteVisible = ref(false);
 
-// Déclenche une nouvelle requête côté serveur dès qu'un filtre change
+//les status du badge du patient/filtre selon le status du badge
+const badgeStatuses = [
+    { value: "actif", label: "Badges actifs" },
+    { value: "desactive", label: "Badges inactifs" },
+    { value: "expired", label: "Badges expirés" },
+];
+const selectedBadgeStatuses = ref(props.filters.badgeStatuses || []);
+const dropdownFilterBadgeVisible = ref(false);
+
+// Options de tri disponibles/tri des resultats
+const sortOptions = [
+    { value: "newest", label: "Plus récents", icon: CalendarOutlined },
+    { value: "oldest", label: "Plus anciens", icon: CalendarOutlined },
+    { value: "name_asc", label: "Nom (A-Z)", icon: SortAscendingOutlined },
+    { value: "name_desc", label: "Nom (Z-A)", icon: SortDescendingOutlined },
+    { value: "societe", label: "Société", icon: TeamOutlined },
+];
+// valeur par defaut du tri
+const sortOrder = ref(props.filters.sort || "newest");
+
+// Fonction pour obtenir le label du tri actuel à aficher dans l'input du selection
+const getSortLabel = () => {
+    const option = sortOptions.find((option) => option.value === sortOrder.value);
+    return option ? option.label : "Trier par";
+};
+// Fonction pour changer l'ordre de tri
+const changeSortOrder = (value) => {
+    sortOrder.value = value;
+
+    router.get(
+        route("admin.patient.index"),
+        {
+            search: searchTerm.value,
+            societes: selectedSocietes.value,
+            types: selectedTypes.value,
+            badgeStatuses: selectedBadgeStatuses.value,
+            sort: value,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        }
+    );
+};
+
+// Mise à jour de la fonction watch pour inclure le tri
 watch(
-    [searchTerm, selectedSocietes, selectedTypes],
-    debounce(([newSearch, newSociete, newTypes]) => {
+    [searchTerm, selectedSocietes, selectedTypes, selectedBadgeStatuses],
+    debounce(([newSearch, newSociete, newTypes, newBadgeStatuses]) => {
+        // Pour les valeurs numériques comme les IDs de sociétés,il faut convertir en numeric pour maintenir le filtre
+        const societeValues = newSociete.map((id) => Number(id));
+
         router.get(
             route("admin.patient.index"),
             {
                 search: newSearch,
-                societes: newSociete,
-                types: newTypes, // Utilisez 'types' au lieu de 'type'
+                societes: societeValues,
+                types: newTypes,
+                badgeStatuses: newBadgeStatuses,
+                sort: sortOrder.value,
             },
             {
                 preserveState: true,
+                preserveScroll: true,
                 replace: true,
             }
         );
     }, 800)
 );
+
 // Fonction pour voir le dossier d'un patient
 const viewDossier = (patient) => {
     router.get(route("admin.patient.view", { id: patient.id }));
+};
+
+// Fonction pour vérifier si la date est expirée
+const isExpired = (dateStr) => {
+    if (!dateStr) return true;
+
+    const validityDate = new Date(dateStr);
+    const today = new Date();
+
+    return validityDate < today;
+};
+
+// Fonction pour formater la date
+const formatDate = (dateStr) => {
+    if (!dateStr) return "Non définie";
+
+    return new Date(dateStr).toLocaleDateString("fr-FR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+};
+// Fonction pour renouveler le badge
+const renewBadge = (badgeId) => {
+    router.post(
+        route("admin.badge.renew"),
+        {
+            badge_id: badgeId,
+        },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                Swal.fire({
+                    title: "Badge activé !",
+                    text: "Le badge a été renouvelé et activé pour un mois",
+                    icon: "success",
+                    confirmButtonColor: "#3b82f6",
+                });
+            },
+            onError: (e) => {
+                console.error(e);
+                Swal.fire({
+                    title: "Erreur",
+                    text: "Impossible de renouveler le badge",
+                    icon: "error",
+                    confirmButtonColor: "#ef4444",
+                });
+            },
+        }
+    );
+};
+
+// Vérifier les badges expirés au chargement de la page
+onMounted(() => {
+    router.post(route("admin.badge.checkExpired"));
+});
+
+const navigateToPage = (url) => {
+    router.get(
+        url,
+        {
+            search: searchTerm.value,
+            societes: selectedSocietes.value.map((id) => Number(id)),
+            types: selectedTypes.value,
+            badgeStatuses: selectedBadgeStatuses.value,
+            sort: sortOrder.value,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        }
+    );
 };
 </script>
 
@@ -831,5 +1351,200 @@ const viewDossier = (patient) => {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
     opacity: 0;
+}
+
+/* Styles pour le dropdown de badge */
+:deep(.badge-dropdown .ant-dropdown-menu) {
+    padding: 0;
+    border-radius: 1rem;
+    min-width: 300px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+:deep(.badge-dropdown .ant-menu-item) {
+    margin: 0.5rem;
+    height: auto !important;
+    line-height: 1.5;
+    padding: 0 !important;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+:deep(.badge-dropdown .ant-menu-item:hover) {
+    background-color: rgba(0, 0, 0, 0.02);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+:deep(.badge-dropdown .ant-menu-item-disabled) {
+    color: rgba(0, 0, 0, 0.25);
+    background-color: transparent !important;
+    cursor: not-allowed;
+}
+
+/* Style spécial pour le bouton de renouvellement */
+:deep(.badge-dropdown .ant-menu-item.bg-blue-50) {
+    background-color: rgb(239, 246, 255) !important;
+    transition: all 0.3s ease;
+}
+
+:deep(.badge-dropdown .ant-menu-item.bg-blue-50:hover) {
+    background-color: rgb(219, 234, 254) !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Animation de pulsation pour les badges */
+@keyframes pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(248, 113, 113, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
+    }
+}
+
+@keyframes pulse-orange {
+    0% {
+        box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(251, 146, 60, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(251, 146, 60, 0);
+    }
+}
+
+@keyframes pulse-blue {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+.pulse-circle {
+    display: inline-block;
+}
+
+.pulse-green {
+    animation: pulse-green 2s infinite;
+}
+
+.pulse-red {
+    animation: pulse-red 2s infinite;
+}
+
+.pulse-orange {
+    animation: pulse-orange 2s infinite;
+}
+
+.pulse-blue {
+    animation: pulse-blue 2s infinite;
+}
+
+.badge-pulse-active,
+.badge-pulse-inactive,
+.badge-pulse-warning {
+    animation: none;
+}
+
+/* Animations plus fluides */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.group:hover .group-hover\:rotate-180 {
+    transform: rotate(180deg);
+}
+
+.group:hover .group-hover\:border-blue-200 {
+    border-color: rgba(191, 219, 254, 1);
+}
+
+.group:hover .group-hover\:text-blue-500,
+.group:hover .group-hover\:text-blue-600 {
+    transition-delay: 0.05s;
+}
+
+.group:hover .group-hover\:scale-110 {
+    transition-delay: 0.05s;
+}
+
+/* Improve visibility transition */
+.invisible {
+    visibility: hidden;
+}
+
+.group-hover\:visible {
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+.group-hover\:opacity-100 {
+    transition-delay: 0.05s;
+}
+
+/* Styles pour le dropdown de tri */
+:deep(.sort-dropdown .ant-dropdown-menu) {
+    padding: 0;
+    border-radius: 0.75rem;
+    min-width: 220px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+:deep(.sort-dropdown .ant-menu-item) {
+    height: auto !important;
+    line-height: 1.5;
+    padding: 8px 12px !important;
+    margin: 4px !important;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+:deep(.sort-dropdown .ant-menu-item:hover) {
+    background-color: #f5f7fa;
+}
+
+:deep(.sort-dropdown .ant-menu-item.bg-blue-50) {
+    background-color: rgb(239, 246, 255) !important;
+}
+
+:deep(.sort-dropdown .ant-menu-item.ant-menu-item-active) {
+    background-color: rgb(239, 246, 255);
 }
 </style>

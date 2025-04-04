@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 class MedecinController extends Controller
 {
     public function index(Request $request)    {
-        return Inertia::render("Medecin/dashboard");
+        return inertia("Medecin/dashboard");
     }
    public function patientDossier(Request $request)
 {
@@ -60,7 +60,7 @@ class MedecinController extends Controller
                 'consultations_count' => $patient->consultations_count,
             ];
         });
-    return Inertia::render('Medecin/patients/Dossier', [
+    return inertia('Medecin/patients/Dossier', [
         'patients' => $patients,
         'filters' => $request->only(['search', 'sort']),
         'medecin' => Auth::user()->medecin
@@ -81,7 +81,7 @@ public function showDossier($id)
     }, 'societe'])->findOrFail($id);
 
     // Retourner la vue avec les données du patient
-    return Inertia::render('Medecin/patients/Details', [
+    return inertia('Medecin/patients/Details', [
         'patient' => $patient,
         'medecin' => $medecin
     ]);
@@ -98,7 +98,7 @@ public function showDossier($id)
         $medecins = Medecin::where('id', '!=', Auth::user()->medecin->id)
             ->orderBy('nom')
             ->get();
-        return Inertia::render('Medecin/consultation/createConsultation', [
+        return inertia('Medecin/consultation/createConsultation', [
             'patients' => $patients,
             'medecins' => $medecins,
             'consultations'=> $consultations
@@ -130,7 +130,6 @@ public function showDossier($id)
         'poids' => 'required|numeric',
         'taille' => 'required|numeric',
         'freq_card' => 'required|numeric',
-        'press_art' => 'required|numeric',
         'temperature' => 'required|numeric',
         'observations' => 'nullable|string|max:1000',
             // autres validations pour ordonnance, examens, lettre de references
@@ -212,7 +211,7 @@ public function showDossier($id)
     {
         $doctor = Auth::user()->medecin;
 
-        return Inertia::render("Medecin/parametre",['doctor'=> $doctor]);
+        return inertia("Medecin/parametre",['doctor'=> $doctor]);
     }
     public function updateParameters(Request $request)
 {

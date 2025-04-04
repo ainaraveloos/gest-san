@@ -30,7 +30,6 @@ return new class extends Migration
             $table->integer('poids')->nullable();
             $table->integer('taille')->nullable();
             $table->integer('freq_card')->nullable();
-            $table->integer('press_art')->nullable();
             $table->integer('temperature')->nullable();
             $table->text('observation')->nullable();
             $table->float('imc')->nullable(); // IMC (Indice de Masse Corporelle)

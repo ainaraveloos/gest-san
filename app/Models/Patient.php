@@ -32,7 +32,6 @@ class Patient extends Model
         'poids',
         'taille',
         'freq_card',
-        'press_art',
         'temperature',
         'imc', // Indice de masse corporelle
     ];

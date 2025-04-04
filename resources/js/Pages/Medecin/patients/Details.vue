@@ -1,66 +1,153 @@
 <template>
     <div class="container mx-auto mb-6">
         <div
-            class="bg-blue-500 px-10 relative mb-6 overflow-hidden flex items-center justify-between h-48 w-full shadow-sm rounded-xl col-span-full"
+            class="bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-6 mb-6 flex items-center justify-between shadow-md rounded-xl overflow-hidden"
         >
             <div>
-                <h1
-                    class="font-bold text-[clamp(1.8rem,5vw,2.5rem)] text-white"
-                >
-                    Nouveau Consultation
+                <h1 class="text-2xl font-bold text-white mb-2">
+                    Nouvelle Consultation
                 </h1>
+                <p class="text-blue-100 mb-4">
+                    Créer une consultation pour un patient
+                </p>
                 <Link :href="route('medecin.consultation.create')">
                     <BaseButton
                         bg-color="bg-green-600"
                         hover-color="bg-green-700"
-                        focus-color="ring-green-400"
-                        active-color="bg-green-800"
-                    class="py-2"
+                        focus-color="ring-green-800"
+                        active-color="bg-green-700"
+                        class="py-3  shadow-md group"
                     >
-                        <span>creer un consultation</span>
-                        <ArrowRightOutlined
-                            class="group-hover:translate-x-2 group-hover:shadow-sm transition-all duration-500"
+                        <span>Créer une consultation</span>
+                        <fonta icon="arrow-right"
+                            class=" ml-2 group-hover:translate-x-1 transition-all duration-300"
                         />
                     </BaseButton>
                 </Link>
             </div>
             <img
                 src="../../../../assets/Consultation.svg"
-                class="w-60 mt-2"
-                alt=""
+                class="w-60 hidden md:block transition-all duration-500 hover:scale-105"
+                alt="Illustration de consultation"
             />
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <!-- Carte Informations du Patient -->
             <div
-                class="bg-white shadow-md rounded-md xl:col-span-1 col-span-full p-6 transition-all duration-300"
+                class="bg-white shadow-sm rounded-lg xl:col-span-1 col-span-full overflow-hidden border border-gray-100"
             >
-                <div class="flex items-center gap-4 mb-6">
-                    <div
-                        class="bg-blue-100 rounded-lg p-2 flex items-center justify-center mb-2"
-                    >
-                        <fonta
-                            class="text-2xl text-blue-600"
-                            icon="user-injured"
-                        />
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-600">
-                        Profil du Patient
+                <div
+                    class="bg-blue-500 px-6 py-3 flex items-center justify-between"
+                >
+                    <h2 class="text-lg font-medium text-white">
+                        Profil du patient
                     </h2>
+                    <span
+                        v-if="patient.societe"
+                        class="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-xs"
+                    >
+                        {{ patient.societe.nom }}
+                    </span>
                 </div>
 
-                <div class="space-y-4">
-                    <div
-                        v-for="(info, key) in patientInfos"
-                        :key="key"
-                        class="flex gap-4 items-center justify-between py-4 border-b border-gray-100 last:border-0"
-                    >
-                        <span class="col-span-1 text-gray-400 font-medium">{{
-                            info.label
-                        }}</span>
-                        <span class="col-span-2 text-gray-700">{{
-                            info.value
-                        }}</span>
+                <div class="p-5">
+                    <!-- En-tête avec nom -->
+                    <div class="mb-5 pb-4 border-b border-gray-100">
+                        <h3 class="text-xl font-semibold text-gray-600">
+                            {{ patient.nom.toUpperCase() }} {{ patient.prenom }}
+                        </h3>
+                        <div
+                            class="flex items-center gap-4 mt-2 text-sm text-gray-500"
+                        >
+                            <span class="flex items-center">
+                                <i
+                                    class="fas fa-birthday-cake text-gray-400 mr-1"
+                                ></i>
+                                {{ calculateAge(patient.date_naissance) }} ans
+                            </span>
+                            <span class="flex items-center">
+                                <i
+                                    class="fas fa-id-card text-gray-400 mr-1"
+                                ></i>
+                                {{ patient.numero }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Informations principales -->
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Type</span>
+                            <span class="text-gray-700 font-medium">{{
+                                patient.type === "SALARIE"
+                                    ? "Salarié"
+                                    : "Famille"
+                            }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Téléphone</span>
+                            <span class="text-gray-700">{{
+                                patient.telephone || "Non renseigné"
+                            }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Adresse</span>
+                            <span class="text-gray-700">{{
+                                patient.adresse || "Non renseignée"
+                            }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Données vitales -->
+                    <div class="mb-6">
+                        <h4
+                            class="text-sm uppercase text-gray-500 font-medium mb-3"
+                        >
+                            Constantes vitales
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div
+                                class="bg-gray-50 p-3 rounded-md border border-gray-200"
+                            >
+                                <p class="text-sm text-gray-500">Poids</p>
+                                <p class="text-gray-700 mt-1 font-medium">
+                                    {{ patient.poids || "-" }} kg
+                                </p>
+                            </div>
+                            <div
+                                class="bg-gray-50 p-3 rounded-md border border-gray-200"
+                            >
+                                <p class="text-sm text-gray-500">Taille</p>
+                                <p class="text-gray-700 mt-1 font-medium">
+                                    {{ patient.taille || "-" }} cm
+                                </p>
+                            </div>
+                            <div
+                                class="bg-gray-50 p-3 rounded-md border border-gray-200"
+                            >
+                                <p class="text-sm text-gray-500">
+                                    Fréquence cardiaque
+                                </p>
+                                <p class="text-gray-700 mt-1 font-medium">
+                                    {{ patient.freq_card || "-" }} bpm
+                                </p>
+                            </div>
+                            <div
+                                class="bg-gray-50 p-3 rounded-md border border-gray-200"
+                            >
+                                <p class="text-sm text-gray-500">IMC</p>
+                                <p class="text-gray-700 mt-1 font-medium">
+                                    {{
+                                        patient.poids && patient.taille
+                                            ? (
+                                                  patient.poids /
+                                                  (patient.taille / 100) ** 2
+                                              ).toFixed(1)
+                                            : "-"
+                                    }}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -69,7 +156,7 @@
             <div
                 class="bg-white shadow-md rounded-md p-6 xl:col-span-2 col-span-full transition-all duration-300"
             >
-                <div class="flex items-center gap-4 mb-6">
+                <div class="flex items-center gap-4 mb-8">
                     <div
                         class="bg-green-100 rounded-lg p-2 flex items-center justify-center mb-2"
                     >
@@ -78,24 +165,30 @@
                             icon="calendar-check"
                         />
                     </div>
-                    <h2 class="text-2xl font-bold text-gray-600">
+                    <h2 class="text-2xl font-semibold text-gray-600">
                         Historique Médical
                     </h2>
                 </div>
 
-                <ul class="space-y-6">
-                    <li
+                <a-timeline>
+                    <a-timeline-item
                         v-for="consultation in patient.consultations"
                         :key="consultation.id"
-                        class="group cursor-pointer p-4 rounded-lg border-gray-100 border hover:shadow-sm hover:bg-blue-50 transition-all duration-500"
+                        class="cursor-pointer"
                         @click="viewConsultationDetails(consultation)"
                     >
-                        <div class="flex justify-between items-start">
-                            <div
-                                class="flex flex-col items-start justify-between"
-                            >
+                        <template #dot>
+                            <fonta
+                                icon="calendar-alt"
+                                class="text-green-600 text-xl"
+                            />
+                        </template>
+                        <div
+                            class="group flex items-center justify-between bg-gray-50 hover:bg-blue-50 py-2 px-4 shadow-sm transition-all duration-500 rounded-md"
+                        >
+                            <div class="flex flex-col">
                                 <p
-                                    class="text-sm group-hover:text-blue-500 font-semibold group-hover:scale-105 transition-all duration-500 text-gray-400"
+                                    class="text-sm text-gray-400 font-semibold transition-all duration-500"
                                 >
                                     {{
                                         formatDateLongue(
@@ -115,22 +208,22 @@
                                                 consultation.type ===
                                                 'visite_aptitude',
                                         }"
-                                        >{{
+                                    >
+                                        {{
                                             consultation.type === "maladie"
                                                 ? "maladie"
                                                 : "visite d'aptitude"
-                                        }}</span
-                                    >
+                                        }}
+                                    </span>
                                 </p>
                             </div>
-                            <span
-                                class="text-gray-400 group-hover:text-blue-500"
-                            >
-                                <fonta icon="chevron-right" />
-                            </span>
+                            <fonta
+                                icon="chevron-right"
+                                class="group-hover:text-blue-600"
+                            />
                         </div>
-                    </li>
-                </ul>
+                    </a-timeline-item>
+                </a-timeline>
             </div>
         </div>
     </div>
@@ -141,7 +234,7 @@
             class="consultation_details_section space-y-8 bg-white rounded-md p-6 shadow-md"
         >
             <!-- Section Documents -->
-            <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg">
+            <div class="border border-gray-200 p-8 rounded-lg">
                 <h3 class="text-lg font-semibold mb-8 text-blue-500">
                     Documents associés
                 </h3>
@@ -190,9 +283,7 @@
                 </div>
             </div>
             <!-- Section médicale -->
-            <div
-                class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm"
-            >
+            <div class="p-8 rounded-xl border border-gray-200 shadow-sm">
                 <h3
                     class="text-lg font-semibold mb-8 text-blue-500 flex items-center"
                 >
@@ -211,7 +302,7 @@
                             v-model:value="form.motif"
                             placeholder="Décrire le motif de la consultation..."
                             :auto-size="{ minRows: 3, maxRows: 6 }"
-                            class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            class="mt-1 block w-full p-2 bg-gray-50 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         />
                     </div>
 
@@ -226,7 +317,7 @@
                             v-model:value="form.diagnostic"
                             placeholder="Renseigner le diagnostic établi..."
                             :auto-size="{ minRows: 3, maxRows: 8 }"
-                            class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            class="mt-1 block w-full p-2 border bg-gray-50 rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         />
                     </div>
                 </div>
@@ -237,7 +328,14 @@
             <div class="flex justify-end gap-4 border-t pt-4 mt-6">
                 <button
                     type="primary"
-                    @click="confirmDelete(route('consultation.destroy',selectedConsultation.id))"
+                    @click="
+                        confirmDelete(
+                            route(
+                                'consultation.destroy',
+                                selectedConsultation.id
+                            )
+                        )
+                    "
                     class="inline-flex items-center rounded-md border gap-2 border-transparent bg-red-500 transition-colors duration-300 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white ease-in-out ${bgColor} hover:${hoverColor} focus:${focusColor} focus:outline-none focus:ring-2 focus:ring-offset-2 active:${activeColor}"
                 >
                     <DeleteFilled />
@@ -247,12 +345,11 @@
                 <BaseButton
                     @click="handleEdit(selectedConsultation)"
                     bg-color="bg-green-600"
-                        hover-color="bg-green-700"
-                        focus-color="ring-green-400"
-                        active-color="bg-green-800"
-                        class="py-2 disabled:bg-slate-500"
-                        :disabled="!isFormChanged"
-
+                    hover-color="bg-green-700"
+                    focus-color="ring-green-400"
+                    active-color="bg-green-800"
+                    class="py-2 disabled:bg-slate-500"
+                    :disabled="!isFormChanged"
                 >
                     <EditFilled />
 
@@ -271,26 +368,21 @@
     >
         <div
             id="document-content"
-            class=" mt-4"
+            class="mt-4"
             v-html="previewDocumentContent"
         ></div>
         <div class="flex justify-end gap-4 border-t pt-4">
-            <BaseButton
-                @click="printDocument"
-                class="py-2"
-
-            >
+            <BaseButton @click="printDocument" class="py-2">
                 <fonta icon="print" />
                 <span>imprimer</span>
             </BaseButton>
             <BaseButton
-
                 @click="downloadPDF"
                 bg-color="bg-green-600"
-                        hover-color="bg-green-700"
-                        focus-color="ring-green-400"
-                        active-color="bg-green-800"
-                        class="py-2"
+                hover-color="bg-green-700"
+                focus-color="ring-green-400"
+                active-color="bg-green-800"
+                class="py-2"
             >
                 <fonta icon="download" />
                 <span>Telecharger PDF</span>
@@ -301,21 +393,17 @@
 
 <script setup>
 // Importer le logo avec un chemin correct
-import TestLayout from "@/Layouts/TestLayout.vue";
-import {
-    ArrowRightOutlined,
-    DeleteFilled,
-    EditFilled,
-} from "@ant-design/icons-vue";
-import { Link, router, useForm } from "@inertiajs/vue3";
-import { message, Modal } from "ant-design-vue";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import { computed, nextTick, ref } from "vue";
-import logo from "../../../../assets/medicare_dark.svg"; // Assurez-vous que le chemin est correct
 import BaseButton from "@/Components/BaseButton.vue";
 import useConfirmDialog from "@/composables/useConfirmDialog";
-const {confirmDelete} = useConfirmDialog();
+import TestLayout from "@/Layouts/TestLayout.vue";
+import { DeleteFilled, EditFilled } from "@ant-design/icons-vue";
+import { Link, useForm } from "@inertiajs/vue3";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import Swal from "sweetalert2";
+import { computed, nextTick, ref } from "vue";
+import logo from "../../../../assets/medicare_dark.svg";
+const { confirmDelete } = useConfirmDialog();
 
 defineOptions({ layout: TestLayout });
 const props = defineProps({ patient: Object, medecin: Object });
@@ -343,27 +431,6 @@ const formatDateLongue = (date) => {
     });
 };
 
-const patientInfos = computed(() => [
-    {
-        label: "Nom complet",
-        value: `${props.patient.nom.toUpperCase()} ${props.patient.prenom}`,
-    },
-    { label: "Téléphone", value: props.patient.telephone },
-    { label: "Société", value: props.patient.societe?.nom || "Non renseignée" },
-    { label: "Numéro patient", value: props.patient.numero },
-    {
-        label: "Poids/Taille",
-        value: `${props.patient.poids} kg / ${props.patient.taille} cm`,
-    },
-    {
-        label: "IMC",
-        value: (
-            props.patient.poids /
-            (props.patient.taille / 100) ** 2
-        ).toFixed(2),
-    },
-    { label: "Frequence Cardiaque", value: `${props.patient.freq_card} bpm` },
-]);
 const selectedConsultation = ref(null);
 const showConsultationDetails = ref(false);
 const viewConsultationDetails = (consultation) => {
@@ -375,6 +442,9 @@ const viewConsultationDetails = (consultation) => {
             selectedConsultation.value = consultation;
             form.motif = consultation.motif || "";
             form.diagnostic = consultation.diagnostic || "";
+            // Mettre à jour les valeurs originales avec celles de la consultation chargée
+            originalMotif.value = consultation.motif || "";
+            originalDiagnostic.value = consultation.diagnostic || "";
             showConsultationDetails.value = true;
             nextTick(() => {
                 const element = document.querySelector(
@@ -396,7 +466,6 @@ const form = useForm({
 const originalDiagnostic = ref(form.diagnostic);
 const originalMotif = ref(form.motif);
 
-
 // Computed property pour vérifier si le diagnostic a changé
 const isDiagnosticChanged = computed(() => {
     return form.diagnostic !== originalDiagnostic.value;
@@ -412,24 +481,24 @@ const isFormChanged = computed(() => {
     return isDiagnosticChanged.value || isMotifChanged.value;
 });
 
-
-
-
-
 //Modification d'une consutlation
 const handleEdit = () => {
     form.patch(route("consultation.update", selectedConsultation.value.id), {
         onSuccess: () => {
             showConsultationDetails.value = false;
             selectedConsultation.value = null;
-            message.success("La consultation a été mise à jour avec succès.");
+            Swal.fire({
+                title: "Mise à jour !",
+                text: "Consultation mis à jour avec succès",
+                icon: "success",
+                confirmButtonColor: "#3b82f6",
+            });
         },
-        onError: () => {
-            message.error("Erreur lors de la modification du consultation");
+        onError: (e) => {
+            console.log(e);
         },
     });
 };
-
 
 //Pour l'affichage des modals des documents prêts à être imprimé ou telechargé
 const previewModalVisible = ref(false);
@@ -959,11 +1028,6 @@ const printDocument = () => {
  */
 const downloadPDF = async () => {
     try {
-        const loadingMessage = message.loading(
-            "Génération du PDF en cours...",
-            0
-        );
-
         // Capture le contenu HTML
         const element = document.getElementById("document-content");
         const canvas = await html2canvas(element, {
@@ -1003,14 +1067,17 @@ const downloadPDF = async () => {
             keywords: "medical,certificat,medecin,ordonnance",
         });
 
-        loadingMessage();
-        message.success("PDF généré avec succès !");
+        Swal.fire({
+            title: "Telechargé !",
+            text: "PDF telecharger avec succès",
+            icon: "success",
+            confirmButtonColor: "#3b82f6",
+        });
         previewModalVisible.value = false;
 
         // Téléchargement
         doc.save(filename);
     } catch (error) {
-        message.error("Erreur lors de la génération du PDF");
         console.error("Erreur de génération PDF :", error);
     }
 };
@@ -1047,8 +1114,8 @@ const downloadPDF = async () => {
 }
 /* Animation personnalisée */
 .group:hover .fa-chevron-right {
-    transform: translateX(5px);
-    transition: transform 0.8s ease;
+    transform: translateX(8px);
+    transition: all 0.8s ease;
 }
 
 /* Style des séparateurs */

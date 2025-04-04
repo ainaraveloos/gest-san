@@ -1,20 +1,28 @@
 <template>
     <div class="p-2 rounded-md transform transition-all duration-300">
-        <div class="bg-blue-500 p-4 rounded-t-md">
-            <div class="text-white text-2xl font-bold mb-6">
-                <h1>Selectionner un Patient</h1>
+        <!-- En-tête avec recherche de patient -->
+        <div class="bg-blue-500 p-6 rounded-t-xl shadow-md">
+            <div class="flex items-center gap-3 text-white mb-6">
+                <h1 class="text-2xl font-semibold">Nouvelle Consultation</h1>
             </div>
+
             <div
-                class="relative flex items-center justify-center md:flex-row flex-col-reverse mb-4 gap-2"
+                class="relative flex items-center justify-center md:flex-row flex-col-reverse mb-2 gap-3"
             >
                 <div class="relative w-full flex-1 z-50 group">
-                    <BaseInput
-                        type="text"
-                        v-model="patientSearchTerm"
-                        placeholder="Rechercher un nom, prenom, numero ..."
-                        @focus="dropdownVisible = true"
-                        @blur="dropdownVisible = false"
-                    />
+                    <div class="relative flex items-center">
+                        <span class="absolute left-3 text-blue-200">
+                            <fonta icon="search" />
+                        </span>
+                        <BaseInput
+                            type="text"
+                            v-model="patientSearchTerm"
+                            placeholder="Rechercher un patient par nom, prénom ou numéro..."
+                            @focus="dropdownVisible = true"
+                            @blur="dropdownVisible = false"
+                            class="pl-10 py-2 text-md bg-white/95 border-blue-300 hover:bg-white focus:bg-white transition-all duration-300 shadow-inner"
+                        />
+                    </div>
 
                     <transition
                         name="dropdown"
@@ -27,18 +35,18 @@
                             v-if="
                                 dropdownVisible && filteredPatients.length > 0
                             "
-                            class="absolute w-full bg-white shadow-lg p-2 flex flex-col gap-1 rounded-md mt-4 max-h-60 overflow-y-auto custom-scroll"
+                            class="absolute w-full bg-white shadow-lg p-2 flex flex-col gap-1 rounded-md mt-2 max-h-64 overflow-y-auto custom-scroll border border-blue-100"
                         >
                             <div
                                 v-for="(patient, index) in filteredPatients"
                                 :key="patient.id"
                                 @click="selectPatient(patient)"
-                                class="px-4 py-2 hover:bg-blue-50 rounded-md transition-all duration-300 cursor-pointer hover:shadow-sm"
+                                class="px-4 py-3 hover:bg-blue-50 rounded-md transition-all duration-300 cursor-pointer hover:shadow-sm"
                                 :style="{ transitionDelay: `${index * 30}ms` }"
                             >
                                 <div class="flex items-center gap-3">
                                     <div
-                                        class="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center transition-all duration-300 group-hover:bg-blue-200"
+                                        class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center transition-all duration-300 group-hover:bg-blue-200"
                                     >
                                         <span
                                             class="text-blue-500 font-medium text-sm"
@@ -68,14 +76,18 @@
                             v-if="
                                 dropdownVisible && filteredPatients.length === 0
                             "
-                            class="absolute z-50 w-full bg-white shadow-lg p-4 rounded-md mt-2"
+                            class="absolute z-50 w-full bg-white shadow-lg p-4 rounded-md mt-2 border border-blue-100"
                         >
                             <div
-                                class="text-gray-500 text-center py-2 animate-pulse"
+                                class="text-gray-500 text-center py-4 animate-pulse"
                             >
-                                <a-empty
-                                    description="veuillez rechecher un patient"
+                                <fonta
+                                    icon="magnifying-glass"
+                                    class="text-blue-200 text-3xl mb-3"
                                 />
+                                <p class="text-blue-400">
+                                    Veuillez rechercher un patient
+                                </p>
                             </div>
                         </div>
                     </transition>
@@ -83,25 +95,37 @@
 
                 <BaseButton
                     @click="handleAdd"
-                    class="py-3"
+                    class="py-3 px-2"
                     bg-color="bg-green-600"
                     hover-color="bg-green-700"
                     focus-color="ring-green-400"
                     active-color="bg-green-800"
                 >
-                    <span class="flex items-center"> Ajouter le patient </span>
+                    <span class="flex items-center"
+                        >Démarrer la consultation</span
+                    >
                 </BaseButton>
             </div>
         </div>
 
-        <!-- Section 4 derniers consultations -->
-        <div class="bg-white rounded-b-md px-4 py-6">
-            <h2 class="text-xl text-blue-500 font-medium mb-6">
-                Les 4 derniers consultations
-                <fonta icon="calendar-check" class="ml-2" />
-            </h2>
+        <!-- Section des 4 dernières consultations -->
+        <div class="bg-white rounded-b-xl px-6 py-8 shadow-md">
+            <div class="flex items-center justify-between mb-6">
+                <h2
+                    class="text-lg text-blue-500 font-medium flex items-center gap-2"
+                >
+                    <fonta icon="history" class="text-blue-500" />
+                    Consultations récentes
+                </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <span
+                    class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full"
+                >
+                    Les 4 dernières consultations
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Link
                     v-for="consultation in consultations"
                     :key="consultation.id"
@@ -114,11 +138,20 @@
                     class="group transition-all duration-300"
                 >
                     <div
-                        class="bg-blue-50 rounded-lg p-6 border border-blue-100 hover:bg-green-100/50 hover:scale-105 duration-500 transition-all hover:border-blue-200 cursor-pointer"
+                        class="bg-blue-50 rounded-xl p-5 border border-blue-100 hover:bg-blue-100 hover:shadow-md duration-300 transition-all hover:border-blue-300 cursor-pointer flex items-start gap-3"
                     >
-                        <div class="space-y-3">
+                        <div
+                            class="bg-blue-100 p-3 rounded-full flex-shrink-0 group-hover:bg-blue-200 transition-colors"
+                        >
+                            <fonta
+                                icon="user-md"
+                                class="text-blue-500 text-lg"
+                            />
+                        </div>
+
+                        <div class="space-y-2">
                             <!-- Date -->
-                            <div class="text-sm font-medium text-blue-500">
+                            <div class="text-sm font-medium text-blue-700">
                                 {{
                                     new Date(
                                         consultation.date_consultation
@@ -134,10 +167,10 @@
                             <div class="flex items-center gap-2">
                                 <fonta
                                     icon="id-card"
-                                    class="text-blue-400 text-sm"
+                                    class="text-blue-400 text-xs"
                                 />
                                 <span
-                                    class="text-base font-semibold text-blue-800"
+                                    class="text-xs font-semibold text-gray-600"
                                 >
                                     {{ consultation.patient.numero }}
                                 </span>
@@ -146,11 +179,21 @@
                     </div>
                 </Link>
 
-                <div v-if="consultations.length === 0" class="col-span-full">
-                    <a-empty
-                        description="Aucune consultation enregistrée"
-                        class="text-blue-200"
-                    />
+                <div
+                    v-if="consultations.length === 0"
+                    class="col-span-full bg-gray-50 p-8 rounded-xl border border-gray-200 flex flex-col items-center justify-center"
+                >
+                    <div
+                        class="bg-gray-100 p-4 rounded-full text-gray-400 mb-3"
+                    >
+                        <fonta icon="clipboard-list" class="text-3xl" />
+                    </div>
+                    <p class="text-gray-500 font-medium">
+                        Aucune consultation enregistrée
+                    </p>
+                    <p class="text-gray-400 text-sm mt-1">
+                        Les consultations récentes apparaîtront ici
+                    </p>
                 </div>
             </div>
         </div>
@@ -161,18 +204,15 @@
         <div
             v-if="showConsultation"
             :key="addedPatient.id"
-            class="card-container consultation-section py-6 my-6 rounded-md shadow-md bg-white"
+            class="card-container consultation-section py-4 my-6 rounded-md shadow-md bg-white"
         >
             <form @submit.prevent="submitConsultation">
-                <div class="flex items-center justify-between p-8">
+                <div class="flex items-center justify-between md:flex-row flex-col gap-4 p-8">
                     <div>
-                        <h2 class="text-xl font-bold text-gray-600">
-                            {{ addedPatient.nom }}
-                            {{ addedPatient.prenom }}
-                        </h2>
                         <span
-                            class="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+                            class="text-md bg-blue-100 text-blue-800 px-4 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm"
                         >
+                            <fonta icon="id-card" class="text-blue-500" />
                             {{ addedPatient.numero }}
                         </span>
                     </div>
@@ -180,24 +220,21 @@
                     <div class="flex items-center justify-center">
                         <BaseButton
                             type="submit"
-                            class="py-2"
+                            class="py-3 px-6 text-base"
                             bg-color="bg-green-600"
                             hover-color="bg-green-700"
                             focus-color="ring-green-400"
                             active-color="bg-green-800"
                         >
-                            <fonta
-                                class="w-5 h-5 fill-current"
-                                icon="floppy-disk"
-                            />
-                            <span> Enregistrer la consultation </span>
+                            <fonta class="text-lg" icon="floppy-disk" />
+                            <span>Enregistrer la consultation</span>
                         </BaseButton>
                     </div>
                 </div>
 
-                <a-tabs v-model:activeKey="activeKey" type="card" >
+                <a-tabs v-model:activeKey="activeKey" type="card">
                     <a-tab-pane key="1">
-                        <template #tab >
+                        <template #tab>
                             <span class="flex items-center gap-2">
                                 <fonta icon="file-waveform" class="text-lg" />
                                 Fiche de Consultation
@@ -214,11 +251,15 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
                                 >
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
+                                        <fonta
+                                            icon="user"
+                                            class="text-blue-500"
+                                        />
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -228,10 +269,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
+                                    <fonta
+                                        icon="calendar-days"
+                                        class="text-blue-500"
+                                    />
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
                                     >
                                 </div>
@@ -240,9 +285,12 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-500 bg-gray-50 px-4 py-2 rounded-md text-base font-semibold"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta icon="fa-regular fa-calendar" />
+                                    <fonta
+                                        icon="calendar"
+                                        class="text-blue-500"
+                                    />
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -250,22 +298,26 @@
                             </div>
                         </div>
                         <div
-                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-4"
+                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-6"
                         >
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 <!-- Section Gauche - Informations Générales -->
-                                <div class="space-y-4">
+                                <div class="space-y-6">
                                     <h3
-                                        class="text-lg font-semibold text-blue-500 mb-4"
+                                        class="text-lg font-semibold text-blue-500 mb-4 pb-2 border-b border-blue-100 flex items-center gap-2"
                                     >
+                                        <fonta
+                                            icon="clipboard-list"
+                                            class="text-blue-500"
+                                        />
                                         Informations Générales
                                     </h3>
 
-                                    <div >
+                                    <div>
                                         <InputLabel
                                             for="type de consultation"
                                             value="Type de consultation"
-                                            class="mb-2"
+                                            class="mb-2 text-gray-700"
                                         />
                                         <a-segmented
                                             v-model:value="form.type"
@@ -275,21 +327,39 @@
                                         />
                                     </div>
 
-                                    <div >
-
+                                    <div>
+                                        <InputLabel
+                                            value="Motif de consultation"
+                                            class="mb-2 text-gray-700 flex items-center gap-2"
+                                        >
+                                            <fonta
+                                                icon="circle-info"
+                                                class="text-blue-500"
+                                            />
+                                            Motif de consultation
+                                        </InputLabel>
                                         <textarea
                                             v-model="form.motif"
                                             required
-                                            class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                            class="mt-1 block w-full p-3 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner bg-white"
                                             placeholder="Décrire le motif de la consultation..."
                                         ></textarea>
                                     </div>
 
                                     <div>
-
+                                        <InputLabel
+                                            value="Diagnostic"
+                                            class="mb-2 text-gray-700 flex items-center gap-2"
+                                        >
+                                            <fonta
+                                                icon="stethoscope"
+                                                class="text-blue-500"
+                                            />
+                                            Diagnostic
+                                        </InputLabel>
                                         <textarea
                                             v-model="form.diagnostic"
-                                            class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                            class="mt-1 block w-full p-3 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner bg-white"
                                             placeholder="Rédiger le diagnostic..."
                                             required
                                         ></textarea>
@@ -297,19 +367,25 @@
                                 </div>
 
                                 <!-- Section Droite - Constantes Vitales -->
-                                <div class="space-y-4">
+                                <div class="space-y-6">
                                     <h3
-                                        class="text-lg font-semibold text-blue-500 mb-4"
+                                        class="text-lg font-semibold text-blue-500 mb-4 pb-2 border-b border-blue-100 flex items-center gap-2"
                                     >
+                                        <fonta
+                                            icon="heart-pulse"
+                                            class="text-blue-500"
+                                        />
                                         Constantes Vitales
                                     </h3>
 
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-2 gap-6">
                                         <div>
                                             <InputLabel
                                                 value="Poids (kg)"
-                                                class="mb-2"
-                                            />
+                                                class="mb-2 text-gray-700 flex items-center gap-2"
+                                            >
+                                                Poids (kg)
+                                            </InputLabel>
 
                                             <BaseInput
                                                 type="number"
@@ -317,31 +393,39 @@
                                                 min="0"
                                                 step="5"
                                                 required
+                                                class="shadow-inner bg-white"
                                             />
                                         </div>
 
                                         <div>
                                             <InputLabel
                                                 value="Taille (cm)"
-                                                class="mb-2"
-                                            />
+                                                class="mb-2 text-gray-700 flex items-center gap-2"
+                                            >
+
+                                                Taille (cm)
+                                            </InputLabel>
                                             <BaseInput
                                                 type="number"
                                                 v-model.number="form.taille"
                                                 min="0"
                                                 required
+                                                class="shadow-inner bg-white"
                                             />
                                         </div>
 
                                         <div>
                                             <InputLabel
                                                 value="Fréquence cardiaque (bpm)"
-                                                class="mb-2"
-                                            />
+                                                class="mb-2 text-gray-700 flex items-center gap-2"
+                                            >
+
+                                                Fréquence cardiaque
+                                            </InputLabel>
                                             <BaseInput
                                                 type="number"
                                                 v-model.number="form.freq_card"
-                                                class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                                class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner bg-white"
                                                 min="0"
                                                 required
                                             />
@@ -349,29 +433,22 @@
 
                                         <div>
                                             <InputLabel
-                                                value="Pression artérielle (mmHg)"
-                                                class="mb-2"
-                                            />
+                                                value="Température (°C)"
+                                                class="mb-2 text-gray-700 flex items-center gap-2"
+                                            >
+
+                                                Température (°C)
+                                            </InputLabel>
                                             <BaseInput
-                                                type="text"
-                                                v-model.number="form.press_art"
-                                                placeholder="120/80"
+                                                type="number"
+                                                v-model.number="
+                                                    form.temperature
+                                                "
+                                                min="0"
                                                 required
+                                                class="shadow-inner bg-white"
                                             />
                                         </div>
-                                    </div>
-
-                                    <div>
-                                        <InputLabel
-                                            value="Température (°C)"
-                                            class="mb-2"
-                                        />
-                                        <BaseInput
-                                            type="number"
-                                            v-model.number="form.temperature"
-                                            min="0"
-                                            required
-                                        />
                                     </div>
                                 </div>
                             </div>
@@ -395,11 +472,15 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
                                 >
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
+                                        <fonta
+                                            icon="user"
+                                            class="text-blue-500"
+                                        />
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -409,10 +490,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
+                                    <fonta
+                                        icon="calendar-days"
+                                        class="text-blue-500"
+                                    />
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
                                     >
                                 </div>
@@ -421,9 +506,12 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-500 bg-gray-50 px-4 py-2 rounded-md text-base font-semibold"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta icon="fa-regular fa-calendar" />
+                                    <fonta
+                                        icon="calendar"
+                                        class="text-blue-500"
+                                    />
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -432,34 +520,53 @@
                         </div>
                         <!-- medicament -->
                         <div
-                            class="max-w-full mx-4 mt-4 p-4 space-y-6 bg-white rounded-md border-2 border-gray-200 shadow-xl shadow-blue-100/50 pb-2"
+                            class="max-w-full mx-4 mt-4 p-6 space-y-6 bg-white rounded-md border-2 border-gray-200 shadow-sm"
                         >
                             <!-- En-tête du tableau -->
                             <div
-                                class="font-bold text-lg text-gray-600 flex justify-center items-center gap-4"
+                                class="font-semibold text-lg text-blue-500 flex items-center gap-2 pb-4 mb-2 border-b border-blue-100"
                             >
-                                <h1>Ajouter des médicaments</h1>
-                                <fonta icon="capsules" class="text-2xl mb-2" />
+                                <fonta icon="capsules" class="text-blue-500" />
+                                <h1>Médicaments prescrits</h1>
                             </div>
                             <div
-                                class="grid grid-cols-4 text-base gap-4 font-semibold text-blue-500"
+                                class="grid grid-cols-4 text-base gap-4 font-medium text-gray-700 bg-gray-50 py-3 px-2 rounded-lg"
                             >
-                                <div>Désignation</div>
-                                <div>Forme</div>
-                                <div>Posologie</div>
-                                <div>Quantité</div>
+                                <div class="flex items-center gap-2">
+                                    <fonta icon="pills" class="text-blue-500" />
+                                    <span>Désignation</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <fonta
+                                        icon="prescription-bottle"
+                                        class="text-blue-500"
+                                    />
+                                    <span>Forme</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <fonta icon="clock" class="text-blue-500" />
+                                    <span>Posologie</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <fonta
+                                        icon="hashtag"
+                                        class="text-blue-500"
+                                    />
+                                    <span>Quantité</span>
+                                </div>
                             </div>
 
                             <!-- Lignes des médicaments -->
                             <div
                                 v-for="(med, index) in form.medicament"
                                 :key="index"
-                                class="grid grid-cols-4 gap-4 items-center group transition-all duration-300 ease-in-out transform"
+                                class="grid grid-cols-4 gap-4 items-center group transition-all duration-300 ease-in-out py-3 px-2 border-b border-gray-100"
                             >
                                 <div>
                                     <BaseInput
                                         v-model="med.designation"
                                         placeholder="Paracétamol..."
+                                        class="shadow-inner bg-white"
                                     />
                                 </div>
 
@@ -467,6 +574,7 @@
                                     <BaseInput
                                         v-model="med.forme"
                                         placeholder="Comprimé..."
+                                        class="shadow-inner bg-white"
                                     />
                                 </div>
 
@@ -474,6 +582,7 @@
                                     <BaseInput
                                         v-model="med.posologie"
                                         placeholder="1 comprimé 3x/jour..."
+                                        class="shadow-inner bg-white"
                                     />
                                 </div>
 
@@ -482,13 +591,14 @@
                                         v-model="med.quantite"
                                         type="number"
                                         placeholder="10"
+                                        class="shadow-inner bg-white"
                                     />
                                     <button
                                         type="button"
                                         @click="removeMed(index)"
-                                        class="text-red-500 hover:text-red-700 group-hover:scale-110 transition-all duration-500"
+                                        class="text-red-500 hover:text-red-700 group-hover:scale-110 transition-all duration-500 bg-red-50 p-2 rounded-full"
                                     >
-                                        <fonta icon="trash" class="text-xl" />
+                                        <fonta icon="trash" class="text-lg" />
                                     </button>
                                 </div>
                             </div>
@@ -498,8 +608,11 @@
                                 <BaseButton
                                     type="button"
                                     @click="addMed"
-                                    class="py-2"
+                                    class="py-2 px-4 flex items-center gap-2"
+                                    bg-color="bg-blue-500"
+                                    hover-color="bg-blue-600"
                                 >
+                                    <fonta icon="plus-circle" />
                                     Ajouter médicament
                                 </BaseButton>
                             </div>
@@ -523,11 +636,15 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
                                 >
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
+                                        <fonta
+                                            icon="user"
+                                            class="text-blue-500"
+                                        />
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -537,10 +654,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
+                                    <fonta
+                                        icon="calendar-days"
+                                        class="text-blue-500"
+                                    />
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
                                     >
                                 </div>
@@ -549,9 +670,12 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-500 bg-gray-50 px-4 py-2 rounded-md text-base font-semibold"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta icon="fa-regular fa-calendar" />
+                                    <fonta
+                                        icon="calendar"
+                                        class="text-blue-500"
+                                    />
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -560,45 +684,89 @@
                         </div>
                         <!-- Conteneur input -->
                         <div
-                            class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mx-4 border-2 border-gray-200 rounded-md p-4 items-end"
+                            class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mx-4 border-2 border-gray-200 rounded-md p-6"
                         >
+                            <div
+                                class="font-semibold text-lg text-blue-500 flex items-center gap-2 pb-4 mb-2 col-span-full border-b border-blue-100"
+                            >
+                                <fonta icon="bed-pulse" class="text-blue-500" />
+                                <h1>Jour de repos</h1>
+                            </div>
+
                             <!-- Date de reprise -->
                             <div class="space-y-2">
-                                <InputLabel value="Date de reprise" />
+                                <InputLabel
+                                    value="Date de reprise"
+                                    class="mb-2 text-gray-700 flex items-center gap-2"
+                                >
+                                    <fonta
+                                        icon="calendar-check"
+                                        class="text-blue-500"
+                                    />
+                                    Date de reprise
+                                </InputLabel>
                                 <BaseInput
                                     type="date"
                                     v-model="returnDate"
                                     :min="minDate"
                                     @change="calculateRestDays"
+                                    class="shadow-inner bg-white"
                                 />
                             </div>
 
                             <!-- Jours de repos calculés , affecter à form.nbr_jours_repos lors de la soumission -->
                             <div class="space-y-2">
-                                <InputLabel value="Jours de repos prescrits" />
+                                <InputLabel
+                                    value="Jours de repos prescrits"
+                                    class="mb-2 text-gray-700 flex items-center gap-2"
+                                >
+                                    <fonta
+                                        icon="hourglass-half"
+                                        class="text-blue-500"
+                                    />
+                                    Jours de repos prescrits
+                                </InputLabel>
                                 <div class="relative">
                                     <BaseInput
                                         type="number"
                                         :value="restDays"
                                         readonly
+                                        class="shadow-inner bg-blue-50 font-medium text-blue-700"
                                     />
                                 </div>
                             </div>
 
                             <!-- Message d'information -->
-                            <p class="text-base font-medium mt-2">
-                                <span
+                            <div class="col-span-full mt-2">
+                                <div
                                     v-if="restDays > 0"
-                                    class="text-green-500"
+                                    class="p-4 bg-green-50 rounded-lg border border-green-200 text-green-700 flex items-start gap-2"
                                 >
-                                    Le patient dois se reposer jusqu'au
-                                    {{ formattedReturnDate }}
-                                </span>
-                                <span v-else class="text-gray-500">
-                                    Sélectionnez une date de reprise future pour
-                                    calculer les jours de repos
-                                </span>
-                            </p>
+                                    <fonta
+                                        icon="circle-info"
+                                        class="text-green-500 mt-1"
+                                    />
+                                    <span>
+                                        Le patient doit se reposer jusqu'au
+                                        <strong>{{
+                                            formattedReturnDate
+                                        }}</strong>
+                                    </span>
+                                </div>
+                                <div
+                                    v-else
+                                    class="p-4 bg-blue-50 rounded-lg border border-blue-100 text-gray-600 flex items-start gap-2"
+                                >
+                                    <fonta
+                                        icon="circle-info"
+                                        class="text-blue-500 mt-1"
+                                    />
+                                    <span>
+                                        Sélectionnez une date de reprise future
+                                        pour calculer les jours de repos
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="4">
@@ -622,11 +790,15 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
                                 >
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
+                                        <fonta
+                                            icon="user"
+                                            class="text-blue-500"
+                                        />
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -636,10 +808,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
+                                    <fonta
+                                        icon="calendar-days"
+                                        class="text-blue-500"
+                                    />
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
                                     >
                                 </div>
@@ -648,9 +824,12 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-500 bg-gray-50 px-4 py-2 rounded-md text-base font-semibold"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta icon="fa-regular fa-calendar" />
+                                    <fonta
+                                        icon="calendar"
+                                        class="text-blue-500"
+                                    />
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -658,33 +837,62 @@
                             </div>
                         </div>
                         <div
-                            class="bg-white p-6 rounded-md border-2 border-gray-200 m-4"
+                            class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mx-4 border-2 border-gray-200 rounded-md p-6"
                         >
-                            <h2
-                                class="text-lg font-semibold text-gray-600 justify-center mb-4 flex items-center gap-2"
+                            <div
+                                class="font-semibold text-lg text-blue-600 flex items-center gap-2 pb-4 mb-2 col-span-full border-b border-blue-100"
                             >
-                                Sélection des examens à réaliser
                                 <fonta
-                                    class="text-2xl"
                                     icon="vial-circle-check"
+                                    class="text-blue-500"
                                 />
-                            </h2>
+                                <h1>Sélection des examens à réaliser</h1>
+                            </div>
 
-                            <a-select
-                                v-model:value="form.liste_examens"
-                                mode="tags"
-                                placeholder="Ajouter des examens à faire..."
-                                :options="options"
-                                :class="{ '!w-full': true }"
-                            >
-                            </a-select>
-                            <div class="w-full my-4">
-                                <InputLabel value="Remarques" class="mb-2" />
+                            <!-- Sélection des examens -->
+                            <div class="col-span-full">
+                                <InputLabel
+                                    value="Examens à réaliser"
+                                    class="mb-2 text-gray-700 flex items-center gap-2"
+                                >
+                                    <fonta
+                                        icon="microscope"
+                                        class="text-blue-500"
+                                    />
+                                    Examens à réaliser
+                                </InputLabel>
+                                <div
+                                    class="shadow-inner bg-white rounded-lg border border-gray-300"
+                                >
+                                    <a-select
+                                        v-model:value="form.liste_examens"
+                                        mode="tags"
+                                        placeholder="Ajouter des examens à faire..."
+                                        :options="options"
+                                        class="!w-full custom-select"
+                                    >
+                                    </a-select>
+                                </div>
+                            </div>
+
+                            <!-- Section remarques -->
+                            <div class="col-span-full mt-4">
+                                <InputLabel
+                                    value="Remarques"
+                                    class="mb-2 text-gray-700 flex items-center gap-2"
+                                >
+                                    <fonta
+                                        icon="circle-info"
+                                        class="text-blue-500"
+                                    />
+                                    Remarques sur les examens
+                                </InputLabel>
 
                                 <textarea
                                     v-model="form.remarques"
-                                    class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                                    placeholder="Ajouter des remarques..."
+                                    class="w-full border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-lg shadow-inner"
+                                    rows="4"
+                                    placeholder="Ajouter des remarques concernant les examens..."
                                 ></textarea>
                             </div>
                         </div>
@@ -708,11 +916,15 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
                                 >
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
+                                        <fonta
+                                            icon="user"
+                                            class="text-blue-500"
+                                        />
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -722,10 +934,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-md"
+                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
+                                    <fonta
+                                        icon="calendar-days"
+                                        class="text-blue-500"
+                                    />
                                     <span
-                                        class="font-semibold text-lg text-gray-500"
+                                        class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
                                     >
                                 </div>
@@ -734,9 +950,12 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-500 bg-gray-50 px-4 py-2 rounded-md text-base font-semibold"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta icon="fa-regular fa-calendar" />
+                                    <fonta
+                                        icon="calendar"
+                                        class="text-blue-500"
+                                    />
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -744,63 +963,84 @@
                             </div>
                         </div>
                         <div
-                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-4"
+                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-6"
                         >
                             <div
-                                class="font-bold text-lg mb-6 text-gray-600 flex items-center justify-center gap-4"
+                                class="font-semibold text-lg text-blue-500 flex items-center gap-2 pb-4 mb-2 border-b border-blue-100"
                             >
-                                <h1>Information pour la lettre de reference</h1>
-                                <fonta icon="envelope" class="text-2xl mb-2" />
-                            </div>
-                            <div
-                                class="grid grid-cols-1 md:grid-cols-[200px_1fr] items-center gap-4 mb-4"
-                            >
-                                <InputLabel value="Médecin référent" />
-
-                                <a-select
-                                    v-model="form.refere_med_id"
-                                    placeholder="Sélectionnez un médecin"
-                                    class="w-full custom-antd-select"
-                                    @change="onMedecinChange"
-                                >
-                                    <a-select-option
-                                        v-for="medecin in props.medecins"
-                                        :key="medecin.id"
-                                        :value="medecin.id"
-                                        class="antd-custom-option"
-                                    >
-                                        <div
-                                            class="flex items-center gap-3 hover:bg-blue-50 rounded-md"
-                                        >
-                                            <div>
-                                                <p
-                                                    class="font-medium text-gray-800"
-                                                >
-                                                    {{ medecin.nom }}
-                                                    {{ medecin.prenom }}
-                                                </p>
-                                                <p
-                                                    class="text-xs text-gray-500"
-                                                >
-                                                    {{ medecin.specialite }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </a-select-option>
-                                </a-select>
-                            </div>
-                            <div
-                                class="grid grid-cols-1 md:grid-cols-[200px_1fr] items-center gap-4 mb-4"
-                            >
-                                <InputLabel
-                                    value="Motif de reference"
-                                    class="mb-1"
+                                <fonta
+                                    icon="envelope-circle-check"
+                                    class="text-blue-500"
                                 />
-                                <textarea
-                                    v-model="form.motif_ref"
-                                    class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                                    placeholder="Décrire le motif de la reference..."
-                                ></textarea>
+                                <h1>Lettre de référence</h1>
+                            </div>
+
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4"
+                            >
+                                <div class="space-y-2">
+                                    <InputLabel
+                                        value="Médecin référent"
+                                        class="mb-2 text-gray-700 flex items-center gap-2"
+                                    >
+                                        <fonta
+                                            icon="user-doctor"
+                                            class="text-blue-500"
+                                        />
+                                        Médecin référent
+                                    </InputLabel>
+
+                                    <a-select
+                                        v-model="form.refere_med_id"
+                                        placeholder="Sélectionnez un médecin"
+                                        class="w-full custom-antd-select"
+                                        @change="onMedecinChange"
+                                    >
+                                        <a-select-option
+                                            v-for="medecin in props.medecins"
+                                            :key="medecin.id"
+                                            :value="medecin.id"
+                                            class="antd-custom-option"
+                                        >
+                                            <div
+                                                class="flex items-center gap-3 hover:bg-blue-50 rounded-md"
+                                            >
+                                                <div>
+                                                    <p
+                                                        class="font-medium text-gray-800"
+                                                    >
+                                                        {{ medecin.nom }}
+                                                        {{ medecin.prenom }}
+                                                    </p>
+                                                    <p
+                                                        class="text-xs text-gray-500"
+                                                    >
+                                                        {{ medecin.specialite }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </a-select-option>
+                                    </a-select>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <InputLabel
+                                        value="Motif de référence"
+                                        class="mb-2 text-gray-700 flex items-center gap-2"
+                                    >
+                                        <fonta
+                                            icon="circle-info"
+                                            class="text-blue-500"
+                                        />
+                                        Motif de référence
+                                    </InputLabel>
+                                    <textarea
+                                        v-model="form.motif_ref"
+                                        class="w-full border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-lg shadow-inner"
+                                        rows="5"
+                                        placeholder="Décrire le motif de la référence..."
+                                    ></textarea>
+                                </div>
                             </div>
                         </div>
                     </a-tab-pane>
@@ -924,7 +1164,6 @@ const form = useForm({
     poids: "",
     taille: "",
     freq_card: "",
-    press_art: "",
     temperature: "",
     observations: "",
     //Ordonnance
@@ -981,6 +1220,7 @@ const restDays = computed(() => {
     const diff = end.getTime() - start.getTime();
     return Math.ceil(diff / (1000 * 3600 * 24)); // Arrondi au jour supérieur
 });
+
 const calculateRestDays = () => {
     if (returnDate.value) {
         form.nbr_jours_repos = restDays.value;
@@ -1047,6 +1287,10 @@ const submitConsultation = () => {
         (med) =>
             med.designation && med.forme && med.posologie && med.quantite > 0
     );
+
+    // Intégrer les jours de repos
+    form.nbr_jours_repos = restDays.value;
+
     form.patient_id = addedPatient.value.id;
     form.post(route("consultations.store"), {
         preserveScroll: true,
@@ -1187,10 +1431,10 @@ const submitConsultation = () => {
     > div
     > .ant-tabs-nav
     .ant-tabs-tab-active {
-    @apply !bg-blue-500 !text-white;
+    @apply !bg-blue-500 !text-white !important;
 }
 .ant-tabs > .ant-tabs-nav .ant-tabs-nav-list {
-    @apply gap-1;
+    @apply gap-1 !important;
 }
 
 /* Personnalisation du dropdown examen */
@@ -1203,7 +1447,7 @@ const submitConsultation = () => {
 }
 
 .ant-select-selection-placeholder {
-    @apply text-base !text-gray-400;
+    @apply text-base !text-gray-400 !important;
 }
 
 /* Personnalisation du dropdown */
@@ -1226,8 +1470,14 @@ const submitConsultation = () => {
 .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
     @apply h-11;
 }
+
+/* Style spécifique pour la section d'examens */
+.custom-select .ant-select-selector {
+    @apply border-0 shadow-none !important;
+}
+
 .ant-card .ant-card-head {
-    @apply bg-blue-500 text-white;
+    @apply bg-blue-500 text-white !important;
 }
 
 /* card pour les 4 derniers consultations */
