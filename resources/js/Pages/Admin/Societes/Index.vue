@@ -2,88 +2,25 @@
     <!-- Card Liste des Sociétés -->
     <div class="bg-white rounded-lg shadow p-6">
         <div
-            class="flex items-center justify-between mb-4 gap-4 md:flex-row flex-col"
+            class="flex items-center justify-between mb-4 gap-4 lg:flex-row flex-col"
         >
             <div>
                 <h1 class="font-bold text-2xl text-gray-600">
                     Liste des Societes
                 </h1>
             </div>
-            <!-- Boutton pour ouvrir le formulaire d'ajout de societe et sélecteur de tri -->
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 flex-wrap">
                 <!-- Sélecteur de tri avec Ant Design Vue -->
-                <a-dropdown
-                    :trigger="['click']"
-                    overlay-class-name="sort-dropdown"
-                >
-                    <div
-                        class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 transition-all duration-300 px-4 py-2.5 rounded-lg border border-gray-200 cursor-pointer shadow-sm hover:shadow"
-                    >
-                        <SortAscendingOutlined
-                            class="text-blue-500 transition-transform duration-300"
-                        />
-                        <span
-                            class="text-gray-500 font-normal hidden md:inline"
-                            >{{ getSortLabel() }}</span
-                        >
-                        <DownOutlined
-                            class="text-gray-400 text-xs transition-all duration-300"
-                        />
-                    </div>
-
-                    <template #overlay>
-                        <a-menu class="sort-menu">
-                            <div
-                                class="p-3 border-b border-gray-100 bg-gray-50"
-                            >
-                                <h4 class="font-semibold text-gray-700">
-                                    Trier par
-                                </h4>
-                            </div>
-                            <a-menu-item
-                                v-for="option in sortOptions"
-                                :key="option.value"
-                                @click="changeSortOrder(option.value)"
-                                :class="
-                                    sortOrder === option.value
-                                        ? 'ant-menu-item-active bg-blue-50'
-                                        : ''
-                                "
-                            >
-                                <div class="flex items-center gap-2">
-                                    <component
-                                        :is="getSortIcon(option.value)"
-                                        class="text-sm"
-                                        :class="
-                                            sortOrder === option.value
-                                                ? 'text-blue-500'
-                                                : 'text-gray-400'
-                                        "
-                                    />
-                                    <span
-                                        :class="
-                                            sortOrder === option.value
-                                                ? 'text-blue-600 font-medium'
-                                                : 'text-gray-600'
-                                        "
-                                    >
-                                        {{ option.label }}
-                                    </span>
-                                    <CheckOutlined
-                                        v-if="sortOrder === option.value"
-                                        class="ml-auto text-blue-500"
-                                    />
-                                </div>
-                            </a-menu-item>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
+                <SortDropdown
+                    :sort-options="sortOptions"
+                    :current-sort="sortOrder"
+                    route-name="admin.societe.index"
+                    @sort-changed="handleSortChanged"
+                    class="flex-1"
+                />
 
                 <!-- Bouton pour ouvrir le formulaire dans une modal -->
-                <BaseButton
-                    @click="openModal"
-                    class="shadow-md hover:shadow-lg transition-shadow"
-                >
+                <BaseButton @click="openModal">
                     <span>Ajouter un societe</span>
                     <AppstoreAddOutlined class="text-lg" />
                 </BaseButton>
@@ -91,7 +28,9 @@
         </div>
 
         <div class="overflow-x-auto mb-4">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table
+                class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden"
+            >
                 <thead class="bg-blue-500 text-center">
                     <tr>
                         <th
@@ -190,7 +129,9 @@
                                         />
                                     </button>
                                     <template #overlay>
-                                        <a-menu class="!min-w-[120px]">
+                                        <a-menu
+                                            class="!min-w-[120px] space-y-4"
+                                        >
                                             <a-menu-item
                                                 @click="editSociete(societe)"
                                                 class="!py-2"
@@ -199,9 +140,10 @@
                                                     class="flex items-center gap-2"
                                                 >
                                                     <EditFilled
-                                                        class="text-blue-500"
+                                                        class="text-blue-500 text-lg"
                                                     />
-                                                    <span class="text-blue-500"
+                                                    <span
+                                                        class="text-blue-500 font-medium"
                                                         >Modifier</span
                                                     >
                                                 </div>
@@ -221,9 +163,10 @@
                                                     class="flex items-center gap-2"
                                                 >
                                                     <DeleteFilled
-                                                        class="text-red-500"
+                                                        class="text-red-500 text-lg"
                                                     />
-                                                    <span class="text-red-500"
+                                                    <span
+                                                        class="text-red-500 font-medium"
                                                         >Supprimer</span
                                                     >
                                                 </div>
@@ -252,8 +195,11 @@
                             v-else
                             :preserve-state="true"
                             :preserve-scroll="true"
-                            class="mr-1 shadow-sm transition-all duration-300 hover:scale-110 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block px-4 py-3 focus:text-blue-500"
-                            :class="{ 'bg-slate-600 !text-white border-none': link.active }"
+                            class="mr-1 shadow-sm transition-all duration-300 hover:scale-110 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block focus:text-blue-500"
+                            :class="{
+                                'bg-slate-600 !text-white border-none':
+                                    link.active,
+                            }"
                             :href="link.url"
                             @click.prevent="navigateToPage(link.url)"
                         >
@@ -268,57 +214,105 @@
     <!-- Modal Ant Design pour le formulaire -->
     <a-modal
         v-model:open="showModal"
-        @ok="submitForm"
         @cancel="handleCancel"
-        cancelText="Annuler"
         :footer="null"
-        class="p-4"
+        width="700px"
+        class="rounded-lg"
     >
-        <h1 class="mb-6 text-blue-500 font-bold text-xl text-center">
-            {{ isEditing ? "Modifier information" : "Ajouter une entreprise" }}
-        </h1>
+        <div class="modal-header bg-blue-500 -mt-6 -mx-6 py-4 px-6 mb-6">
+            <h1 class="text-white text-lg">
+                {{ isEditing ? "Modifier la société" : "Ajouter une société" }}
+            </h1>
+        </div>
+
         <div class="p-4">
             <form @submit.prevent="submitForm" layout="vertical">
-                <InputLabel for="nom" value="Nom de l'entreprise" />
-                <BaseInput
-                    id="nom"
-                    type="text"
-                    v-model="form.nom"
-                    required
-                    autofocus
-                />
-                <InputError class="mt-1" :message="form.errors.nom" />
+                <!-- Informations générales -->
+                <div class="mb-6">
+                    <h2 class="text-md text-gray-600 font-medium mb-4">
+                        Informations générales
+                    </h2>
+                    <div
+                        class="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                    >
+                        <div>
+                            <InputLabel for="nom" value="Nom de l'entreprise" />
+                            <BaseInput
+                                id="nom"
+                                type="text"
+                                v-model="form.nom"
+                                required
+                                autofocus
+                            />
+                            <InputError
+                                class="mt-1"
+                                :message="form.errors.nom"
+                            />
+                        </div>
+                    </div>
+                </div>
 
-                <InputLabel for="email" value="Email" class="mt-4" />
-                <BaseInput
-                    id="email"
-                    type="email"
-                    v-model="form.email"
-                    required
-                    autofocus
-                />
-                <InputError class="mt-1" :message="form.errors.email" />
+                <!-- Informations de contact -->
+                <div class="mb-6">
+                    <h2 class="text-md text-gray-600 font-medium mb-4">
+                        Informations de contact
+                    </h2>
+                    <div
+                        class="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                    >
+                        <div>
+                            <InputLabel for="email" value="Email" />
+                            <BaseInput
+                                id="email"
+                                type="email"
+                                v-model="form.email"
+                                required
+                            />
+                            <InputError
+                                class="mt-1"
+                                :message="form.errors.email"
+                            />
+                        </div>
+                    </div>
+                </div>
 
-                <InputLabel
-                    for="nom"
-                    value="Description"
-                    class="mt-4 mb-1"
-                />
-                <textarea
-                    name="description"
-                    id="description"
-                    v-model="form.description"
-                    class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                />
-                <InputError class="mt-1" :message="form.errors.description" />
+                <!-- Description -->
+                <div class="mb-6">
+                    <h2 class="text-md text-gray-600 font-medium mb-4">
+                        Description de l'entreprise
+                    </h2>
+                    <div
+                        class="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                    >
+                        <div>
+                            <InputLabel for="description" value="Description" />
+                            <textarea
+                                name="description"
+                                id="description"
+                                v-model="form.description"
+                                class="mt-1 block w-full p-3 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                rows="4"
+                            ></textarea>
+                            <InputError
+                                class="mt-1"
+                                :message="form.errors.description"
+                            />
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Boutons d'action, disposés de manière responsive -->
+                <!-- Boutons d'action -->
                 <div
-                    class="flex flex-col mt-4 sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4"
+                    class="flex justify-end space-x-3 pt-4 border-t border-gray-200"
                 >
-                    <Button @click="handleCancel"> Annuler </Button>
-                    <BaseButton @click="submitForm">
-                        {{ isEditing ? "Modifier" : "Ajouter" }}
+                    <Button
+                        @click="handleCancel"
+                        class="bg-white hover:bg-gray-50 border-gray-300 text-gray-700 hover:text-gray-900"
+                    >
+                        Annuler
+                    </Button>
+                    <BaseButton @click="submitForm" class="px-6">
+                        {{ isEditing ? "Mettre à jour" : "Ajouter" }}
                     </BaseButton>
                 </div>
             </form>
@@ -332,14 +326,13 @@ import BaseInput from "@/Components/BaseInput.vue";
 import Button from "@/Components/Button.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import SortDropdown from "@/Components/SortDropdown.vue";
 import useConfirmDialog from "@/composables/useConfirmDialog";
 import TestLayout from "@/Layouts/TestLayout.vue";
 import {
     AppstoreAddOutlined,
     CalendarOutlined,
-    CheckOutlined,
     DeleteFilled,
-    DownOutlined,
     EditFilled,
     SortAscendingOutlined,
     SortDescendingOutlined,
@@ -364,6 +357,9 @@ const props = defineProps({
         default: () => ({}),
     },
 });
+
+
+
 //Variable d'affichage du modal
 const showModal = ref(false);
 //Variable pour edition de societe
@@ -409,7 +405,7 @@ const submitForm = () => {
                 form.reset();
                 showModal.value = false;
             },
-            onError: () => {
+            onError: (e) => {
                 console.log(e);
             },
         });
@@ -425,7 +421,7 @@ const submitForm = () => {
                 form.reset();
                 showModal.value = false;
             },
-            onError: () => {
+            onError: (e) => {
                 console.log(e);
             },
         });
@@ -443,24 +439,15 @@ const sortOptions = [
         icon: UserOutlined,
     },
 ];
+
 // Tri par date - Initialisation sans valeur par défaut
-const sortOrder = ref(props.filters?.sort || null);
-// Fonction pour obtenir le lable du tri actuel
-const getSortLabel = () => {
-    if (!sortOrder.value) return "Trier par";
-    const option = sortOptions.find((opt) => opt.value === sortOrder.value);
-    return option ? option.label : "Trier par";
-};
-// Fonction pour obtenir l'icône correspondant au type de tri
-const getSortIcon = (value) => {
-    const option = sortOptions.find((opt) => opt.value === value);
-    return option ? option.icon : SortAscendingOutlined;
-};
-// Fonction pour changer l'ordre de tri
-const changeSortOrder = (value) => {
-    // Mettons à jour la valeur localement avant de faire la requête
+const sortOrder = ref(props.filters?.sort || "");
+
+// Handler pour le changement de tri
+const handleSortChanged = (value) => {
     sortOrder.value = value;
 
+    // Ajouter ce code pour naviguer avec le nouveau tri
     router.get(
         route("admin.societe.index"),
         { sort: value },
@@ -468,10 +455,6 @@ const changeSortOrder = (value) => {
             preserveState: true,
             preserveScroll: true,
             replace: true,
-            onSuccess: () => {
-                // Force la mise à jour après la navigation
-                sortOrder.value = value;
-            },
         }
     );
 };
@@ -487,8 +470,6 @@ const navigateToPage = (url) => {
         }
     );
 };
-
-
 </script>
 
 <style>
@@ -537,36 +518,5 @@ const navigateToPage = (url) => {
 
 .group-hover\:opacity-100 {
     transition-delay: 0.05s;
-}
-
-/* Styles pour le dropdown de tri */
-:deep(.sort-dropdown .ant-dropdown-menu) {
-    padding: 0;
-    border-radius: 0.75rem;
-    min-width: 220px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-:deep(.sort-dropdown .ant-menu-item) {
-    height: auto !important;
-    line-height: 1.5;
-    padding: 8px 12px !important;
-    margin: 4px !important;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-:deep(.sort-dropdown .ant-menu-item:hover) {
-    background-color: #f5f7fa;
-}
-
-:deep(.sort-dropdown .ant-menu-item.bg-blue-50) {
-    background-color: rgb(239, 246, 255) !important;
-}
-
-:deep(.sort-dropdown .ant-menu-item.ant-menu-item-active) {
-    background-color: rgb(239, 246, 255);
 }
 </style>

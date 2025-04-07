@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('consultation_id')->constrained('consultations')->onDelete('cascade');
             $table->integer('nbr_jours_repos')->nullable();
-            $table->json('medicament')->nullable();
             $table->timestamps();
         });
     }

@@ -1,9 +1,9 @@
 <template>
     <div
-        class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50/30 flex items-center justify-center"
+        class="min-h-screen bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 lg:p-4 p-8 flex items-center justify-center"
     >
         <div
-            class="w-full max-w-5xl bg-white rounded-xl shadow-xl shadow-blue-100/50 flex flex-col lg:flex-row"
+            class="w-full max-w-5xl bg-white rounded-xl shadow-lg  flex flex-col lg:flex-row"
         >
             <!-- Left Section -->
             <div class="w-full lg:w-1/2 p-8 lg:p-12 xl:p-14">
@@ -32,14 +32,11 @@
                             class="text-gray-700 font-medium"
                         />
                         <div class="relative mt-2">
-                            <font-awesome-icon
-                                icon="envelope"
-                                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm z-10"
-                            />
+
                             <BaseInput
                                 id="email"
                                 type="email"
-                                class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+
                                 v-model="form.email"
                                 required
                                 autofocus
@@ -60,10 +57,6 @@
                             class="text-gray-700 font-medium"
                         />
                         <div class="relative mt-2">
-                            <font-awesome-icon
-                                icon="lock"
-                                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm z-10"
-                            />
                             <BaseInput
                                 id="password"
                                 type="password"

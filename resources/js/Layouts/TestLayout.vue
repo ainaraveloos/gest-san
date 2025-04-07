@@ -102,63 +102,68 @@
 
             <a-dropdown trigger="click">
                 <a-button
-        type="text"
-        class="flex items-center hover:!bg-gray-50 gap-4 text-xl !py-6"
-    >
-        <fonta icon="user" class="text-gray-600 text-2xl" />
-        <div class="flex flex-col items-start justify-center">
-            <span class="text-gray-600 text-xl">{{
-                $page.props.auth.user.name
-            }}</span>
-            <span class="text-xs font-medium text-gray-500">{{
-                $page.props.auth.user.role
-            }}</span>
-        </div>
-    </a-button>
-    <template #overlay>
-        <a-menu class="!mt-1 !min-w-[200px]">
-            <!-- Informations utilisateur -->
-            <div class="px-4 py-3 border-b border-gray-100">
-                <div class="font-semibold text-gray-700">{{ $page.props.auth.user.name }} {{ $page.props.auth.user.prenom }}</div>
-                <div class="text-xs text-gray-500">{{ $page.props.auth.user.email }}</div>
-            </div>
+                    type="text"
+                    class="flex items-center hover:!bg-gray-50 gap-4 text-xl !py-6"
+                >
+                    <fonta icon="user" class="text-gray-600 text-2xl" />
+                    <div class="flex flex-col items-start justify-center">
+                        <span class="text-gray-600 text-xl">{{
+                            $page.props.auth.user.name
+                        }}</span>
+                        <span class="text-xs font-medium text-gray-500">{{
+                            $page.props.auth.user.role
+                        }}</span>
+                    </div>
+                </a-button>
+                <template #overlay>
+                    <a-menu class="!mt-1 !min-w-[200px]">
+                        <!-- Informations utilisateur -->
+                        <div class="px-4 py-3 border-gray-100">
+                            <div class="font-semibold text-gray-700">
+                                {{ $page.props.auth.user.name }}
+                                {{ $page.props.auth.user.prenom }}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                {{ $page.props.auth.user.email }}
+                            </div>
+                        </div>
 
-            <!-- Option profil -->
-            <a-menu-item
-                key="profile"
-                @click="navigateToProfile"
-                class="!flex !items-center !text-sm !p-2 !font-semibold !text-blue-600 hover:!bg-blue-50"
-            >
-                
-                <span>Modifier mon profil</span>
-            </a-menu-item>
+                        <!-- Option profil -->
+                        <a-menu-item
+                            key="profile"
+                            v-if="$page.props.auth.user.role == 'admin'"
+                            
+                            class="!flex !items-center !text-sm !p-2 !font-semibold !text-blue-500 hover:!bg-blue-50"
+                        >
+                            <span>Modifier mon profil</span>
+                        </a-menu-item>
 
-            <!-- Option paramètres -->
-            <a-menu-item
-            v-if="$page.props.auth.user.role == 'admin'"
-                key="settings"
-                @click="navigateToSettings"
-                class="!flex !items-center !text-sm !p-2 !font-semibold !text-gray-600 hover:!bg-gray-50"
-            >
-                <Link :href="route('admin.parametres')">
-                <span>Paramètres</span>
-                </Link>
-            </a-menu-item>
+                        <!-- Option paramètres -->
+                        <a-menu-item
+                            v-if="$page.props.auth.user.role == 'admin'"
+                            key="settings"
 
-            <!-- Séparateur -->
-            <a-menu-divider class="!my-1" />
+                            class="!flex !items-center !text-sm !p-2 !font-semibold !text-gray-600 hover:!bg-gray-50"
+                        >
+                            <Link :href="route('admin.parametres')">
+                                <span>Paramètres</span>
+                            </Link>
+                        </a-menu-item>
 
-            <!-- Option déconnexion -->
-            <a-menu-item
-                key="logout"
-                @click="logout"
-                class="!flex !items-center !justify-center !text-sm !p-2 !font-semibold !text-red-600 hover:!bg-red-50"
-            >
-                <LogoutOutlined class="mr-2  text-lg" />
-                <span >Déconnexion</span>
-            </a-menu-item>
-        </a-menu>
-    </template>
+                        <!-- Séparateur -->
+                        <a-menu-divider class="!my-1" />
+
+                        <!-- Option déconnexion -->
+                        <a-menu-item
+                            key="logout"
+                            @click="logout"
+                            class="!flex !items-center !justify-center !text-sm !p-2 !font-semibold !text-red-600 hover:!bg-red-50"
+                        >
+                            <LogoutOutlined class="mr-2 text-lg" />
+                            <span>Déconnexion</span>
+                        </a-menu-item>
+                    </a-menu>
+                </template>
             </a-dropdown>
         </a-layout-header>
     </a-layout>
@@ -200,7 +205,6 @@ import {
     MenuUnfoldOutlined,
     SettingFilled,
     UsergroupAddOutlined,
-    UserOutlined
 } from "@ant-design/icons-vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 
@@ -250,7 +254,7 @@ const adminMenu = [
         key: "4",
         icon: UsergroupAddOutlined,
         label: "Gestion des Medecins",
-        path: "medecins.list",
+        path: "admin.medecins.list",
     },
 
     {
@@ -274,8 +278,6 @@ const medecinMenu = [
         icon: CarryOutFilled,
         label: "Mes Consultations",
         children: [
-
-
             {
                 key: "3-1",
                 label: "Nouvelle Consultation",

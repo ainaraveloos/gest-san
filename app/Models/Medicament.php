@@ -10,4 +10,8 @@ class medicament extends Model
     /** @use HasFactory<\Database\Factories\MedicamentFactory> */
     use HasFactory;
     protected $fillable = ['ordonnance_id','designation','forme','posologie','quantite'];
+    public function ordonnance()
+    {
+        return $this->belongsTo(Ordonnance::class);
+    }
 }

@@ -1,7 +1,7 @@
 <template>
     <div class="p-2 rounded-md transform transition-all duration-300">
         <!-- En-tête avec recherche de patient -->
-        <div class="bg-blue-500 p-6 rounded-t-xl shadow-md">
+        <div class="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 p-6 rounded-t-xl shadow-md">
             <div class="flex items-center gap-3 text-white mb-6">
                 <h1 class="text-2xl font-semibold">Nouvelle Consultation</h1>
             </div>
@@ -20,7 +20,7 @@
                             placeholder="Rechercher un patient par nom, prénom ou numéro..."
                             @focus="dropdownVisible = true"
                             @blur="dropdownVisible = false"
-                            class="pl-10 py-2 text-md bg-white/95 border-blue-300 hover:bg-white focus:bg-white transition-all duration-300 shadow-inner"
+                            class="pl-10 py-2 text-md bg-white/95 border-blue-300 hover:bg-white focus:bg-white transition-all duration-300"
                         />
                     </div>
 
@@ -138,20 +138,20 @@
                     class="group transition-all duration-300"
                 >
                     <div
-                        class="bg-blue-50 rounded-xl p-5 border border-blue-100 hover:bg-blue-100 hover:shadow-md duration-300 transition-all hover:border-blue-300 cursor-pointer flex items-start gap-3"
+                        class="bg-blue-50 rounded-xl p-5 border border-blue-100 hover:bg-blue-100 hover:shadow-md duration-500 transition-all hover:border-blue-300 cursor-pointer flex items-start gap-3"
                     >
                         <div
-                            class="bg-blue-100 p-3 rounded-full flex-shrink-0 group-hover:bg-blue-200 transition-colors"
+                            class="bg-blue-100 p-3 rounded-full  group-hover:bg-blue-200 transition-colors duration-500"
                         >
                             <fonta
-                                icon="user-md"
+                                icon="user"
                                 class="text-blue-500 text-lg"
                             />
                         </div>
 
                         <div class="space-y-2">
                             <!-- Date -->
-                            <div class="text-sm font-medium text-blue-700">
+                            <div class="text-base font-medium text-blue-500">
                                 {{
                                     new Date(
                                         consultation.date_consultation
@@ -183,11 +183,9 @@
                     v-if="consultations.length === 0"
                     class="col-span-full bg-gray-50 p-8 rounded-xl border border-gray-200 flex flex-col items-center justify-center"
                 >
-                    <div
-                        class="bg-gray-100 p-4 rounded-full text-gray-400 mb-3"
-                    >
-                        <fonta icon="clipboard-list" class="text-3xl" />
-                    </div>
+
+                        <a-empty :description="null"/>
+
                     <p class="text-gray-500 font-medium">
                         Aucune consultation enregistrée
                     </p>
@@ -256,10 +254,7 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-                                        <fonta
-                                            icon="user"
-                                            class="text-blue-500"
-                                        />
+
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -271,10 +266,7 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-                                    <fonta
-                                        icon="calendar-days"
-                                        class="text-blue-500"
-                                    />
+
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -287,10 +279,7 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta
-                                        icon="calendar"
-                                        class="text-blue-500"
-                                    />
+
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -348,19 +337,19 @@
 
                                     <div>
                                         <InputLabel
-                                            value="Diagnostic"
+                                            value="Diagnostique"
                                             class="mb-2 text-gray-700 flex items-center gap-2"
                                         >
                                             <fonta
                                                 icon="stethoscope"
                                                 class="text-blue-500"
                                             />
-                                            Diagnostic
+                                            Diagnostique
                                         </InputLabel>
                                         <textarea
                                             v-model="form.diagnostic"
                                             class="mt-1 block w-full p-3 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner bg-white"
-                                            placeholder="Rédiger le diagnostic..."
+                                            placeholder="Rédiger le diagnostique..."
                                             required
                                         ></textarea>
                                     </div>
@@ -390,10 +379,8 @@
                                             <BaseInput
                                                 type="number"
                                                 v-model.number="form.poids"
-                                                min="0"
-                                                step="5"
                                                 required
-                                                class="shadow-inner bg-white"
+                                                class=" bg-white"
                                             />
                                         </div>
 
@@ -410,7 +397,7 @@
                                                 v-model.number="form.taille"
                                                 min="0"
                                                 required
-                                                class="shadow-inner bg-white"
+                                                class=" bg-white"
                                             />
                                         </div>
 
@@ -425,7 +412,7 @@
                                             <BaseInput
                                                 type="number"
                                                 v-model.number="form.freq_card"
-                                                class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner bg-white"
+                                                class="bg-white"
                                                 min="0"
                                                 required
                                             />
@@ -446,7 +433,7 @@
                                                 "
                                                 min="0"
                                                 required
-                                                class="shadow-inner bg-white"
+                                                class=" bg-white"
                                             />
                                         </div>
                                     </div>
@@ -477,10 +464,7 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-                                        <fonta
-                                            icon="user"
-                                            class="text-blue-500"
-                                        />
+
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -492,10 +476,7 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-                                    <fonta
-                                        icon="calendar-days"
-                                        class="text-blue-500"
-                                    />
+
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -508,10 +489,7 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta
-                                        icon="calendar"
-                                        class="text-blue-500"
-                                    />
+
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -533,25 +511,19 @@
                                 class="grid grid-cols-4 text-base gap-4 font-medium text-gray-700 bg-gray-50 py-3 px-2 rounded-lg"
                             >
                                 <div class="flex items-center gap-2">
-                                    <fonta icon="pills" class="text-blue-500" />
+
                                     <span>Désignation</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <fonta
-                                        icon="prescription-bottle"
-                                        class="text-blue-500"
-                                    />
+
                                     <span>Forme</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <fonta icon="clock" class="text-blue-500" />
+
                                     <span>Posologie</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <fonta
-                                        icon="hashtag"
-                                        class="text-blue-500"
-                                    />
+
                                     <span>Quantité</span>
                                 </div>
                             </div>
@@ -566,7 +538,7 @@
                                     <BaseInput
                                         v-model="med.designation"
                                         placeholder="Paracétamol..."
-                                        class="shadow-inner bg-white"
+                                        class=" bg-white"
                                     />
                                 </div>
 
@@ -574,7 +546,7 @@
                                     <BaseInput
                                         v-model="med.forme"
                                         placeholder="Comprimé..."
-                                        class="shadow-inner bg-white"
+                                        class=" bg-white"
                                     />
                                 </div>
 
@@ -582,7 +554,7 @@
                                     <BaseInput
                                         v-model="med.posologie"
                                         placeholder="1 comprimé 3x/jour..."
-                                        class="shadow-inner bg-white"
+                                        class=" bg-white"
                                     />
                                 </div>
 
@@ -591,7 +563,7 @@
                                         v-model="med.quantite"
                                         type="number"
                                         placeholder="10"
-                                        class="shadow-inner bg-white"
+                                        class=" bg-white"
                                     />
                                     <button
                                         type="button"
@@ -641,10 +613,7 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-                                        <fonta
-                                            icon="user"
-                                            class="text-blue-500"
-                                        />
+
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -656,10 +625,7 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-                                    <fonta
-                                        icon="calendar-days"
-                                        class="text-blue-500"
-                                    />
+
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -672,10 +638,7 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta
-                                        icon="calendar"
-                                        class="text-blue-500"
-                                    />
+
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -710,7 +673,7 @@
                                     v-model="returnDate"
                                     :min="minDate"
                                     @change="calculateRestDays"
-                                    class="shadow-inner bg-white"
+                                    class=" bg-white"
                                 />
                             </div>
 
@@ -731,7 +694,7 @@
                                         type="number"
                                         :value="restDays"
                                         readonly
-                                        class="shadow-inner bg-blue-50 font-medium text-blue-700"
+                                        class=" bg-blue-50 font-medium text-blue-700"
                                     />
                                 </div>
                             </div>
@@ -795,10 +758,7 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-                                        <fonta
-                                            icon="user"
-                                            class="text-blue-500"
-                                        />
+
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -810,10 +770,7 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-                                    <fonta
-                                        icon="calendar-days"
-                                        class="text-blue-500"
-                                    />
+
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -826,10 +783,7 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta
-                                        icon="calendar"
-                                        class="text-blue-500"
-                                    />
+
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -890,7 +844,7 @@
 
                                 <textarea
                                     v-model="form.remarques"
-                                    class="w-full border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-lg shadow-inner"
+                                    class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner"
                                     rows="4"
                                     placeholder="Ajouter des remarques concernant les examens..."
                                 ></textarea>
@@ -921,10 +875,7 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-                                        <fonta
-                                            icon="user"
-                                            class="text-blue-500"
-                                        />
+
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -936,10 +887,7 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-                                    <fonta
-                                        icon="calendar-days"
-                                        class="text-blue-500"
-                                    />
+
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -952,10 +900,7 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-                                    <fonta
-                                        icon="calendar"
-                                        class="text-blue-500"
-                                    />
+
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>

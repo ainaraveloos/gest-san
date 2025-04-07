@@ -22,19 +22,34 @@
             </div>
 
             <div class="mb-1 p-6">
-                <div class="relative w-full md:w-1/3">
-                    <input
-                        type="text"
-                        v-model="search"
-                        class="mt-1 block w-full pl-10 p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                        placeholder="Rechercher un nom, prenom, numero ..."
-                    />
-                    <div
-                        class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"
-                    >
-                        <fonta
-                            class="fas fa-search text-blue-500"
-                            icon="magnifying-glass"
+                <div
+                    class="flex justify-between items-center  gap-4"
+                >
+                    <div class="relative flex-1">
+                        <input
+                            type="text"
+                            v-model="search"
+                            class="mt-1 block w-full pl-10 p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            placeholder="Rechercher un nom, prenom, numero ..."
+                        />
+                        <div
+                            class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"
+                        >
+                            <fonta
+                                class="fas fa-search text-blue-500"
+                                icon="magnifying-glass"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Sélecteur de tri - Remplacer par dropdown Ant Design -->
+                    <div class="flex items-center justify-end">
+                        <SortDropdown
+                            :sort-options="sortOptions"
+                            :current-sort="String(currentSort)"
+                            route-name="patient.dossier"
+                            :additional-params="{ search: search.value }"
+                            @sort-changed="handleSortChanged"
                         />
                     </div>
                 </div>
@@ -44,9 +59,11 @@
             <div class="flow-root">
                 <div class="overflow-x-auto">
                     <div class="inline-block min-w-full py-2 align-middle">
-                        <table class="min-w-full divide-y divide-gray-300">
-                            <thead>
-                                <tr class="bg-blue-500 text-white">
+                        <table
+                            class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden"
+                        >
+                            <thead class="bg-blue-500 text-white">
+                                <tr>
                                     <th
                                         scope="col"
                                         class="py-4 pl-4 pr-3 text-left text-md font-semibold sm:pl-6"
@@ -73,22 +90,9 @@
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-4 py-3.5 text-center text-md font-semibold cursor-pointer hover:bg-blue-600/25 duration-500 transition-colors"
-                                        @click="toggleSort"
+                                        class="px-4 py-3.5 text-center text-md font-semibold"
                                     >
-                                        <div
-                                            class="flex items-center justify-center gap-2"
-                                        >
-                                            <span>Nombre de consultations</span>
-                                            <fonta
-                                                :icon="
-                                                    sortDirection === 'desc'
-                                                        ? 'chevron-down'
-                                                        : 'chevron-up'
-                                                "
-                                                class="text-xs transition-transform"
-                                            />
-                                        </div>
+                                        Nombre de consultations
                                     </th>
                                     <th
                                         scope="col"
@@ -150,7 +154,7 @@
                                         class="whitespace-nowrap px-3 hidden lg:table-cell py-4 text-sm"
                                     >
                                         <span
-                                            class="p-1 bg-green-50 rounded-full  text-green-600 text-xs border border-green-600"
+                                            class="p-1 bg-green-50 rounded-full text-green-600 text-xs border border-green-600"
                                             >{{ patient.numero }}</span
                                         >
                                     </td>
@@ -232,6 +236,7 @@
                                         'bg-blue-500 text-white': link.active,
                                     }"
                                     :href="link.url"
+                                    @click.prevent="navigateToPage(link.url)"
                                 >
                                     <span v-html="link.label"></span>
                                 </Link>
@@ -245,10 +250,19 @@
 </template>
 
 <script setup>
+import SortDropdown from "@/Components/SortDropdown.vue";
 import TestLayout from "@/Layouts/TestLayout.vue";
+import {
+    ArrowDownOutlined,
+    ArrowUpOutlined,
+    CalendarOutlined,
+    SortAscendingOutlined,
+    SortDescendingOutlined,
+} from "@ant-design/icons-vue";
 import { Link, router } from "@inertiajs/vue3";
 import { debounce } from "lodash";
 import { ref, watch } from "vue";
+
 defineOptions({
     layout: TestLayout,
 });
@@ -259,7 +273,33 @@ const props = defineProps({
 });
 
 const search = ref(props.filters?.search || "");
-const sortDirection = ref("desc");
+const currentSort = ref(props.filters?.sort || "consultations_desc");
+
+// Options de tri disponibles
+const sortOptions = [
+    { value: "name_asc", label: "Nom (A-Z)", icon: SortAscendingOutlined },
+    { value: "name_desc", label: "Nom (Z-A)", icon: SortDescendingOutlined },
+    {
+        value: "date_asc",
+        label: "Consultation plus ancienne",
+        icon: CalendarOutlined,
+    },
+    {
+        value: "date_desc",
+        label: "Consultation plus recente",
+        icon: CalendarOutlined,
+    },
+    {
+        value: "consultations_asc",
+        label: "Nombre de consultations (croissant)",
+        icon: ArrowUpOutlined,
+    },
+    {
+        value: "consultations_desc",
+        label: "Nombre de consultations (décroissant)",
+        icon: ArrowDownOutlined,
+    },
+];
 
 // Méthode unique pour gérer les requêtes
 const updateResults = debounce(() => {
@@ -267,24 +307,20 @@ const updateResults = debounce(() => {
         route("patient.dossier"),
         {
             search: search.value,
-            sort: sortDirection.value,
+            sort: currentSort.value,
         },
         {
             preserveState: true,
+            preserveScroll: true,
             replace: true,
         }
     );
 }, 300); // Debounce de 300ms
 
 // Watcher unifié
-watch([search, sortDirection], () => {
+watch([search, currentSort], () => {
     updateResults();
 });
-
-// toggleSort simplifié
-const toggleSort = () => {
-    sortDirection.value = sortDirection.value === "desc" ? "asc" : "desc";
-};
 
 // Fonction pour obtenir les initiales
 const getInitials = (nom, prenom) => {
@@ -304,6 +340,71 @@ const formatDateLongue = (date) => {
 const viewDossier = (patient) => {
     router.get(route("patient.dossier.details", { id: patient.id }));
 };
+
+// Fonction pour gérer le changement de tri
+const handleSortChanged = (value) => {
+    currentSort.value = value;
+    updateResults();
+};
+
+// Fonction pour naviguer à une page donnée
+const navigateToPage = (url) => {
+    router.get(url, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+        data: {
+            search: search.value,
+            sort: currentSort.value,
+        },
+    });
+};
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Animation de pulsation pour les badges */
+@keyframes pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Améliorations visuelles */
+.group:hover .group-hover\:rotate-180 {
+    transform: rotate(180deg);
+}
+
+.group:hover .group-hover\:border-blue-200 {
+    border-color: rgba(191, 219, 254, 1);
+}
+
+.group:hover .group-hover\:text-blue-500,
+.group:hover .group-hover\:text-blue-600 {
+    transition-delay: 0.05s;
+}
+
+.group:hover .group-hover\:scale-110 {
+    transition-delay: 0.05s;
+}
+</style>

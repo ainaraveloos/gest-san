@@ -52,7 +52,9 @@ Route::middleware(['auth','role:admin'])->group(function () {
     Route::delete('admin/societes/{societe}', [AdminController::class, 'deleteSociete'])->name('admin.societe.delete');
     Route::patch('admin/societes/{societe}', [AdminController::class, 'updateSociete'])->name('admin.societe.update');
     //Liste des medecins
-    Route::get('admin/medecins_list',[AdminController::class,'medecinsList'])->name('medecins.list');
+    Route::get('admin/medecins_list',[AdminController::class,'medecinsList'])->name('admin.medecins.list');
+    Route::patch('admin/medecins/{medecin}', [AdminController::class, 'updateMedecin'])->name('admin.medecin.update');
+    Route::delete('admin/medecins/{medecin}', [AdminController::class, 'deleteMedecin'])->name('admin.medecin.delete');
     // Routes pour la gestion des patients
     Route::get('admin/patients', [AdminController::class, 'showPatients'])->name('admin.patient.index');
     Route::post('admin/patients', [AdminController::class, 'storePatient'])->name('admin.patient.store');

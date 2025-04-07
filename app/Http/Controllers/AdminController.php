@@ -15,13 +15,54 @@ use App\Models\Badge;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use App\Models\Consultation;
+use App\Models\Ordonnance;
+use App\Models\Demande_examen;
+use App\Models\Lettre_reference;
+use App\Models\Medicament;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return inertia("Admin/dashboard");
+        return inertia('Admin/dashboard');
     }
+
+
+
+    private function getDateRange($periode)
+    {
+        $now = now();
+
+        switch ($periode) {
+            case 'jour':
+                return [
+                    'start' => $now->startOfDay(),
+                    'end' => $now->endOfDay()
+                ];
+            case 'semaine':
+                return [
+                    'start' => $now->startOfWeek(),
+                    'end' => $now->endOfWeek()
+                ];
+            case 'mois':
+                return [
+                    'start' => $now->startOfMonth(),
+                    'end' => $now->endOfMonth()
+                ];
+            case 'annee':
+                return [
+                    'start' => $now->startOfYear(),
+                    'end' => $now->endOfYear()
+                ];
+            default:
+                return [
+                    'start' => $now->startOfDay(),
+                    'end' => $now->endOfDay()
+                ];
+        }
+    }
+
     public function showSocietes(Request $request)
     {
         // Récupérer le paramètre de tri depuis la requête, sans valeur par défaut
@@ -408,10 +449,94 @@ return redirect()->back()->with('Utilisateur enregistrer avec succes');
 }
 public function medecinsList(Request $request)
 {
-    $medecins = Medecin::with(['user'])
-    ->withCount('consultations')
-    ->get();
-return inertia('Admin/Medecins/index',['medecins'=>$medecins]);
+    // Récupérer le paramètre de tri depuis la requête, sans valeur par défaut
+    $sort = $request->input('sort');
+
+    // Démarrer la requête avec les relations nécessaires
+    $query = Medecin::with(['user']);
+
+    // Appliquer le tri en fonction du paramètre, seulement si un tri est spécifié
+    if ($sort) {
+        switch ($sort) {
+            case 'name_desc':
+                $query->join('users', 'medecins.user_id', '=', 'users.id')
+                    ->orderBy('users.name', 'desc')
+                    ->select('medecins.*');
+                break;
+            case 'name_asc':
+                $query->join('users', 'medecins.user_id', '=', 'users.id')
+                    ->orderBy('users.name', 'asc')
+                    ->select('medecins.*');
+                break;
+        }
+    }
+
+    $medecins = $query->withCount('consultations')->paginate(5)->appends($request->query());
+
+    return inertia('Admin/Medecins/index', [
+        'medecins' => $medecins,
+        'filters' => [
+            'sort' => $sort
+        ]
+    ]);
+}
+
+public function updateMedecin(Request $request, Medecin $medecin)
+{
+    // Préparer les règles de validation
+    $rules = [
+        'name' => 'required|string|max:255',
+        'prenom' => 'required|string|max:255',
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($medecin->user_id)],
+        'specialite' => 'required|string|max:255',
+        'type' => 'required|in:GENERALISTE,ENTREPRISE',
+    ];
+
+    // Ajouter les règles pour le mot de passe si nécessaire
+    if ($request->has('password') && !empty($request->password)) {
+        $rules['password'] = ['required', 'confirmed', Rules\Password::defaults()];
+    }
+
+    // Valider les données
+    $validated = $request->validate($rules);
+
+    // Mettre à jour l'utilisateur associé
+    $user = $medecin->user;
+    $user->name = $validated['name'];
+    $user->prenom = $validated['prenom'];
+    $user->email = $validated['email'];
+
+    // Mettre à jour le mot de passe si nécessaire
+    if (isset($validated['password'])) {
+        $user->password = Hash::make($validated['password']);
+    }
+
+    $user->save();
+
+    // Mettre à jour le médecin
+    $medecin->nom = $validated['name'];
+    $medecin->prenom = $validated['prenom'];
+    $medecin->specialite = $validated['specialite'];
+    $medecin->type = $validated['type'];
+    $medecin->save();
+
+    return redirect()->route('admin.medecins.list')
+                     ->with('success', 'Médecin mis à jour avec succès');
+}
+
+public function deleteMedecin(Medecin $medecin)
+{
+    // Récupérer l'utilisateur associé
+    $user = $medecin->user;
+
+    // Supprimer le médecin
+    $medecin->delete();
+
+    // Supprimer l'utilisateur associé
+    $user->delete();
+
+    return redirect()->route('admin.medecins.list')
+                     ->with('success', 'Médecin supprimé avec succès');
 }
 }
 ?>

@@ -42,9 +42,6 @@ return new class extends Migration
             $table->string('numero_travailleur')->nullable();
             //Status de l'adhesion
             $table->date('date_adhesion')->nullable();
-            $table->enum('type_adhesion',['famille','association','formelle'])->nullable();
-            $table->date('date_debauche')->nullable();
-            $table->string('motif_debauche')->nullable();
             $table->timestamps();
         });
     }

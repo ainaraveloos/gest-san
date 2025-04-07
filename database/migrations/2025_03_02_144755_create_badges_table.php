@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('qr_code')->unique();
             $table->date('date_emission');
             $table->date('validite')->nullable();
-            $table->enum('status',['actif','desactive','en_renouvellement']);
+            $table->enum('status',['actif','desactive']);
             $table->timestamps();
         });
     }

@@ -1,7 +1,7 @@
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCalendar } from '@fortawesome/free-regular-svg-icons'
-import {  faAddressBook, faArrowRight, faBed,  faBedPulse,  faCalendarAlt, faCalendarCheck, faCapsules, faChevronDown, faChevronRight, faChevronUp, faCircleInfo, faClipboard, faClipboardList, faDownload, faEllipsis, faEnvelope, faEnvelopeCircleCheck, faEnvelopeOpenText, faFileMedical, faFilePen, faFileWaveform, faFilter, faFloppyDisk, faFolderOpen, faHeartPulse, faHistory, faHospitalUser, faIdBadge, faIdCard, faLock, faMagnifyingGlass, faMicroscope, faNotesMedical, faPaperPlane, faPhone, faPrescription, faPrint, faRuler, faShuffle,  faSignInAlt,  faSpinner, faStethoscope,  faTemperatureHigh,  faTrash,faUser,faUserCircle,faUserDoctor,faUserInjured,faUserMd, faUserPlus, faUsers, faUserTag, faVialCircleCheck, faWeight } from '@fortawesome/free-solid-svg-icons'
+import {  faAddressBook, faArrowRight, faBed,  faBedPulse,  faCalendarAlt, faCalendarCheck, faCapsules, faChevronDown, faChevronRight, faChevronUp, faCircleInfo, faClipboard, faClipboardList, faDownload, faEllipsis, faEnvelope, faEnvelopeCircleCheck, faEnvelopeOpenText, faFileMedical, faFilePen, faFileWaveform, faFilter, faFloppyDisk, faFolderOpen, faHeartPulse, faHistory, faHospitalUser, faIdBadge, faIdCard, faLock, faMagnifyingGlass, faMicroscope, faNotesMedical, faPaperPlane, faPhone, faPlusCircle, faPrescription, faPrint, faRuler, faShuffle,  faSignInAlt,  faSpinner, faStethoscope,  faTemperatureHigh,  faTrash,faUser,faUserCircle,faUserDoctor,faUserInjured,faUserMd, faUserPlus, faUsers, faUserTag, faVialCircleCheck, faWeight } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
     faMagnifyingGlass,
@@ -14,6 +14,7 @@ library.add(
     faClipboardList,
     faArrowRight,
     faFilter,
+    faPlusCircle,
     faPhone,
     faAddressBook,
     faUserCircle,
@@ -21,7 +22,6 @@ library.add(
     faCapsules,
     faFileWaveform,
     faNotesMedical,
-    faCalendar,
     faTrash,
     faFloppyDisk,
     faShuffle,

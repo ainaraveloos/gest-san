@@ -25,6 +25,7 @@ class MedecinController extends Controller
 {
     $medecinId = Auth::user()->medecin->id;
 
+    // Requête de base pour récupérer les patients
     $query = Patient::whereHas('consultations', function($query) use ($medecinId) {
         $query->where('medecin_id', $medecinId);
     })
@@ -35,9 +36,47 @@ class MedecinController extends Controller
         $query->where('medecin_id', $medecinId)
             ->orderBy('date_consultation', 'desc');
     }]);
+
     // Gestion du tri
-    $sort = $request->input('sort', 'desc');
-    $query->orderBy('consultations_count', $sort);
+    $sort = $request->input('sort', 'consultations_desc');
+
+    switch ($sort) {
+        case 'name_asc':
+            $query->orderBy('nom', 'asc');
+            break;
+        case 'name_desc':
+            $query->orderBy('nom', 'desc');
+            break;
+        case 'date_asc':
+            // Tri par date de consultation ascendante (plus anciennes d'abord)
+            $query->select('patients.*')
+                ->leftJoin('consultations as c', function($join) use ($medecinId) {
+                    $join->on('patients.id', '=', 'c.patient_id')
+                        ->where('c.medecin_id', '=', $medecinId);
+                })
+                ->groupBy('patients.id')
+                ->orderBy(DB::raw('MIN(c.date_consultation)'), 'asc');
+            break;
+        case 'date_desc':
+            // Tri par date de consultation descendante (plus récentes d'abord)
+            $query->select('patients.*')
+                ->leftJoin('consultations as c', function($join) use ($medecinId) {
+                    $join->on('patients.id', '=', 'c.patient_id')
+                        ->where('c.medecin_id', '=', $medecinId);
+                })
+                ->groupBy('patients.id')
+                ->orderBy(DB::raw('MAX(c.date_consultation)'), 'desc');
+            break;
+        case 'consultations_asc':
+            $query->orderBy('consultations_count', 'asc');
+            break;
+        case 'consultations_desc':
+        default:
+            $query->orderBy('consultations_count', 'desc');
+            break;
+    }
+
+    // Filtre de recherche
     if ($request->filled('search')) {
         $search = $request->input('search');
         $query->where(function($q) use ($search) {
@@ -60,6 +99,7 @@ class MedecinController extends Controller
                 'consultations_count' => $patient->consultations_count,
             ];
         });
+
     return inertia('Medecin/patients/Dossier', [
         'patients' => $patients,
         'filters' => $request->only(['search', 'sort']),

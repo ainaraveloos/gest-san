@@ -7,16 +7,16 @@
                 Liste des Patients <fonta class="ml-4" icon="users" />
             </h1>
             <!-- Boutton ouvrir modal de registre patient -->
-            <BaseButton class="py-3" @click="showFormModal">
+            <BaseButton class="py-2.5" @click="showFormModal">
                 <span>Ajouter nouveau patient</span>
                 <fonta icon="user-plus" class="text-md" />
             </BaseButton>
         </div>
 
         <!-- Input recherche -->
-        <div class="flex items-center mb-4 px-4 gap-4">
+        <div class="flex items-center justify-between mb-4 px-4 gap-4">
             <!-- Recherche par nom, prénom ou numéro du patient -->
-            <div class="relative w-full md:w-1/3">
+            <div class="relative flex-1">
                 <BaseInput
                     id="searchTerm"
                     type="text"
@@ -26,71 +26,20 @@
             </div>
 
             <!-- Sélecteur de tri avec Ant Design Vue -->
-            <a-dropdown :trigger="['click']" overlay-class-name="sort-dropdown">
-                <div
-                    class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 transition-all duration-300 px-4 py-2.5 rounded-lg border border-gray-200 cursor-pointer shadow-sm hover:shadow"
-                >
-                    <SortAscendingOutlined
-                        class="text-blue-500 transition-transform duration-300"
-                    />
-                    <span class="text-gray-500 font-normal hidden md:inline">{{
-                        getSortLabel()
-                    }}</span>
-                    <DownOutlined
-                        class="text-gray-400 text-xs transition-all duration-300"
-                    />
-                </div>
-
-                <template #overlay>
-                    <a-menu class="sort-menu">
-                        <div class="p-3 border-b border-gray-100 bg-gray-50">
-                            <h4 class="font-semibold text-gray-700">
-                                Trier par
-                            </h4>
-                        </div>
-                        <a-menu-item
-                            v-for="option in sortOptions"
-                            :key="option.value"
-                            @click="changeSortOrder(option.value)"
-                            :class="
-                                sortOrder === option.value
-                                    ? 'ant-menu-item-active bg-blue-50'
-                                    : ''
-                            "
-                        >
-                            <div class="flex items-center gap-2">
-                                <component
-                                    :is="option.icon"
-                                    class="text-sm"
-                                    :class="
-                                        sortOrder === option.value
-                                            ? 'text-blue-500'
-                                            : 'text-gray-400'
-                                    "
-                                />
-                                <span
-                                    :class="
-                                        sortOrder === option.value
-                                            ? 'text-blue-600 font-medium'
-                                            : 'text-gray-600'
-                                    "
-                                >
-                                    {{ option.label }}
-                                </span>
-                                <CheckOutlined
-                                    v-if="sortOrder === option.value"
-                                    class="ml-auto text-blue-500"
-                                />
-                            </div>
-                        </a-menu-item>
-                    </a-menu>
-                </template>
-            </a-dropdown>
+            <SortDropdown
+                :sort-options="sortOptions"
+                :current-sort="String(sortOrder)"
+                route-name="admin.patient.index"
+                :additional-params="getAdditionalParams()"
+                @sort-changed="handleSortChanged"
+            />
         </div>
 
         <!-- Table patient -->
         <div class="flex items-center justify-center overflow-x-auto">
-            <table class="min-w-[97%] divide-y divide-gray-200">
+            <table
+                class="min-w-[97%] divide-y divide-gray-200 rounded-lg overflow-hidden"
+            >
                 <thead class="bg-blue-500">
                     <tr
                         class="text-sm text-gray-200 font-bold uppercase tracking-tight"
@@ -100,238 +49,40 @@
                         </th>
                         <th class="py-4 px-4 text-left">Nom Complet</th>
                         <th class="py-4 px-4 text-left">
-                            <div
-                                class="relative flex items-center justify-start gap-4"
-                            >
-                                <span class="mr-1">societe</span>
-                                <a-dropdown
-                                    v-model:open="dropdownFilterSocieteVisible"
-                                    :trigger="['click']"
-                                >
-                                    <FilterFilled
-                                        class="hover:text-white hover:shadow-md transition-colors duration-300 text-gray-300"
-                                    />
-
-                                    <template #overlay>
-                                        <div
-                                            class="bg-white rounded-lg shadow-xl border border-gray-100 w-64"
-                                        >
-                                            <div
-                                                class="p-4 border-b border-gray-100"
-                                            >
-                                                <h4
-                                                    class="font-semibold text-gray-800"
-                                                >
-                                                    Filtrer par société
-                                                </h4>
-                                            </div>
-
-                                            <div
-                                                class="p-2 max-h-60 overflow-y-auto"
-                                            >
-                                                <a-checkbox-group
-                                                    v-model:value="
-                                                        selectedSocietes
-                                                    "
-                                                    class="flex flex-col gap-2"
-                                                >
-                                                    <a-checkbox
-                                                        v-for="societe in societes"
-                                                        :key="societe.id"
-                                                        :value="societe.id"
-                                                        class="!flex items-center p-2 hover:bg-gray-50 rounded-md transition-colors"
-                                                    >
-                                                        <span
-                                                            class="text-gray-700"
-                                                            >{{
-                                                                societe.nom
-                                                            }}</span
-                                                        >
-                                                    </a-checkbox>
-                                                </a-checkbox-group>
-                                            </div>
-
-                                            <div
-                                                class="p-2 border-t border-gray-100 flex justify-end"
-                                            >
-                                                <a-button
-                                                    type="link"
-                                                    size="small"
-                                                    @click="
-                                                        selectedSocietes = []
-                                                    "
-                                                    class="!text-gray-500 hover:!text-red-500 !h-8"
-                                                >
-                                                    Réinitialiser
-                                                </a-button>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </a-dropdown>
-                            </div>
+                            <TableFilterHeader
+                                label="societe"
+                                filter-title="Filtrer par société"
+                                :options="
+                                    societes.map((s) => ({
+                                        value: s.id,
+                                        label: s.nom,
+                                    }))
+                                "
+                                v-model="selectedSocietes"
+                                width-class="w-64"
+                            />
                         </th>
                         <th class="py-4 px-4 hidden lg:table-cell">
-                            <div
-                                class="relative flex items-center justify-center gap-4"
-                            >
-                                <span class="mr-1">Type</span>
-                                <a-dropdown
-                                    v-model:open="dropdownFilterTypeVisible"
-                                    :trigger="['click']"
-                                >
-                                    <!-- Icône de filtre -->
-                                    <FilterFilled
-                                        class="hover:text-white hover:shadow-md transition-colors duration-300 text-gray-300"
-                                    />
-
-                                    <!-- Menu déroulant -->
-                                    <template #overlay>
-                                        <div
-                                            class="bg-white rounded-lg shadow-xl border border-gray-100 w-52"
-                                        >
-                                            <!-- En-tête -->
-                                            <div
-                                                class="p-4 border-b border-gray-100"
-                                            >
-                                                <h4
-                                                    class="font-semibold text-gray-800"
-                                                >
-                                                    Filtrer par type
-                                                </h4>
-                                            </div>
-
-                                            <!-- Liste des checkboxes -->
-                                            <div
-                                                class="p-2 max-h-60 overflow-y-auto"
-                                            >
-                                                <a-checkbox-group
-                                                    v-model:value="
-                                                        selectedTypes
-                                                    "
-                                                    class="flex flex-col gap-2"
-                                                >
-                                                    <a-checkbox
-                                                        v-for="type in patientTypes"
-                                                        :key="type.value"
-                                                        :value="type.value"
-                                                        class="!flex items-center p-2 hover:bg-gray-50 rounded-md transition-colors"
-                                                    >
-                                                        <span
-                                                            class="text-gray-700"
-                                                            >{{
-                                                                type.label
-                                                            }}</span
-                                                        >
-                                                    </a-checkbox>
-                                                </a-checkbox-group>
-                                            </div>
-
-                                            <!-- Footer avec reset -->
-                                            <div
-                                                class="p-2 border-t border-gray-100 flex justify-end"
-                                            >
-                                                <a-button
-                                                    type="link"
-                                                    size="small"
-                                                    @click="resetSelection"
-                                                    class="!text-gray-500 hover:!text-red-500 !h-8"
-                                                >
-                                                    Réinitialiser
-                                                </a-button>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </a-dropdown>
-                            </div>
+                            <TableFilterHeader
+                                label="Type"
+                                filter-title="Filtrer par type"
+                                :options="patientTypes"
+                                v-model="selectedTypes"
+                                width-class="w-52"
+                            />
                         </th>
                         <th class="py-4 text-center hidden md:table-cell">
-                            <div class="flex items-center justify-center gap-2">
-                                <span>Statut badge</span>
-                                <a-dropdown
-                                    v-model:open="dropdownFilterBadgeVisible"
-                                    :trigger="['click']"
-                                >
-                                    <FilterFilled
-                                        class="hover:text-white hover:shadow-md transition-colors duration-300 text-gray-300"
-                                    />
-                                    <template #overlay>
-                                        <div
-                                            class="bg-white rounded-lg shadow-xl border border-gray-100 w-56"
-                                        >
-                                            <div
-                                                class="p-4 border-b border-gray-100"
-                                            >
-                                                <h4
-                                                    class="font-semibold text-gray-800"
-                                                >
-                                                    Filtrer par statut
-                                                </h4>
-                                            </div>
-                                            <div
-                                                class="p-2 max-h-60 overflow-y-auto"
-                                            >
-                                                <a-checkbox-group
-                                                    v-model:value="
-                                                        selectedBadgeStatuses
-                                                    "
-                                                    class="flex flex-col gap-2"
-                                                >
-                                                    <a-checkbox
-                                                        v-for="status in badgeStatuses"
-                                                        :key="status.value"
-                                                        :value="status.value"
-                                                        class="!flex items-center p-2 hover:bg-gray-50 rounded-md transition-colors"
-                                                    >
-                                                        <div
-                                                            class="flex items-center gap-2"
-                                                        >
-                                                            <div
-                                                                :class="[
-                                                                    'w-3 h-3 rounded-full',
-                                                                    status.value ===
-                                                                    'actif'
-                                                                        ? 'bg-green-500 pulse-green'
-                                                                        : status.value ===
-                                                                          'desactive'
-                                                                        ? 'bg-red-500 pulse-red'
-                                                                        : status.value ===
-                                                                          'expired'
-                                                                        ? 'bg-orange-500 pulse-orange'
-                                                                        : 'bg-gray-500',
-                                                                ]"
-                                                            ></div>
-                                                            <span
-                                                                class="text-gray-700"
-                                                                >{{
-                                                                    status.label
-                                                                }}</span
-                                                            >
-                                                        </div>
-                                                    </a-checkbox>
-                                                </a-checkbox-group>
-                                            </div>
-                                            <div
-                                                class="p-2 border-t border-gray-100 flex justify-end"
-                                            >
-                                                <a-button
-                                                    type="link"
-                                                    size="small"
-                                                    @click="
-                                                        selectedBadgeStatuses =
-                                                            []
-                                                    "
-                                                    class="!text-gray-500 hover:!text-red-500 !h-8"
-                                                >
-                                                    Réinitialiser
-                                                </a-button>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </a-dropdown>
-                            </div>
+                            <TableFilterHeader
+                                label="Statut badge"
+                                filter-title="Filtrer par statut"
+                                :options="badgeStatusesWithColors"
+                                v-model="selectedBadgeStatuses"
+                                width-class="w-56"
+                                :show-option-icon="true"
+                            />
                         </th>
 
-                        <th class="py-4 text-center">Actions</th>
+                        <th class="py-4 px-4 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -685,7 +436,7 @@
                         v-else
                         :preserve-state="true"
                         :preserve-scroll="true"
-                        class="mr-1 shadow-sm transition-all duration-300 hover:scale-110 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block px-4 py-3 focus:text-blue-500"
+                        class="mr-1 shadow-sm transition-all duration-300 hover:scale-110 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block focus:text-blue-500"
                         :class="{
                             'bg-slate-600 !text-white border-none': link.active,
                         }"
@@ -703,111 +454,137 @@
             :open="showModal"
             :width="800"
             :footer="null"
-            style="top: 15px"
+            class="rounded-lg"
             @cancel="handleCloseModal"
         >
-            <h1 class="mb-6 text-blue-500 font-bold text-xl text-center">
-                {{ isEditing ? "Modifier Information" : "Ajouter un Patient" }}
-            </h1>
-            <form @submit.prevent="handleSubmit" class="!px-4">
-                <transition name="fade">
+            <div class="modal-header bg-blue-500 -mt-6 -mx-6 py-4 px-6 mb-6">
+                <h1 class="text-white text-lg">
+                    {{
+                        isEditing
+                            ? "Modifier Information"
+                            : "Ajouter un Patient"
+                    }}
+                </h1>
+            </div>
+
+            <form @submit.prevent="handleSubmit" class="p-4">
+                <!-- Type de patient et société/salarié référent -->
+                <div class="mb-6">
+                    <h2 class="text-md text-gray-600 font-medium mb-4">
+                        Type de patient
+                    </h2>
                     <div
-                        class="grid grid-cols-1 items-center md:grid-cols-2 gap-4 mb-4"
+                        class="bg-gray-50 p-5 rounded-lg border border-gray-200"
                     >
-                        <div>
-                            <InputLabel
-                                for="type de patient"
-                                value="Type de patient"
-                                class="mb-1"
-                            />
-                            <a-segmented
-                                v-model:value="form.type"
-                                :options="patientOptions"
-                                :disabled="isEditing"
-                                block
-                                class="custom-patient-segmented"
-                            />
-                        </div>
-                        <div v-if="form.type === 'SALARIE'">
-                            <InputLabel
-                                for="societe"
-                                value="Societe"
-                                class="mb-1"
-                            />
-                            <a-select
-                                v-model:value="form.societe_id"
-                                placeholder="Sélectionner une société"
-                                class="w-full societe_select"
-                                :style="{ height: '42px' }"
-                                :disabled="isEditing"
-                            >
-                                <a-select-option
-                                    class="p-4"
-                                    v-for="societe in societes"
-                                    :key="societe.id"
-                                    :value="societe.id"
+                        <div
+                            class="grid grid-cols-1 items-center md:grid-cols-2 gap-4"
+                        >
+                            <div>
+                                <InputLabel
+                                    for="type de patient"
+                                    value="Type de patient"
+                                    class="mb-1"
+                                />
+                                <a-segmented
+                                    v-model:value="form.type"
+                                    :options="patientOptions"
+                                    :disabled="isEditing"
+                                    block
+                                    class="custom-patient-segmented"
+                                />
+                            </div>
+                            <div v-if="form.type === 'SALARIE'">
+                                <InputLabel
+                                    for="societe"
+                                    value="Société"
+                                    class="mb-1"
+                                />
+                                <a-select
+                                    v-model:value="form.societe_id"
+                                    placeholder="Sélectionner une société"
+                                    class="w-full societe_select !shadow-inner"
+                                    :style="{ height: '42px' }"
+                                    :disabled="isEditing"
                                 >
-                                    {{ societe.nom }}
-                                </a-select-option>
-                            </a-select>
+                                    <a-select-option
+                                        class="p-4"
+                                        v-for="societe in societes"
+                                        :key="societe.id"
+                                        :value="societe.id"
+                                    >
+                                        {{ societe.nom }}
+                                    </a-select-option>
+                                </a-select>
+                            </div>
+
+                            <div
+                                v-if="form.type === 'FAMILLE'"
+                                class="relative"
+                            >
+                                <InputLabel
+                                    for="parent_id"
+                                    value="Salarié Référent"
+                                    class="mb-1"
+                                />
+                                <BaseInput
+                                    type="text"
+                                    v-model="employeeSearchTerm"
+                                    placeholder="Rechercher un salarié..."
+                                    @focus="dropdownVisible = true"
+                                    @input="searchSalaries"
+                                />
+                                <div
+                                    v-if="
+                                        dropdownVisible &&
+                                        filteredSalaries.length > 0
+                                    "
+                                    class="absolute z-10 w-full bg-white shadow-md p-4 flex flex-col gap-2 rounded-md mt-1 max-h-60 overflow-y-auto"
+                                >
+                                    <div
+                                        v-for="salarie in filteredSalaries"
+                                        :key="salarie.id"
+                                        @mousedown.prevent="
+                                            selectSalarie(salarie)
+                                        "
+                                        class="px-3 py-2 hover:bg-blue-600 rounded-md hover:text-white transition-colors duration-500 cursor-pointer"
+                                    >
+                                        {{ salarie.nom }}
+                                        {{ salarie.prenom }} ({{
+                                            salarie.numero
+                                        }})
+                                    </div>
+                                </div>
+                                <input type="hidden" v-model="form.parent_id" />
+                            </div>
                         </div>
 
-                        <div v-if="form.type === 'FAMILLE'" class="relative">
+                        <div class="mt-4" v-if="form.type === 'FAMILLE'">
                             <InputLabel
-                                for="parent_id"
-                                value="Salarié Référent"
-                                class="mb-1"
+                                for="lien_parente"
+                                value="Lien de parenté"
                             />
                             <BaseInput
+                                id="lient_parente"
                                 type="text"
-                                v-model="employeeSearchTerm"
-                                placeholder="Rechercher un salarié..."
-                                @focus="dropdownVisible = true"
-                                @input="searchSalaries"
+                                v-model="form.lien_parente"
+                                required
                             />
-                            <div
-                                v-if="
-                                    dropdownVisible &&
-                                    filteredSalaries.length > 0
-                                "
-                                class="absolute z-10 w-full bg-white shadow-md p-4 flex flex-col gap-2 rounded-md mt-1 max-h-60 overflow-y-auto"
-                            >
-                                <div
-                                    v-for="salarie in filteredSalaries"
-                                    :key="salarie.id"
-                                    @mousedown.prevent="selectSalarie(salarie)"
-                                    class="px-3 py-2 hover:bg-blue-600 rounded-md hover:text-white transition-colors duration-500 cursor-pointer"
-                                >
-                                    {{ salarie.nom }} {{ salarie.prenom }} ({{
-                                        salarie.numero
-                                    }})
-                                </div>
-                            </div>
-                            <input type="hidden" v-model="form.parent_id" />
+                            <InputError
+                                class="mt-1"
+                                :message="form.errors.lien_parente"
+                            />
                         </div>
                     </div>
-                </transition>
-                <div class="mb-4" v-if="form.type === 'FAMILLE'">
-                    <InputLabel for="lien_parente" value="Lien de parente" />
-                    <BaseInput
-                        id="lient_parente"
-                        type="text"
-                        v-model="form.lien_parente"
-                        required
-                    />
-                    <InputError
-                        class="mt-1"
-                        :message="form.errors.lien_parente"
-                    />
                 </div>
-                <!-- Informations de base -->
-                <!-- Informations Personnelles -->
-                <transition name="fade">
-                    <div class="mb-6 border-b pb-4">
-                        <h2 class="text-lg font-semibold text-blue-500 mb-4">
-                            Informations Personnelles
-                        </h2>
 
+                <!-- Informations Personnelles -->
+                <div class="mb-6">
+                    <h2 class="text-md text-gray-600 font-medium mb-4">
+                        Informations Personnelles
+                    </h2>
+                    <div
+                        class="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                    >
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
                                 <InputLabel for="nom" value="Nom" />
@@ -870,7 +647,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <InputLabel for="telephone" value="Téléphone" />
                                 <BaseInput
@@ -898,19 +675,18 @@
                             </div>
                         </div>
                     </div>
-                </transition>
+                </div>
 
                 <!-- Informations Professionnelles (Uniquement pour les salariés) -->
-                <transition name="fade">
-                    <div v-if="form.type === 'SALARIE'" class="border-b pb-4">
-                        <h2 class="text-lg font-semibold text-blue-500 mb-4">
-                            Informations Professionnelles
-                        </h2>
-                        <div
-                            v-if="form.type === 'SALARIE'"
-                            class="w-full col-span-full mb-4"
-                        >
-                            <InputLabel for="poste" value="Poste occupe" />
+                <div v-if="form.type === 'SALARIE'" class="mb-6">
+                    <h2 class="text-md text-gray-600 font-medium mb-4">
+                        Informations Professionnelles
+                    </h2>
+                    <div
+                        class="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                    >
+                        <div class="mb-4">
+                            <InputLabel for="poste" value="Poste occupé" />
                             <BaseInput
                                 id="poste"
                                 type="text"
@@ -964,7 +740,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div
                                 v-if="
                                     ['Temporaire', 'CDD'].includes(
@@ -984,15 +760,20 @@
                             </div>
                         </div>
                     </div>
-                </transition>
+                </div>
 
-                <!-- Boutons d'action, disposés de manière responsive -->
+                <!-- Boutons d'action -->
                 <div
-                    class="flex flex-col mt-4 sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4"
+                    class="flex justify-end space-x-3 pt-4 border-t border-gray-200"
                 >
-                    <Button @click="handleCloseModal"> Annuler </Button>
-                    <BaseButton type="submit">
-                        {{ isEditing ? "Modifier" : "Enregistrer" }}
+                    <Button
+                        @click="handleCloseModal"
+                        class="bg-white hover:bg-gray-50 border-gray-300 text-gray-700 hover:text-gray-900"
+                    >
+                        Annuler
+                    </Button>
+                    <BaseButton type="submit" class="px-6">
+                        {{ isEditing ? "Mettre à jour" : "Enregistrer" }}
                     </BaseButton>
                 </div>
             </form>
@@ -1006,15 +787,14 @@ import BaseInput from "@/Components/BaseInput.vue";
 import Button from "@/Components/Button.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import SortDropdown from "@/Components/SortDropdown.vue";
+import TableFilterHeader from "@/Components/TableFilterHeader.vue";
 import useConfirmDialog from "@/composables/useConfirmDialog";
 import TestLayout from "@/Layouts/TestLayout.vue";
 import {
     CalendarOutlined,
-    CheckOutlined,
     DeleteFilled,
-    DownOutlined,
     EditFilled,
-    FilterFilled,
     SortAscendingOutlined,
     SortDescendingOutlined,
     TeamOutlined,
@@ -1022,7 +802,7 @@ import {
 import { Link, router, useForm } from "@inertiajs/vue3";
 import { debounce } from "lodash";
 import Swal from "sweetalert2";
-import { defineOptions, onMounted, ref, watch } from "vue";
+import { computed, defineOptions, onMounted, ref, watch } from "vue";
 const { confirmDelete } = useConfirmDialog();
 
 defineOptions({
@@ -1032,7 +812,10 @@ const props = defineProps({
     patients: Object,
     societes: Array,
     salaries: Array,
-    filters: Object,
+    filters:{
+        type:Object,
+        default: () => ({}),
+    },
     badge: Array,
 });
 //Pour l'ajout ou edit patient
@@ -1089,7 +872,8 @@ const searchSalaries = async () => {
         return;
     }
 
-    const response = await fetch(//sinon on retourne une correspondance
+    const response = await fetch(
+        //sinon on retourne une correspondance
         `/admin/salaries/search?search=${employeeSearchTerm.value}`
     );
     const data = await response.json();
@@ -1173,8 +957,6 @@ const patientTypes = [
     { value: "SALARIE", label: "Salarié" },
     { value: "FAMILLE", label: "Bénéficiaire" },
 ];
-const dropdownFilterTypeVisible = ref(false);
-const dropdownFilterSocieteVisible = ref(false);
 
 //les status du badge du patient/filtre selon le status du badge
 const badgeStatuses = [
@@ -1182,8 +964,15 @@ const badgeStatuses = [
     { value: "desactive", label: "Badges inactifs" },
     { value: "expired", label: "Badges expirés" },
 ];
+
+// Version améliorée des statuts de badge avec couleurs pour le composant réutilisable
+const badgeStatusesWithColors = computed(() => [
+    { value: "actif", label: "Badges actifs", color: "green", pulse: true },
+    { value: "desactive", label: "Badges inactifs", color: "red", pulse: true },
+    { value: "expired", label: "Badges expirés", color: "orange", pulse: true },
+]);
+
 const selectedBadgeStatuses = ref(props.filters.badgeStatuses || []);
-const dropdownFilterBadgeVisible = ref(false);
 
 // Options de tri disponibles/tri des resultats
 const sortOptions = [
@@ -1193,26 +982,23 @@ const sortOptions = [
     { value: "name_desc", label: "Nom (Z-A)", icon: SortDescendingOutlined },
     { value: "societe", label: "Société", icon: TeamOutlined },
 ];
+
 // valeur par defaut du tri
-const sortOrder = ref(props.filters.sort || "newest");
+const sortOrder = ref(props.filters?.sort || "");
 
-// Fonction pour obtenir le label du tri actuel à aficher dans l'input du selection
-const getSortLabel = () => {
-    const option = sortOptions.find((option) => option.value === sortOrder.value);
-    return option ? option.label : "Trier par";
-};
-// Fonction pour changer l'ordre de tri
-const changeSortOrder = (value) => {
-    sortOrder.value = value;
+// Fonction pour gérer le changement de tri
+const handleSortChanged = (newSortOrder) => {
+    sortOrder.value = newSortOrder;
 
+    // Ajouter la navigation immédiate
     router.get(
         route("admin.patient.index"),
         {
             search: searchTerm.value,
-            societes: selectedSocietes.value,
+            societes: selectedSocietes.value.map((id) => Number(id)),
             types: selectedTypes.value,
             badgeStatuses: selectedBadgeStatuses.value,
-            sort: value,
+            sort: newSortOrder,
         },
         {
             preserveState: true,
@@ -1323,6 +1109,18 @@ const navigateToPage = (url) => {
             replace: true,
         }
     );
+};
+
+
+
+const getAdditionalParams = () => {
+    return {
+        search: searchTerm.value,
+        societes: selectedSocietes.value.map((id) => Number(id)),
+        types: selectedTypes.value,
+        badgeStatuses: selectedBadgeStatuses.value,
+        sort: sortOrder.value,
+    };
 };
 </script>
 
@@ -1515,36 +1313,5 @@ const navigateToPage = (url) => {
 
 .group-hover\:opacity-100 {
     transition-delay: 0.05s;
-}
-
-/* Styles pour le dropdown de tri */
-:deep(.sort-dropdown .ant-dropdown-menu) {
-    padding: 0;
-    border-radius: 0.75rem;
-    min-width: 220px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-:deep(.sort-dropdown .ant-menu-item) {
-    height: auto !important;
-    line-height: 1.5;
-    padding: 8px 12px !important;
-    margin: 4px !important;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-:deep(.sort-dropdown .ant-menu-item:hover) {
-    background-color: #f5f7fa;
-}
-
-:deep(.sort-dropdown .ant-menu-item.bg-blue-50) {
-    background-color: rgb(239, 246, 255) !important;
-}
-
-:deep(.sort-dropdown .ant-menu-item.ant-menu-item-active) {
-    background-color: rgb(239, 246, 255);
 }
 </style>
