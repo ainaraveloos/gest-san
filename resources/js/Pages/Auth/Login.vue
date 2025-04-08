@@ -1,6 +1,6 @@
 <template>
     <div
-        class="min-h-screen bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 lg:p-4 p-8 flex items-center justify-center"
+        class="min-h-screen bg-gradient-to-r from-blue-500  to-blue-600 lg:p-4 p-8 flex items-center justify-center"
     >
         <div
             class="w-full max-w-5xl bg-white rounded-xl shadow-lg  flex flex-col lg:flex-row"
@@ -100,7 +100,7 @@
                         <fonta
                             v-if="form.processing"
                             icon="spinner"
-                            class="animate-spin disabled:opacity-70 disabled:bg-gray-400 disabled:bg-none"
+                            class="animate-spin "
                         />
                     </BaseButton>
                 </form>

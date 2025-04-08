@@ -2,7 +2,7 @@
     <div class="container mx-auto mb-6 px-4">
         <!-- Bannière de consultation améliorée -->
         <div
-            class="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 px-8 py-8 mb-8 flex items-center justify-between shadow-lg rounded-2xl overflow-hidden border border-blue-400"
+            class="bg-gradient-to-r from-blue-500  to-blue-600 px-8 py-8 mb-8 flex items-center justify-between shadow-lg rounded-2xl overflow-hidden border border-blue-400"
         >
             <div>
                 <h1 class="text-2xl font-bold text-white mb-3">

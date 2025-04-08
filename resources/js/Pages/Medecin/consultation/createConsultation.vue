@@ -1,7 +1,7 @@
 <template>
     <div class="p-2 rounded-md transform transition-all duration-300">
         <!-- En-tête avec recherche de patient -->
-        <div class="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 p-6 rounded-t-xl shadow-md">
+        <div class="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-700 p-6 rounded-t-xl shadow-md">
             <div class="flex items-center gap-3 text-white mb-6">
                 <h1 class="text-2xl font-semibold">Nouvelle Consultation</h1>
             </div>

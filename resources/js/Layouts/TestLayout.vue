@@ -132,7 +132,6 @@
                         <a-menu-item
                             key="profile"
                             v-if="$page.props.auth.user.role == 'admin'"
-                            
                             class="!flex !items-center !text-sm !p-2 !font-semibold !text-blue-500 hover:!bg-blue-50"
                         >
                             <span>Modifier mon profil</span>
@@ -142,7 +141,6 @@
                         <a-menu-item
                             v-if="$page.props.auth.user.role == 'admin'"
                             key="settings"
-
                             class="!flex !items-center !text-sm !p-2 !font-semibold !text-gray-600 hover:!bg-gray-50"
                         >
                             <Link :href="route('admin.parametres')">

@@ -25,42 +25,142 @@ class AdminController extends Controller
 {
     public function index(Request $request)
     {
-        return inertia('Admin/dashboard');
-    }
-
-
-
-    private function getDateRange($periode)
-    {
+        $period = $request->input('period', 'month');
         $now = now();
+        $startDate = null;
 
-        switch ($periode) {
-            case 'jour':
-                return [
-                    'start' => $now->startOfDay(),
-                    'end' => $now->endOfDay()
-                ];
-            case 'semaine':
-                return [
-                    'start' => $now->startOfWeek(),
-                    'end' => $now->endOfWeek()
-                ];
-            case 'mois':
-                return [
-                    'start' => $now->startOfMonth(),
-                    'end' => $now->endOfMonth()
-                ];
-            case 'annee':
-                return [
-                    'start' => $now->startOfYear(),
-                    'end' => $now->endOfYear()
-                ];
+        switch ($period) {
+            case 'today':
+                $startDate = $now->copy()->startOfDay();
+                break;
+            case 'week':
+                $startDate = $now->copy()->subDays(7);
+                break;
+            case 'month':
+                $startDate = $now->copy()->subMonth();
+                break;
+            case 'year':
+                $startDate = $now->copy()->subYear();
+                break;
             default:
-                return [
-                    'start' => $now->startOfDay(),
-                    'end' => $now->endOfDay()
-                ];
+                $startDate = $now->copy()->subMonth();
         }
+
+        // Statistiques générales (comptage basique)
+        $totalPatients = Patient::count();
+        $totalConsultations = Consultation::where('date_consultation', '>=', $startDate)->count();
+        $totalMedecins = Medecin::count();
+
+        // Consultations par type
+        $consultationsByType = Consultation::query()
+            ->where('date_consultation', '>=', $startDate)
+            ->select('type', DB::raw('COUNT(*) as total'))
+            ->groupBy('type')
+            ->get()
+            ->pluck('total', 'type');
+
+        // Statut des badges
+        $badgesStatus = Badge::query()
+            ->select('status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status')
+            ->get()
+            ->pluck('total', 'status');
+
+        // Dernières consultations avec relations
+        $recentConsultations = Consultation::query()
+            ->where('date_consultation', '>=', $startDate)
+            ->select([
+                'consultations.*',
+                'patients.nom as patient_nom',
+                'patients.prenom as patient_prenom',
+                'medecins.nom as medecin_nom',
+                'medecins.prenom as medecin_prenom'
+            ])
+            ->join('patients', 'consultations.patient_id', '=', 'patients.id')
+            ->join('medecins', 'consultations.medecin_id', '=', 'medecins.id')
+            ->orderBy('date_consultation', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'patient' => [
+                        'nom' => $item->patient_nom,
+                        'prenom' => $item->patient_prenom
+                    ],
+                    'medecin' => [
+                        'nom' => $item->medecin_nom,
+                        'prenom' => $item->medecin_prenom
+                    ],
+                    'date_consultation' => $item->date_consultation
+                ];
+            });
+
+        // Patients fréquents
+        $frequentPatients = Patient::query()
+            ->select([
+                'patients.*',
+                DB::raw('COUNT(consultations.id) as consultations_count')
+            ])
+            ->join('consultations', 'patients.id', '=', 'consultations.patient_id')
+            ->where('consultations.date_consultation', '>=', $startDate)
+            ->groupBy('patients.id', 'patients.nom', 'patients.prenom')
+            ->orderBy('consultations_count', 'desc')
+            ->take(5)
+            ->get();
+
+        // Suivi médical
+        $medicalFollowUp = [
+            'ordonnances' => Ordonnance::where('created_at', '>=', $startDate)->count(),
+            'examens' => Demande_examen::where('created_at', '>=', $startDate)->count(),
+            'references' => Lettre_reference::where('created_at', '>=', $startDate)->count(),
+            'certificats' => Consultation::whereNotNull('type')
+                ->where('date_consultation', '>=', $startDate)
+                ->count()
+        ];
+
+        // Jours de repos médicaux par médecin
+        $medicalRestDays = Ordonnance::query()
+            ->where('ordonnances.created_at', '>=', $startDate)
+            ->where('ordonnances.nbr_jours_repos', '>', 0)
+            ->select([
+                'medecins.id as medecin_id',
+                'medecins.nom as medecin_nom',
+                'medecins.prenom as medecin_prenom',
+                DB::raw('COUNT(DISTINCT consultations.patient_id) as patients_count'),
+                DB::raw('SUM(ordonnances.nbr_jours_repos) as total_jours')
+            ])
+            ->join('consultations', 'ordonnances.consultation_id', '=', 'consultations.id')
+            ->join('medecins', 'consultations.medecin_id', '=', 'medecins.id')
+            ->groupBy('medecins.id', 'medecins.nom', 'medecins.prenom')
+            ->orderBy('medecins.nom')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'key' => $item->medecin_id,
+                    'medecin' => $item->medecin_nom . ' ' . $item->medecin_prenom,
+                    'patients' => $item->patients_count,
+                    'totalJours' => $item->total_jours ?? 0,
+                    'moyenne' => $item->patients_count > 0
+                        ? round(($item->total_jours ?? 0) / $item->patients_count, 1)
+                        : 0
+                ];
+            });
+
+        $data = [
+            'totalPatients' => $totalPatients,
+            'totalConsultations' => $totalConsultations,
+            'consultationsByType' => $consultationsByType,
+            'badgesStatus' => $badgesStatus,
+            'medicalFollowUp' => $medicalFollowUp,
+            'recentConsultations' => $recentConsultations,
+            'frequentPatients' => $frequentPatients,
+            'medicalRestDays' => $medicalRestDays
+        ];
+
+        return inertia('Admin/dashboard', [
+            'stats' => $data
+        ]);
     }
 
     public function showSocietes(Request $request)
@@ -237,34 +337,33 @@ class AdminController extends Controller
             'salaries'  => Patient::where('type', 'SALARIE')->get(),
         ]);
     }
-    public function patientDossier($id)
+    public function patientDossier($patient)
     {
-
         // Récupère le patient avec toutes ses consultations et les relations associées
-    $patient = Patient::with([
-        'consultations' => function ($query) {
-            $query->orderBy('date_consultation', 'desc');
-        },
-        'consultations.medecin',
-        'consultations.ordonnance.medicaments',
-        'consultations.demande_examen',
-        'consultations.lettre_reference.refereMed',
-        'societe',
-        'salarie',
-        'badge'
-    ])->withCount('consultations')->find($id);
+        $patient = Patient::with([
+            'consultations' => function ($query) {
+                $query->orderBy('date_consultation', 'desc');
+            },
+            'consultations.medecin',
+            'consultations.ordonnance.medicaments',
+            'consultations.demande_examen',
+            'consultations.lettre_reference.refereMed',
+            'societe',
+            'salarie',
+            'badge'
+        ])->withCount('consultations')->find($patient);
         // Récupère toutes les consultations du patient
-    $consultations = $patient->consultations;
+        $consultations = $patient->consultations;
 
-    // Compte le nombre total de dossiers associés à toutes les consultations
-    $totalDossiers = $consultations->reduce(function ($carry, $consultation) {
-        return $carry + (bool) $consultation->ordonnance
-            + (bool) $consultation->demande_examen
-            + (bool) $consultation->lettre_reference;
-    }, 0);
+        // Compte le nombre total de dossiers associés à toutes les consultations
+        $totalDossiers = $consultations->reduce(function ($carry, $consultation) {
+            return $carry + (bool) $consultation->ordonnance
+                + (bool) $consultation->demande_examen
+                + (bool) $consultation->lettre_reference;
+        }, 0);
 
-    // Récupère la date de la dernière consultation
-    $lastConsultationDate = $consultations->max('date_consultation');
+        // Récupère la date de la dernière consultation
+        $lastConsultationDate = $consultations->max('date_consultation');
 
         return inertia('Admin/Patients/viewDetails',
         [

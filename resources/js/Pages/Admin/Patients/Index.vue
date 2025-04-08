@@ -452,7 +452,7 @@
         <!-- Modal registre de patient -->
         <a-modal
             :open="showModal"
-            :width="800"
+            :width="700"
             :footer="null"
             class="rounded-lg"
             @cancel="handleCloseModal"
