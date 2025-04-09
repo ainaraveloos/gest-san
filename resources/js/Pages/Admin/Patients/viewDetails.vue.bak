@@ -823,35 +823,18 @@
                                                         class="space-y-3 bg-white p-5 border border-gray-200 rounded-lg shadow-sm"
                                                     >
                                                         <h5
-                                                            class="font-medium text-gray-700 mb-3 flex items-center gap-2"
+                                                            class="font-medium text-gray-700 mb-4 flex items-center gap-2"
                                                         >
                                                             <fonta
-                                                                icon="file-medical"
+                                                                icon="file-alt"
                                                                 class="text-blue-500"
                                                             />
-                                                            Documents médicaux
+                                                            Documents associés
                                                         </h5>
-                                                        <div
-                                                            class="flex flex-wrap gap-2"
-                                                        >
-                                                            <!-- Certificat Médical - toujours disponible -->
-                                                            <button
-                                                                @click="
-                                                                    viewDocument(
-                                                                        'certificat_medical',
-                                                                        consultation
-                                                                    )
-                                                                "
-                                                                class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-xs font-medium hover:bg-blue-100 transition-colors duration-200"
-                                                            >
-                                                                <fonta
-                                                                    icon="file-medical"
-                                                                    class="mr-1"
-                                                                />
-                                                                Certificat
-                                                                Médical
-                                                            </button>
 
+                                                        <div
+                                                            class="flex flex-wrap gap-3"
+                                                        >
                                                             <button
                                                                 v-if="
                                                                     consultation.ordonnance
@@ -862,11 +845,11 @@
                                                                         consultation
                                                                     )
                                                                 "
-                                                                class="inline-flex items-center px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-xs font-medium hover:bg-green-100 transition-colors duration-200"
+                                                                class="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                                                             >
                                                                 <fonta
                                                                     icon="prescription"
-                                                                    class="mr-1"
+                                                                    class="text-green-600"
                                                                 />
                                                                 Ordonnance
                                                             </button>
@@ -881,13 +864,13 @@
                                                                         consultation
                                                                     )
                                                                 "
-                                                                class="inline-flex items-center px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-md text-xs font-medium hover:bg-indigo-100 transition-colors duration-200"
+                                                                class="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                                                             >
                                                                 <fonta
                                                                     icon="microscope"
-                                                                    class="mr-1"
+                                                                    class="text-blue-600"
                                                                 />
-                                                                Demande d'examen
+                                                                Examen
                                                             </button>
 
                                                             <button
@@ -900,15 +883,31 @@
                                                                         consultation
                                                                     )
                                                                 "
-                                                                class="inline-flex items-center px-3 py-1.5 bg-purple-50 text-purple-700 rounded-md text-xs font-medium hover:bg-purple-100 transition-colors duration-200"
+                                                                class="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                                                             >
                                                                 <fonta
                                                                     icon="envelope-open-text"
-                                                                    class="mr-1"
+                                                                    class="text-blue-600"
                                                                 />
                                                                 Lettre de
                                                                 référence
                                                             </button>
+
+                                                            <span
+                                                                v-if="
+                                                                    !consultation.ordonnance &&
+                                                                    !consultation.demande_examen &&
+                                                                    !consultation.lettre_reference
+                                                                "
+                                                                class="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-500 rounded-md text-sm border border-gray-200"
+                                                            >
+                                                                <fonta
+                                                                    icon="file-alt"
+                                                                    class="mr-2 text-gray-400"
+                                                                />
+                                                                Aucun document
+                                                                associé
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -961,30 +960,24 @@
     <!-- Modal de prévisualisation du document -->
     <a-modal
         v-model:open="previewModalVisible"
-        width="800px"
-        :closable="true"
+        width="700px"
+        :closable="null"
         style="top: 15px"
         :footer="null"
-        :title="previewDocumentTitle"
     >
-        <iframe
-            v-if="documentPreviewUrl"
-            :src="documentPreviewUrl"
-            style="
-                width: 100%;
-                height: 650px;
-                border: none;
-                overflow-y: auto;
-                background-color: white;
-            "
-        ></iframe>
+        <VuePdfEmbed
+            v-if="previewDocumentUrl"
+            :source="previewDocumentUrl"
+            :page="1"
+            style="width: 100%; height: 500px;"
+        />
         <div class="flex justify-end gap-4 border-t pt-4">
             <BaseButton @click="printDocument" class="py-2">
                 <fonta icon="print" />
-                <span>Imprimer</span>
+                <span>imprimer</span>
             </BaseButton>
             <BaseButton
-                @click="downloadDocument"
+                @click="downloadPDF"
                 bg-color="bg-green-600"
                 hover-color="bg-green-700"
                 focus-color="ring-green-400"
@@ -992,7 +985,7 @@
                 class="py-2"
             >
                 <fonta icon="download" />
-                <span>Télécharger PDF</span>
+                <span>Telecharger PDF</span>
             </BaseButton>
         </div>
     </a-modal>
@@ -1000,8 +993,11 @@
 <script setup>
 import BaseButton from "@/Components/BaseButton.vue";
 import TestLayout from "@/Layouts/TestLayout.vue";
+import VuePdfEmbed from 'vue-pdf-embed';
 import Swal from "sweetalert2";
 import { computed, defineOptions, defineProps, ref } from "vue";
+import logo from "../../../../assets/medicare_dark.svg";
+import { Head, router } from "@inertiajs/vue3";
 
 defineOptions({
     layout: TestLayout,
@@ -1083,84 +1079,54 @@ const getIMCColor = (imc) => {
 };
 //Pour l'affichage des modals des documents prêts à être imprimé ou telechargé
 const previewModalVisible = ref(false);
-const previewDocumentTitle = ref("");
+const previewDocumentUrl = ref("");
+const selectedDocumentType = ref("");
 const selectedConsultation = ref(null);
-const documentPreviewUrl = ref("");
-const documentType = ref("");
 
 /**
- * Ouvre le modal apperçu du contenu du document
+ * Ouvre le modal aperçu du contenu du document
  */
 const viewDocument = (docType, consultation) => {
     selectedConsultation.value = consultation;
-    documentType.value = docType;
+    selectedDocumentType.value = docType;
 
-    // Définir le titre du document
-    switch (docType) {
-        case "ordonnance":
-            previewDocumentTitle.value = "Ordonnance";
-            break;
-        case "demande_examen":
-            previewDocumentTitle.value = "Demande d'examen";
-            break;
-        case "lettre_reference":
-            previewDocumentTitle.value = "Lettre de référence";
-            break;
-        case "certificat_medical":
-            previewDocumentTitle.value = "Certificat Médical";
-            break;
-        default:
-            previewDocumentTitle.value = "Document";
-    }
-
-    // Construire l'URL de prévisualisation
-    documentPreviewUrl.value = route("admin.document.preview", {
+    // Utiliser la route nommée pour construire l'URL
+    previewDocumentUrl.value = route('admin.document.preview', {
         type: docType,
-        consultation: consultation.id,
+        consultation: consultation.id
     });
 
-    // Afficher le modal
     previewModalVisible.value = true;
 };
 
 /**
- * Imprime le contenu du document
+ * Imprime le document en ouvrant une nouvelle fenêtre
  */
 const printDocument = () => {
-    const iframe = document.querySelector("iframe");
-    iframe.contentWindow.print();
+    window.open(previewDocumentUrl.value, '_blank');
 };
 
 /**
  * Télécharge le document PDF
  */
-const downloadDocument = () => {
-    // Fermer le modal de prévisualisation
-    previewModalVisible.value = false;
-
-    // Utiliser la route de téléchargement
-    const downloadUrl = route("admin.document.download", {
-        type: documentType.value,
-        consultation: selectedConsultation.value.id,
+const downloadPDF = () => {
+    // Utiliser la route nommée pour le téléchargement
+    window.location.href = route('admin.document.download', {
+        type: selectedDocumentType.value,
+        consultation: selectedConsultation.value.id
     });
 
-    // Créer un lien temporaire pour le téléchargement
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = `${previewDocumentTitle.value}_${selectedConsultation.value.id}.pdf`; // Force le téléchargement
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Afficher une notification de succès
+    Swal.fire({
+        title: "Téléchargé !",
+        text: "PDF téléchargé avec succès",
+        icon: "success",
+        confirmButtonColor: "#3b82f6",
+    });
 
-    // Afficher une notification de succès après un délai pour laisser le temps à l'utilisateur de gérer la boîte de dialogue de téléchargement
-    setTimeout(() => {
-        Swal.fire({
-            title: "Téléchargement",
-            text: "Téléchargement du PDF en cours...",
-            icon: "success",
-            confirmButtonColor: "#3b82f6",
-        });
-    }, 1000); // Délai d'une seconde
+    // Fermer le modal
+    previewModalVisible.value = false;
+    selectedConsultation.value = null;
 };
 </script>
 

@@ -20,36 +20,59 @@ use App\Models\Ordonnance;
 use App\Models\Demande_examen;
 use App\Models\Lettre_reference;
 use App\Models\Medicament;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
+    /**
+     * Calcule la date de début en fonction de la période sélectionnée.
+     *
+     * @param string $period
+     * @return \Illuminate\Support\Carbon
+     */
+    private function getStartDateFromPeriod(string $period): Carbon
+    {
+        $now = now();
+        switch ($period) {
+            case 'today':
+                return $now->copy()->startOfDay();
+            case 'week':
+                return $now->copy()->subDays(7);
+            case 'month':
+                return $now->copy()->subMonth();
+            case 'year':
+                return $now->copy()->subYear();
+            default:
+                // Retourne le début du mois par défaut si la période n'est pas reconnue
+                Log::warning("Période de tableau de bord non reconnue: {$period}. Utilisation de 'month' par défaut.");
+                return $now->copy()->subMonth();
+        }
+    }
+
     public function index(Request $request)
     {
         $period = $request->input('period', 'month');
-        $now = now();
-        $startDate = null;
+        $startDate = $this->getStartDateFromPeriod($period);
+        $now = now(); // Peut être nécessaire pour certaines requêtes
 
-        switch ($period) {
-            case 'today':
-                $startDate = $now->copy()->startOfDay();
-                break;
-            case 'week':
-                $startDate = $now->copy()->subDays(7);
-                break;
-            case 'month':
-                $startDate = $now->copy()->subMonth();
-                break;
-            case 'year':
-                $startDate = $now->copy()->subYear();
-                break;
-            default:
-                $startDate = $now->copy()->subMonth();
-        }
-
-        // Statistiques générales (comptage basique)
+        // Statistiques générales
         $totalPatients = Patient::count();
         $totalConsultations = Consultation::where('date_consultation', '>=', $startDate)->count();
-        $totalMedecins = Medecin::count();
+
+
+        // Tendance des consultations sur 6 mois
+        $monthlyTrends = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $monthStart = $now->copy()->subMonths($i)->startOfMonth();
+            $monthEnd = $now->copy()->subMonths($i)->endOfMonth();
+
+            $monthlyTrends[] = [
+                'month' => $monthStart->format('M Y'),
+                'consultations' => Consultation::whereBetween('date_consultation', [$monthStart, $monthEnd])->count(),
+            ];
+        }
 
         // Consultations par type
         $consultationsByType = Consultation::query()
@@ -71,10 +94,8 @@ class AdminController extends Controller
             ->where('date_consultation', '>=', $startDate)
             ->select([
                 'consultations.*',
-                'patients.nom as patient_nom',
-                'patients.prenom as patient_prenom',
-                'medecins.nom as medecin_nom',
-                'medecins.prenom as medecin_prenom'
+                DB::raw("CONCAT(patients.nom, ' ', patients.prenom) as patient_nom_complet"),
+                DB::raw("CONCAT(medecins.nom, ' ', medecins.prenom) as medecin_nom_complet")
             ])
             ->join('patients', 'consultations.patient_id', '=', 'patients.id')
             ->join('medecins', 'consultations.medecin_id', '=', 'medecins.id')
@@ -85,12 +106,10 @@ class AdminController extends Controller
                 return [
                     'id' => $item->id,
                     'patient' => [
-                        'nom' => $item->patient_nom,
-                        'prenom' => $item->patient_prenom
+                        'nom_complet' => $item->patient_nom_complet
                     ],
                     'medecin' => [
-                        'nom' => $item->medecin_nom,
-                        'prenom' => $item->medecin_prenom
+                        'nom_complet' => $item->medecin_nom_complet
                     ],
                     'date_consultation' => $item->date_consultation
                 ];
@@ -99,11 +118,13 @@ class AdminController extends Controller
         // Patients fréquents
         $frequentPatients = Patient::query()
             ->select([
-                'patients.*',
-                DB::raw('COUNT(consultations.id) as consultations_count')
+                'patients.id',
+                'patients.nom',
+                'patients.prenom',
+                DB::raw('COUNT(consultations.id) as consultations_count'),
+                DB::raw("CONCAT(patients.nom, ' ', patients.prenom) as nom_complet")
             ])
             ->join('consultations', 'patients.id', '=', 'consultations.patient_id')
-            ->where('consultations.date_consultation', '>=', $startDate)
             ->groupBy('patients.id', 'patients.nom', 'patients.prenom')
             ->orderBy('consultations_count', 'desc')
             ->take(5)
@@ -121,7 +142,6 @@ class AdminController extends Controller
 
         // Jours de repos médicaux par médecin
         $medicalRestDays = Ordonnance::query()
-            ->where('ordonnances.created_at', '>=', $startDate)
             ->where('ordonnances.nbr_jours_repos', '>', 0)
             ->select([
                 'medecins.id as medecin_id',
@@ -155,7 +175,8 @@ class AdminController extends Controller
             'medicalFollowUp' => $medicalFollowUp,
             'recentConsultations' => $recentConsultations,
             'frequentPatients' => $frequentPatients,
-            'medicalRestDays' => $medicalRestDays
+            'medicalRestDays' => $medicalRestDays,
+            'monthlyTrends' => $monthlyTrends
         ];
 
         return inertia('Admin/dashboard', [
@@ -636,6 +657,53 @@ public function deleteMedecin(Medecin $medecin)
 
     return redirect()->route('admin.medecins.list')
                      ->with('success', 'Médecin supprimé avec succès');
+}
+
+/**
+ * Prévisualise un document
+ */
+public function previewDocument($type, $consultation)
+{
+    $consultation = Consultation::with(['medecin', 'ordonnance.medicaments', 'demande_examen', 'lettre_reference.refereMed', 'patient'])
+        ->findOrFail($consultation);
+
+    $view = match($type) {
+        'ordonnance' => 'documents.ordonnance',
+        'demande_examen' => 'documents.demande-examen',
+        'lettre_reference' => 'documents.lettre-reference',
+        'certificat_medical' => 'documents.certificat-medical',
+        default => abort(404)
+    };
+
+    // Renvoyer la vue directement pour l'aperçu
+    return view($view, compact('consultation'));
+}
+
+/**
+ * Télécharge un document PDF
+ */
+public function downloadDocument($type, $consultation)
+{
+    $consultation = Consultation::with(['medecin', 'ordonnance.medicaments', 'demande_examen', 'lettre_reference.refereMed', 'patient'])
+        ->findOrFail($consultation);
+
+    $view = match($type) {
+        'ordonnance' => 'documents.ordonnance',
+        'demande_examen' => 'documents.demande-examen',
+        'lettre_reference' => 'documents.lettre-reference',
+        'certificat_medical' => 'documents.certificat-medical',
+        default => abort(404)
+    };
+
+    $filename = sprintf(
+        '%s_%s_%s.pdf',
+        ucfirst($type),
+        $consultation->patient->numero,
+        Carbon::parse($consultation->date_consultation)->format('Y-m-d')
+    );
+
+    $pdf = Pdf::loadView($view, compact('consultation'));
+    return $pdf->download($filename);
 }
 }
 ?>

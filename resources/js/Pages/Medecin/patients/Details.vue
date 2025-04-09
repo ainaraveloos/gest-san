@@ -2,7 +2,7 @@
     <div class="container mx-auto mb-6 px-4">
         <!-- Bannière de consultation améliorée -->
         <div
-            class="bg-gradient-to-r from-blue-500  to-blue-600 px-8 py-8 mb-8 flex items-center justify-between shadow-lg rounded-2xl overflow-hidden border border-blue-400"
+            class="bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-8 mb-8 flex items-center justify-between shadow-lg rounded-2xl overflow-hidden border border-blue-400"
         >
             <div>
                 <h1 class="text-2xl font-bold text-white mb-3">
@@ -37,7 +37,7 @@
         <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
             <!-- Carte Informations du Patient -->
             <div
-                class="bg-white shadow-md rounded-xl xl:col-span-1 col-span-full overflow-hidden border border-gray-200  transition-all duration-300"
+                class="bg-white shadow-md rounded-xl xl:col-span-1 col-span-full overflow-hidden border border-gray-200 transition-all duration-300"
             >
                 <div
                     class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 flex items-center justify-between"
@@ -119,7 +119,6 @@
                         <h4
                             class="text-sm uppercase text-gray-600 font-medium mb-4 flex items-center"
                         >
-
                             Constantes vitales
                         </h4>
                         <div class="grid grid-cols-2 gap-4">
@@ -194,7 +193,7 @@
 
             <!-- Carte Historique des Consultations améliorée -->
             <div
-                class="bg-white shadow-md rounded-xl p-6 xl:col-span-2 col-span-full transition-all duration-300 border border-gray-200 "
+                class="bg-white shadow-md rounded-xl p-6 xl:col-span-2 col-span-full transition-all duration-300 border border-gray-200"
             >
                 <div class="flex items-center gap-4 mb-8">
                     <div
@@ -239,7 +238,9 @@
                                 <p
                                     class="text-gray-500 flex flex-wrap items-center gap-2 mt-1"
                                 >
-                                    <strong class="font-medium text-gray-400 ">Type de Consultation:</strong>
+                                    <strong class="font-medium text-gray-400"
+                                        >Type de Consultation:</strong
+                                    >
                                     <span
                                         :class="{
                                             'text-red-600 bg-red-50 border border-red-200 px-3 py-1 rounded-full text-xs font-semibold':
@@ -257,10 +258,7 @@
                                     </span>
                                 </p>
                             </div>
-                                <fonta
-                                    icon="chevron-right"
-                                    class="text-gray-400 "
-                                />
+                            <fonta icon="chevron-right" class="text-gray-400" />
                         </div>
                     </a-timeline-item>
                 </a-timeline>
@@ -275,17 +273,17 @@
         >
             <!-- Section Documents -->
             <div
-                class="border border-gray-200 p-8 rounded-xl bg-gray-50 transition-all duration-300"
+                class="border border-gray-200 p-6 rounded-lg bg-white shadow-sm transition-all duration-300"
             >
                 <h3
-                    class="text-lg font-semibold mb-8 text-blue-500 flex items-center"
+                    class="text-lg font-semibold mb-6 text-gray-700 flex items-center gap-2"
                 >
-
+                    <fonta icon="file-alt" class="text-blue-500" />
                     Documents associés
                 </h3>
-                <div class="flex sm:flex-row flex-col gap-4 mt-2">
+                <div class="flex sm:flex-row flex-col gap-3 mt-2">
                     <button
-                        class="flex items-center gap-2 px-4 py-3 bg-orange-100 text-orange-700 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 border border-orange-200"
+                        class="flex items-center gap-2 px-4 py-2.5 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                         @click="
                             viewDocument(
                                 'certificat_medical',
@@ -293,29 +291,31 @@
                             )
                         "
                     >
-                        <fonta icon="file-medical" /> Certificat Médical
+                        <fonta icon="file-medical" class="text-blue-500" />
+                        Certificat Médical
                     </button>
                     <button
                         v-if="selectedConsultation.ordonnance"
-                        class="flex items-center gap-2 px-4 py-3 bg-green-100 text-green-600 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 border border-green-200"
+                        class="flex items-center gap-2 px-4 py-2.5 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                         @click="
                             viewDocument('ordonnance', selectedConsultation)
                         "
                     >
-                        <fonta icon="prescription" /> Ordonnance
+                        <fonta icon="prescription" class="text-green-600" />
+                        Ordonnance
                     </button>
                     <button
                         v-if="selectedConsultation.demande_examen"
-                        class="flex items-center gap-2 px-4 py-3 bg-blue-100 text-blue-600 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 border border-blue-200"
+                        class="flex items-center gap-2 px-4 py-2.5 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                         @click="
                             viewDocument('demande_examen', selectedConsultation)
                         "
                     >
-                        <fonta icon="microscope" /> Examen
+                        <fonta icon="microscope" class="text-blue-600" /> Examen
                     </button>
                     <button
                         v-if="selectedConsultation.lettre_reference"
-                        class="flex items-center gap-2 px-4 py-3 bg-purple-100 text-purple-600 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 border border-purple-200"
+                        class="flex items-center gap-2 px-4 py-2.5 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                         @click="
                             viewDocument(
                                 'lettre_reference',
@@ -323,7 +323,11 @@
                             )
                         "
                     >
-                        <fonta icon="envelope-open-text" /> Lettre de référence
+                        <fonta
+                            icon="envelope-open-text"
+                            class="text-blue-600"
+                        />
+                        Lettre de référence
                     </button>
                 </div>
             </div>
@@ -334,54 +338,53 @@
                 <h3
                     class="text-lg font-semibold mb-8 text-blue-500 flex items-center gap-4"
                 >
-
                     Détails médicaux
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Motif de consultation -->
                     <div
-                        class="space-y-2 bg-gray-50 p-5 rounded-xl border border-gray-200 "
+                        class="space-y-2 bg-gray-50 p-5 rounded-xl border border-gray-200"
                     >
-                    <InputLabel
-                           for="Motif de Consultation"
-                           value="Motif de Consultation"
+                        <InputLabel
+                            for="Motif de Consultation"
+                            value="Motif de Consultation"
                         />
                         <textarea
                             v-model="form.motif"
                             placeholder="Décrire le motif de la consultation..."
-
-                            class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner "
-
+                            class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner"
                         />
                     </div>
 
                     <!-- Diagnostic médical -->
                     <div
-                        class="space-y-2 bg-gray-50 p-5 rounded-xl border border-gray-200 "
+                        class="space-y-2 bg-gray-50 p-5 rounded-xl border border-gray-200"
                     >
                         <InputLabel
-                           for="Diagnostic médical"
-                           value="Diagnostique médical"
+                            for="Diagnostic médical"
+                            value="Diagnostique médical"
                         />
 
                         <textarea
                             v-model="form.diagnostic"
                             placeholder="Renseigner le diagnostique établi..."
-                            class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner "
+                            class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner"
                         />
                     </div>
                 </div>
             </div>
 
             <!-- Actions sur le consultation -->
-            <div class="flex justify-end items-center flex-wrap gap-4 border-t pt-6 mt-6">
+            <div
+                class="flex justify-end items-center flex-wrap gap-4 border-t pt-6 mt-6"
+            >
                 <BaseButton
-                bg-color="bg-red-600"
+                    bg-color="bg-red-600"
                     hover-color="bg-red-700"
                     focus-color="ring-red-400"
                     active-color="bg-red-800"
-                    class="py-2.5 "
+                    class="py-2.5"
                     @click="
                         confirmDelete(
                             route(
@@ -390,7 +393,6 @@
                             )
                         )
                     "
-
                 >
                     <DeleteFilled />
                     <span> Supprimer la consultation</span>
@@ -447,6 +449,7 @@
 <script setup>
 // Importer le logo avec un chemin correct
 import BaseButton from "@/Components/BaseButton.vue";
+import InputLabel from "@/Components/InputLabel.vue";
 import useConfirmDialog from "@/composables/useConfirmDialog";
 import TestLayout from "@/Layouts/TestLayout.vue";
 import { DeleteFilled, EditFilled } from "@ant-design/icons-vue";
@@ -456,7 +459,6 @@ import jsPDF from "jspdf";
 import Swal from "sweetalert2";
 import { computed, nextTick, ref } from "vue";
 import logo from "../../../../assets/medicare_dark.svg";
-import InputLabel from "@/Components/InputLabel.vue";
 const { confirmDelete } = useConfirmDialog();
 
 defineOptions({ layout: TestLayout });

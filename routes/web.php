@@ -70,6 +70,10 @@ Route::middleware(['auth','role:admin'])->group(function () {
     // Route pour les paramètres
     Route::get('admin/parametres', [AdminController::class, 'showParametres'])->name('admin.parametres');
     Route::post('user/store', [AdminController::class, 'storeUser'])->name('register.store');
+
+    // Routes pour les documents PDF
+    Route::get('admin/documents/{type}/{consultation}/preview', [AdminController::class, 'previewDocument'])->name('admin.document.preview');
+    Route::get('admin/documents/{type}/{consultation}/download', [AdminController::class, 'downloadDocument'])->name('admin.document.download');
 }
 );
 

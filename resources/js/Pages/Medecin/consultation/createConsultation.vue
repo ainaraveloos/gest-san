@@ -1,7 +1,9 @@
 <template>
     <div class="p-2 rounded-md transform transition-all duration-300">
         <!-- En-tête avec recherche de patient -->
-        <div class="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-700 p-6 rounded-t-xl shadow-md">
+        <div
+            class="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-700 p-6 rounded-t-xl shadow-md"
+        >
             <div class="flex items-center gap-3 text-white mb-6">
                 <h1 class="text-2xl font-semibold">Nouvelle Consultation</h1>
             </div>
@@ -141,12 +143,9 @@
                         class="bg-blue-50 rounded-xl p-5 border border-blue-100 hover:bg-blue-100 hover:shadow-md duration-500 transition-all hover:border-blue-300 cursor-pointer flex items-start gap-3"
                     >
                         <div
-                            class="bg-blue-100 p-3 rounded-full  group-hover:bg-blue-200 transition-colors duration-500"
+                            class="bg-blue-100 p-3 rounded-full group-hover:bg-blue-200 transition-colors duration-500"
                         >
-                            <fonta
-                                icon="user"
-                                class="text-blue-500 text-lg"
-                            />
+                            <fonta icon="user" class="text-blue-500 text-lg" />
                         </div>
 
                         <div class="space-y-2">
@@ -183,8 +182,7 @@
                     v-if="consultations.length === 0"
                     class="col-span-full bg-gray-50 p-8 rounded-xl border border-gray-200 flex flex-col items-center justify-center"
                 >
-
-                        <a-empty :description="null"/>
+                    <a-empty :description="null" />
 
                     <p class="text-gray-500 font-medium">
                         Aucune consultation enregistrée
@@ -205,7 +203,9 @@
             class="card-container consultation-section py-4 my-6 rounded-md shadow-md bg-white"
         >
             <form @submit.prevent="submitConsultation">
-                <div class="flex items-center justify-between md:flex-row flex-col gap-4 p-8">
+                <div
+                    class="flex items-center justify-between md:flex-row flex-col gap-4 p-8"
+                >
                     <div>
                         <span
                             class="text-md bg-blue-100 text-blue-800 px-4 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm"
@@ -254,7 +254,6 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -266,7 +265,6 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -279,7 +277,6 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -380,7 +377,7 @@
                                                 type="number"
                                                 v-model.number="form.poids"
                                                 required
-                                                class=" bg-white"
+                                                class="bg-white"
                                             />
                                         </div>
 
@@ -389,7 +386,6 @@
                                                 value="Taille (cm)"
                                                 class="mb-2 text-gray-700 flex items-center gap-2"
                                             >
-
                                                 Taille (cm)
                                             </InputLabel>
                                             <BaseInput
@@ -397,7 +393,7 @@
                                                 v-model.number="form.taille"
                                                 min="0"
                                                 required
-                                                class=" bg-white"
+                                                class="bg-white"
                                             />
                                         </div>
 
@@ -406,7 +402,6 @@
                                                 value="Fréquence cardiaque (bpm)"
                                                 class="mb-2 text-gray-700 flex items-center gap-2"
                                             >
-
                                                 Fréquence cardiaque
                                             </InputLabel>
                                             <BaseInput
@@ -423,7 +418,6 @@
                                                 value="Température (°C)"
                                                 class="mb-2 text-gray-700 flex items-center gap-2"
                                             >
-
                                                 Température (°C)
                                             </InputLabel>
                                             <BaseInput
@@ -433,7 +427,7 @@
                                                 "
                                                 min="0"
                                                 required
-                                                class=" bg-white"
+                                                class="bg-white"
                                             />
                                         </div>
                                     </div>
@@ -464,7 +458,6 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -476,7 +469,6 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -489,7 +481,6 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -511,19 +502,15 @@
                                 class="grid grid-cols-4 text-base gap-4 font-medium text-gray-700 bg-gray-50 py-3 px-2 rounded-lg"
                             >
                                 <div class="flex items-center gap-2">
-
                                     <span>Désignation</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-
                                     <span>Forme</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-
                                     <span>Posologie</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-
                                     <span>Quantité</span>
                                 </div>
                             </div>
@@ -538,7 +525,7 @@
                                     <BaseInput
                                         v-model="med.designation"
                                         placeholder="Paracétamol..."
-                                        class=" bg-white"
+                                        class="bg-white"
                                     />
                                 </div>
 
@@ -546,7 +533,7 @@
                                     <BaseInput
                                         v-model="med.forme"
                                         placeholder="Comprimé..."
-                                        class=" bg-white"
+                                        class="bg-white"
                                     />
                                 </div>
 
@@ -554,7 +541,7 @@
                                     <BaseInput
                                         v-model="med.posologie"
                                         placeholder="1 comprimé 3x/jour..."
-                                        class=" bg-white"
+                                        class="bg-white"
                                     />
                                 </div>
 
@@ -563,7 +550,7 @@
                                         v-model="med.quantite"
                                         type="number"
                                         placeholder="10"
-                                        class=" bg-white"
+                                        class="bg-white"
                                     />
                                     <button
                                         type="button"
@@ -613,7 +600,6 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -625,7 +611,6 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -638,7 +623,6 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -673,7 +657,7 @@
                                     v-model="returnDate"
                                     :min="minDate"
                                     @change="calculateRestDays"
-                                    class=" bg-white"
+                                    class="bg-white"
                                 />
                             </div>
 
@@ -694,7 +678,7 @@
                                         type="number"
                                         :value="restDays"
                                         readonly
-                                        class=" bg-blue-50 font-medium text-blue-700"
+                                        class="bg-blue-50 font-medium text-blue-700"
                                     />
                                 </div>
                             </div>
@@ -758,7 +742,6 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -770,7 +753,6 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -783,7 +765,6 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -875,7 +856,6 @@
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
                                     >
-
                                         {{ addedPatient.nom }}
                                         {{ addedPatient.prenom }}
                                     </span>
@@ -887,7 +867,6 @@
                                 <div
                                     class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
-
                                     <span
                                         class="font-semibold text-lg text-gray-600"
                                         >{{ patientAge }} ans</span
@@ -900,7 +879,6 @@
                                 <div
                                     class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
-
                                     <span>{{
                                         new Date().toLocaleDateString()
                                     }}</span>
@@ -1004,7 +982,9 @@ import TestLayout from "@/Layouts/TestLayout.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 import { message } from "ant-design-vue";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { computed, nextTick, ref, watch } from "vue";
+
 const activeKey = ref("1");
 defineOptions({
     layout: TestLayout,
@@ -1243,9 +1223,13 @@ const submitConsultation = () => {
             form.reset();
             addedPatient.value = null;
             showConsultation.value = false;
-            message.success({
-                content: "Consultation enregistrée avec succès!",
-                duration: 3,
+            Swal.fire({
+                title: "Succès!",
+                text: "Consultation enregistrée avec succès!",
+                icon: "success",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#3085d6",
+                timer: 3000,
             });
         },
 

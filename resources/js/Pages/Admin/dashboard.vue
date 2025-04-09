@@ -9,10 +9,10 @@
             >
                 <div>
                     <h1 class="text-2xl font-bold text-white mb-1">
-                        Tableau de bord
+                        Tableau de bord administratif
                     </h1>
                     <p class="text-blue-100 text-sm">
-                        Aperçu de l'activité médicale
+                        Aperçu des activités et statistiques médicales
                     </p>
                 </div>
                 <div class="w-full md:w-auto">
@@ -44,33 +44,65 @@
             <!-- Stats Overview -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div
-                    class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-sm p-6 border border-blue-400 relative overflow-hidden"
+                    class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-lg p-6 border border-blue-400 relative overflow-hidden group hover:shadow-xl transition-all duration-300"
                 >
-                    <div class="absolute -right-4 -top-4 opacity-10">
+                    <div
+                        class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity duration-300"
+                    >
                         <UserOutlined class="text-white text-9xl" />
                     </div>
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    ></div>
                     <div class="relative z-10">
-                        <p class="text-sm font-medium text-blue-100">
-                            Total Patients
-                        </p>
-                        <h3 class="text-2xl font-bold text-white mt-1">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-2 h-2 rounded-full bg-blue-200"></div>
+                            <p
+                                class="text-sm font-medium text-blue-100 tracking-wide uppercase"
+                            >
+                                Nombre total de patients
+                            </p>
+                        </div>
+                        <h3
+                            class="text-3xl font-bold text-white mt-1 flex items-center gap-2"
+                        >
                             {{ localStats.totalPatients }}
+                            <span class="text-blue-200 text-sm font-normal"
+                                >patients</span
+                            >
                         </h3>
                     </div>
                 </div>
 
                 <div
-                    class="bg-gradient-to-br from-green-400 to-green-600 rounded-xl shadow-sm p-6 border border-green-400 relative overflow-hidden"
+                    class="bg-gradient-to-br from-green-400 to-green-600 rounded-xl shadow-lg p-6 border border-green-400 relative overflow-hidden group hover:shadow-xl transition-all duration-300"
                 >
-                    <div class="absolute -right-4 -top-4 opacity-10">
+                    <div
+                        class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity duration-300"
+                    >
                         <CalendarOutlined class="text-white text-9xl" />
                     </div>
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    ></div>
                     <div class="relative z-10">
-                        <p class="text-sm font-medium text-green-100">
-                            Consultations
-                        </p>
-                        <h3 class="text-2xl font-bold text-white mt-1">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div
+                                class="w-2 h-2 rounded-full bg-green-200"
+                            ></div>
+                            <p
+                                class="text-sm font-medium text-green-100 tracking-wide uppercase"
+                            >
+                                {{ totalConsultationsTitle }}
+                            </p>
+                        </div>
+                        <h3
+                            class="text-3xl font-bold text-white mt-1 flex items-center gap-2"
+                        >
                             {{ localStats.totalConsultations }}
+                            <span class="text-green-200 text-sm font-normal"
+                                >consultations</span
+                            >
                         </h3>
                     </div>
                 </div>
@@ -78,29 +110,54 @@
 
             <!-- Charts and Tables -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Main Chart -->
+                <!-- Tendance des consultations -->
+
+                <!-- Medical Follow-up Chart -->
                 <div
-                    class="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
+                    class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 lg:col-span-2"
                 >
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-gray-900">
-                            Activité des consultations
-                        </h2>
-                    </div>
+                    <h2 class="text-lg font-semibold text-gray-600 mb-4">
+                        {{ medicalFollowUpTitle }}
+                    </h2>
                     <div class="chart-container">
-                        <Pie
-                            :data="consultationChartData"
-                            :options="pieOptions"
+                        <Bar
+                            :data="medicalFollowUpData"
+                            :options="medicalFollowUpOptions"
                         />
                     </div>
-                    <div class="mt-4 flex justify-center gap-6">
+                    <div class="mt-4 flex flex-wrap justify-center gap-4">
                         <template
-                            v-for="(
-                                value, key, index
-                            ) in localStats.consultationsByType"
-                            :key="key"
+                            v-for="(item, index) in [
+                                {
+                                    label: 'Ordonnances',
+                                    value:
+                                        localStats.medicalFollowUp
+                                            ?.ordonnances || 0,
+                                },
+                                {
+                                    label: 'Demande d\'Examens',
+                                    value:
+                                        localStats.medicalFollowUp?.examens ||
+                                        0,
+                                },
+                                {
+                                    label: 'Lettre de Références',
+                                    value:
+                                        localStats.medicalFollowUp
+                                            ?.references || 0,
+                                },
+                                {
+                                    label: 'Certificats médicaux',
+                                    value:
+                                        localStats.medicalFollowUp
+                                            ?.certificats || 0,
+                                },
+                            ]"
+                            :key="item.label"
                         >
-                            <div class="flex items-center">
+                            <div
+                                class="flex items-center bg-gray-50 px-3 py-2 rounded-lg"
+                            >
                                 <div
                                     class="w-3 h-3 rounded-full mr-2"
                                     :style="{
@@ -109,17 +166,63 @@
                                             '#10B981',
                                             '#F59E0B',
                                             '#8B5CF6',
-                                            '#EF4444',
-                                        ][index % 5],
+                                        ][index % 4],
                                     }"
                                 ></div>
-                                <span class="text-sm text-gray-600"
+                                <span class="text-sm text-gray-600 font-medium"
+                                    >{{ item.label }}
+                                    <span class="text-gray-400 ml-1"
+                                        >({{ item.value }})</span
+                                    ></span
+                                >
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <!-- Main Chart -->
+                <div
+                    class="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
+                >
+                    <div class="flex items-center justify-between mb-4">
+                        <h2
+                            class="text-lg font-semibold text-gray-600 tracking-tight"
+                        >
+                            {{ consultationChartTitle }}
+                        </h2>
+                    </div>
+                    <div class="chart-container">
+                        <Doughnut
+                            :data="consultationChartData"
+                            :options="consultationOptions"
+                        />
+                    </div>
+                    <div class="mt-4 flex flex-wrap justify-center gap-4">
+                        <template
+                            v-for="(
+                                value, key, index
+                            ) in localStats.consultationsByType"
+                            :key="key"
+                        >
+                            <div
+                                class="flex items-center bg-gray-50 px-3 py-2 rounded-lg"
+                            >
+                                <div
+                                    class="w-3 h-3 rounded-full mr-2"
+                                    :style="{
+                                        backgroundColor: ['#3B82F6', '#10B981'][
+                                            index % 2
+                                        ],
+                                    }"
+                                ></div>
+                                <span class="text-sm text-gray-600 font-medium"
                                     >{{
                                         key === "visite_aptitude"
                                             ? "visite d'aptitude"
                                             : key
                                     }}
-                                    ({{ value }})</span
+                                    <span class="text-gray-400 ml-1"
+                                        >({{ value }})</span
+                                    ></span
                                 >
                             </div>
                         </template>
@@ -130,8 +233,8 @@
                 <div
                     class="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
                 >
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">
-                        Statut des badges
+                    <h2 class="text-lg font-semibold text-gray-600 mb-4">
+                        Statut des badges d'accès
                     </h2>
                     <div class="chart-container">
                         <Doughnut
@@ -139,42 +242,65 @@
                             :options="doughnutOptions"
                         />
                     </div>
-                    <div class="mt-4 flex justify-center gap-6">
+                    <div class="mt-4 flex flex-wrap justify-center gap-4">
                         <template
-                            v-for="(value, key) in localStats.badgesStatus"
+                            v-for="(
+                                value, key, index
+                            ) in localStats.badgesStatus"
                             :key="key"
                         >
-                            <div class="flex items-center">
+                            <div
+                                class="flex items-center bg-gray-50 px-3 py-2 rounded-lg"
+                            >
                                 <div
                                     class="w-3 h-3 rounded-full mr-2"
                                     :style="{
-                                        backgroundColor:
-                                            key === 'actif'
-                                                ? '#3B82F6'
-                                                : '#4ade80',
+                                        backgroundColor: ['#3B82F6', '#10B981'][
+                                            index % 2
+                                        ],
                                     }"
                                 ></div>
-                                <span class="text-sm text-gray-600"
-                                    >{{ key }} ({{ value }})</span
+                                <span class="text-sm text-gray-600 font-medium"
+                                    >{{ key }}
+                                    <span class="text-gray-400 ml-1"
+                                        >({{ value }})</span
+                                    ></span
                                 >
                             </div>
                         </template>
                     </div>
                 </div>
-
+                <div
+                    class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 lg:col-span-2"
+                >
+                    <h2 class="text-lg font-semibold text-gray-600 mb-4">
+                        Tendance des consultations des 6 derniers mois
+                    </h2>
+                    <div class="chart-container">
+                        <Line
+                            :data="monthlyTrendsData"
+                            :options="monthlyTrendsOptions"
+                        />
+                    </div>
+                </div>
                 <!-- Recent Consultations and Frequent Patients -->
                 <div
                     class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:col-span-2"
                 >
                     <!-- Recent Consultations -->
                     <div
-                        class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 xl:col-span-8"
+                        class="bg-white rounded-xl shadow-sm p-4 border border-gray-100 xl:col-span-8"
                     >
                         <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-semibold text-gray-900">
-                                Dernières consultations
+                            <h2 class="text-lg font-semibold text-gray-600">
+                                {{ recentConsultationsTitle }}
                             </h2>
-                            <a-button type="link" class="text-blue-500"
+                            <a-button
+                                type="link"
+                                class="text-blue-500"
+                                @click="
+                                    router.visit(route('admin.patient.index'))
+                                "
                                 >Voir tout</a-button
                             >
                         </div>
@@ -194,8 +320,8 @@
                         class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 xl:col-span-4 col-span-full"
                     >
                         <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-semibold text-gray-900">
-                                Patients fréquents
+                            <h2 class="text-lg font-semibold text-gray-600">
+                                Patients les plus fréquents
                             </h2>
                         </div>
                         <div class="table-responsive">
@@ -210,27 +336,12 @@
                     </div>
                 </div>
 
-                <!-- Medical Follow-up Chart -->
-                <div
-                    class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 lg:col-span-2"
-                >
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">
-                        Suivi médical
-                    </h2>
-                    <div class="chart-container">
-                        <Bar
-                            :data="medicalFollowUpData"
-                            :options="chartOptions"
-                        />
-                    </div>
-                </div>
-
                 <!-- Medical Rest Days by Doctor -->
                 <div
                     class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 lg:col-span-2"
                 >
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">
-                        Jours de repos médicaux par médecin
+                    <h2 class="text-lg font-semibold text-gray-600 mb-4">
+                        Activités médicales
                     </h2>
 
                     <div class="table-responsive">
@@ -246,7 +357,7 @@
             </div>
         </div>
         <div v-else class="p-6 text-center">
-            <p class="text-gray-600">Chargement des données...</p>
+            <p class="text-gray-600">Chargement des données en cours...</p>
         </div>
     </div>
 </template>
@@ -260,13 +371,16 @@ import {
     BarElement,
     CategoryScale,
     Chart as ChartJS,
+    Filler,
     Legend,
     LinearScale,
+    LineElement,
+    PointElement,
     Title,
     Tooltip,
 } from "chart.js";
-import { computed, onMounted, ref, watch } from "vue";
-import { Bar, Doughnut, Pie } from "vue-chartjs";
+import { computed, h, onMounted, ref, watch } from "vue";
+import { Bar, Doughnut, Line } from "vue-chartjs";
 
 ChartJS.register(
     CategoryScale,
@@ -275,7 +389,10 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
-    ArcElement
+    ArcElement,
+    LineElement,
+    PointElement,
+    Filler
 );
 
 defineOptions({
@@ -348,7 +465,7 @@ const commonChartOptions = {
     },
     plugins: {
         tooltip: {
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            backgroundColor: "rgba(255, 255, 255, 0.95)",
             titleColor: "#1F2937",
             bodyColor: "#1F2937",
             borderColor: "#E5E7EB",
@@ -356,40 +473,47 @@ const commonChartOptions = {
             padding: 12,
             boxPadding: 6,
             usePointStyle: true,
+            titleFont: {
+                size: 14,
+                weight: "600",
+                family: "'Inter', sans-serif",
+            },
+            bodyFont: {
+                size: 13,
+                weight: "500",
+                family: "'Inter', sans-serif",
+            },
+            cornerRadius: 8,
+            boxWidth: 8,
+            boxHeight: 8,
+            displayColors: true,
+            callbacks: {
+                label: function (context) {
+                    const label = context.dataset.label || "";
+                    const value = context.raw;
+                    const total = context.dataset.data.reduce(
+                        (a, b) => a + b,
+                        0
+                    );
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ${value} (${percentage}%)`;
+                },
+            },
         },
-    },
-};
-
-// Configuration spécifique pour chaque type de graphique
-const chartOptions = {
-    ...commonChartOptions,
-    plugins: {
-        ...commonChartOptions.plugins,
         legend: {
             position: "bottom",
             labels: {
                 padding: 20,
-                font: { size: 12 },
+                font: {
+                    size: 12,
+                    family: "'Inter', sans-serif",
+                    weight: "500",
+                },
                 boxWidth: 12,
                 boxHeight: 12,
+                usePointStyle: true,
+                pointStyle: "circle",
             },
-        },
-        tooltip: {
-            ...commonChartOptions.plugins.tooltip,
-            callbacks: {
-                label: (context) => `${context.dataset.label}: ${context.raw}`,
-            },
-        },
-    },
-    scales: {
-        y: {
-            beginAtZero: true,
-            grid: { color: "#E5E7EB", drawBorder: false },
-            ticks: { color: "#6B7280", font: { size: 12 } },
-        },
-        x: {
-            grid: { display: false },
-            ticks: { color: "#6B7280", font: { size: 12 } },
         },
     },
 };
@@ -398,19 +522,8 @@ const pieOptions = {
     ...commonChartOptions,
     plugins: {
         ...commonChartOptions.plugins,
-        legend: { display: false },
-        tooltip: {
-            ...commonChartOptions.plugins.tooltip,
-            callbacks: {
-                label: (context) => {
-                    const total = context.dataset.data.reduce(
-                        (a, b) => a + b,
-                        0
-                    );
-                    const percentage = Math.round((context.raw / total) * 100);
-                    return `${context.label}: ${context.raw} (${percentage}%)`;
-                },
-            },
+        legend: {
+            display: false,
         },
     },
 };
@@ -418,6 +531,24 @@ const pieOptions = {
 const doughnutOptions = {
     ...pieOptions,
     cutout: "60%",
+    plugins: {
+        ...pieOptions.plugins,
+        tooltip: {
+            ...pieOptions.plugins.tooltip,
+            callbacks: {
+                label: (context) => {
+                    const label = context.label;
+                    const value = context.raw;
+                    const total = context.dataset.data.reduce(
+                        (a, b) => a + b,
+                        0
+                    );
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ${value} (${percentage}%)`;
+                },
+            },
+        },
+    },
 };
 
 // Couleurs communes pour les graphiques
@@ -435,26 +566,21 @@ const tableColumns = {
     recentConsultations: [
         {
             title: "Patient",
-            dataIndex: ["patient", "nom"],
+            dataIndex: ["patient", "nom_complet"],
             key: "patient",
-            render: (_, record) =>
-                `${record.patient.nom} ${record.patient.prenom}`,
         },
         {
             title: "Médecin",
-            dataIndex: ["medecin", "nom"],
+            dataIndex: ["medecin", "nom_complet"],
             key: "medecin",
-            render: (_, record) =>
-                `${record.medecin.nom} ${record.medecin.prenom}`,
         },
         { title: "Date", dataIndex: "date_consultation", key: "date" },
     ],
     frequentPatients: [
         {
             title: "Patient",
-            dataIndex: "nom",
+            dataIndex: "nom_complet",
             key: "name",
-            render: (_, record) => `${record.nom} ${record.prenom}`,
         },
         {
             title: "Consultations",
@@ -464,22 +590,21 @@ const tableColumns = {
         {
             title: "Actions",
             key: "actions",
-            render: (_, record) => {
-                return {
-                    children: [
-                        {
-                            type: "a",
-                            props: {
-                                href: route("admin.patient.view", {
+            align: "center",
+            render: (_, record) =>
+                h(
+                    "button",
+                    {
+                        class: "text-blue-500 hover:text-blue-700 cursor-pointer",
+                        onClick: () =>
+                            router.visit(
+                                route("admin.patient.view", {
                                     patient: record.id,
-                                }),
-                                class: "text-blue-500 hover:text-blue-700",
-                            },
-                            children: "Voir",
-                        },
-                    ],
-                };
-            },
+                                })
+                            ),
+                    },
+                    "Voir"
+                ),
         },
     ],
     medicalRest: [
@@ -511,6 +636,34 @@ const createEmptyDataset = (label = "Aucune donnée") => ({
     ],
 });
 
+// Configuration spécifique pour le graphique de répartition des consultations
+const consultationOptions = {
+    ...commonChartOptions,
+    cutout: "0%",
+    plugins: {
+        ...commonChartOptions.plugins,
+        legend: {
+            display: false,
+        },
+        tooltip: {
+            ...commonChartOptions.plugins.tooltip,
+            callbacks: {
+                label: (context) => {
+                    const label = context.label;
+                    const value = context.raw;
+                    const total = context.dataset.data.reduce(
+                        (a, b) => a + b,
+                        0
+                    );
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ${value} (${percentage}%)`;
+                },
+            },
+        },
+    },
+};
+
+// Modifier la configuration des données pour le graphique en anneau
 const consultationChartData = computed(() => {
     if (
         !localStats.value.consultationsByType ||
@@ -519,21 +672,46 @@ const consultationChartData = computed(() => {
         return createEmptyDataset();
     }
 
-    const colors = Object.values(chartColors).slice(
-        0,
-        Object.keys(localStats.value.consultationsByType).length
-    );
     return {
-        labels: Object.keys(localStats.value.consultationsByType),
+        labels: Object.keys(localStats.value.consultationsByType).map((key) =>
+            key === "visite_aptitude" ? "visite d'aptitude" : key
+        ),
         datasets: [
             {
                 data: Object.values(localStats.value.consultationsByType),
-                backgroundColor: colors,
-                borderWidth: 2,
+                backgroundColor: [
+                    "rgba(147, 197, 253, 0.8)",
+                    "rgba(134, 239, 172, 0.8)",
+                ],
+                borderWidth: 1,
                 borderColor: "#ffffff",
             },
         ],
     };
+});
+
+// Ajout de la computed property pour le titre dynamique
+const consultationChartTitle = computed(() => {
+    const periodMap = {
+        today: "aujourd'hui",
+        week: "cette semaine",
+        month: "ce mois-ci",
+        year: "cette année",
+    };
+    return `Répartition des types de consultations ${
+        periodMap[selectedPeriod.value]
+    }`;
+});
+
+// Ajout de la computed property pour le titre du nombre total de consultations
+const totalConsultationsTitle = computed(() => {
+    const periodMap = {
+        today: "aujourd'hui",
+        week: "cette semaine",
+        month: "ce mois-ci",
+        year: "cette année",
+    };
+    return `Nombre total de consultations ${periodMap[selectedPeriod.value]}`;
 });
 
 const badgeChartData = computed(() => {
@@ -550,7 +728,7 @@ const badgeChartData = computed(() => {
             {
                 data: Object.values(localStats.value.badgesStatus),
                 backgroundColor: Object.keys(localStats.value.badgesStatus).map(
-                    (key) => (key === "actif" ? chartColors.blue : "#4ade80")
+                    (key) => (key === "actif" ? chartColors.blue : "#f87171")
                 ),
                 borderWidth: 2,
             },
@@ -568,7 +746,7 @@ const medicalFollowUpData = computed(() => {
             "Ordonnances",
             "Demande d'Examens",
             "Lettre de Références",
-            "Consultations",
+            "Certificats médicaux",
         ],
         datasets: [
             {
@@ -591,6 +769,79 @@ const medicalFollowUpData = computed(() => {
     };
 });
 
+// Configuration spécifique pour le graphique de suivi médical
+const medicalFollowUpOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+        duration: 1000,
+        easing: "easeInOutQuart",
+    },
+    plugins: {
+        legend: {
+            display: false,
+        },
+        tooltip: {
+            backgroundColor: "rgba(255, 255, 255, 0.95)",
+            titleColor: "#1F2937",
+            bodyColor: "#1F2937",
+            borderColor: "#E5E7EB",
+            borderWidth: 1,
+            padding: 12,
+            boxPadding: 6,
+            usePointStyle: true,
+            titleFont: {
+                size: 14,
+                weight: "600",
+                family: "'Inter', sans-serif",
+            },
+            bodyFont: {
+                size: 13,
+                weight: "500",
+                family: "'Inter', sans-serif",
+            },
+            cornerRadius: 8,
+            boxWidth: 8,
+            boxHeight: 8,
+            displayColors: true,
+            callbacks: {
+                label: function (context) {
+                    const label = context.dataset.label || "";
+                    const value = context.raw;
+                    return `${label}: ${value}`;
+                },
+            },
+        },
+    },
+    scales: {
+        y: {
+            beginAtZero: true,
+            grid: {
+                color: "#E5E7EB",
+                drawBorder: false,
+                borderDash: [5, 5],
+            },
+            ticks: {
+                color: "#6B7280",
+                font: {
+                    size: 12,
+                    family: "'Inter', sans-serif",
+                },
+            },
+        },
+        x: {
+            grid: { display: false },
+            ticks: {
+                color: "#6B7280",
+                font: {
+                    size: 12,
+                    family: "'Inter', sans-serif",
+                },
+            },
+        },
+    },
+};
+
 // Colonnes pour le tableau des dernières consultations
 const recentConsultationsColumns = tableColumns.recentConsultations;
 
@@ -599,6 +850,84 @@ const frequentPatientsColumns = tableColumns.frequentPatients;
 
 // Colonnes pour les jours de repos médicaux
 const medicalRestColumns = tableColumns.medicalRest;
+
+// Données pour la tendance mensuelle
+const monthlyTrendsData = computed(() => {
+    if (!localStats.value.monthlyTrends) {
+        return createEmptyDataset();
+    }
+
+    return {
+        labels: localStats.value.monthlyTrends.map((item) => item.month),
+        datasets: [
+            {
+                label: "Nombre de consultations",
+                data: localStats.value.monthlyTrends.map(
+                    (item) => item.consultations
+                ),
+                borderColor: chartColors.blue,
+                backgroundColor: "rgba(59, 130, 246, 0.1)",
+                tension: 0.4,
+                fill: true,
+            },
+        ],
+    };
+});
+
+const monthlyTrendsOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            display: false,
+        },
+        tooltip: {
+            callbacks: {
+                label: function (context) {
+                    return `Consultations: ${context.raw}`;
+                },
+            },
+        },
+    },
+    scales: {
+        y: {
+            beginAtZero: true,
+            grid: {
+                color: "#E5E7EB",
+                drawBorder: false,
+            },
+        },
+        x: {
+            grid: {
+                display: false,
+            },
+        },
+    },
+};
+
+// Ajout de la computed property pour le titre dynamique
+const medicalFollowUpTitle = computed(() => {
+    const periodMap = {
+        today: "aujourd'hui",
+        week: "cette semaine",
+        month: "ce mois-ci",
+        year: "cette année",
+    };
+    return `Suivi médical ${periodMap[selectedPeriod.value]}`;
+});
+
+// Ajout de la computed property pour le titre de l'historique des consultations
+const recentConsultationsTitle = computed(() => {
+    const periodMap = {
+        today: "aujourd'hui",
+        week: "cette semaine",
+        month: "ce mois-ci",
+        year: "cette année",
+    };
+    return `Historique des consultations récentes ${
+        periodMap[selectedPeriod.value]
+    }`;
+});
 </script>
 
 <style scoped>
@@ -683,9 +1012,56 @@ const medicalRestColumns = tableColumns.medicalRest;
     }
 }
 
-/* Styles pour les tableaux responsifs */
-.table-responsive {
-    @apply overflow-x-auto;
-    -webkit-overflow-scrolling: touch;
+/* Styles pour les cartes de statistiques */
+.bg-gradient-to-br {
+    position: relative;
+    transition: all 0.8s ease;
+}
+
+.bg-gradient-to-br::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1));
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.bg-gradient-to-br:hover::before {
+    opacity: 1;
+}
+
+/* Animation pour les icônes */
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.absolute.-right-4.-top-4 {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Styles responsifs pour les cartes */
+@media (max-width: 768px) {
+    .text-3xl {
+        @apply text-2xl;
+    }
+
+    .text-9xl {
+        @apply text-8xl;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .text-3xl {
+        @apply text-2xl;
+    }
 }
 </style>
