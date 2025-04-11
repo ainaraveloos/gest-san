@@ -1,14 +1,14 @@
 <template>
     <div class="container mx-auto mb-6 px-4">
-        <!-- Bannière de consultation améliorée -->
+        <!-- Bannière de consultation avec style du dashboard -->
         <div
-            class="bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-8 mb-8 flex items-center justify-between shadow-lg rounded-2xl overflow-hidden border border-blue-400"
+            class="bg-gradient-to-br from-blue-500 to-blue-600 px-8 py-8 mb-6 flex items-center justify-between shadow-lg rounded-xl overflow-hidden border border-blue-400/50"
         >
             <div>
-                <h1 class="text-2xl font-bold text-white mb-3">
+                <h1 class="text-xl font-bold text-white mb-3">
                     Nouvelle Consultation
                 </h1>
-                <p class="text-blue-100 mb-5 opacity-90">
+                <p class="text-blue-100 mb-5 text-sm opacity-90">
                     Créer une consultation pour un patient
                 </p>
                 <Link :href="route('medecin.consultation.create')">
@@ -17,46 +17,61 @@
                         hover-color="bg-green-700"
                         focus-color="ring-green-800"
                         active-color="bg-green-700"
-                        class="py-2.5"
+                        class="py-2"
                     >
                         <span>Créer une consultation</span>
-                        <fonta
-                            icon="arrow-right"
-                            class="ml-2 group-hover:translate-x-1 transition-all duration-300"
-                        />
+                        <fonta icon="arrow-right" class="ml-2" />
                     </BaseButton>
                 </Link>
             </div>
             <img
                 src="../../../../assets/Consultation.svg"
-                class="w-60 hidden md:block transition-all duration-500 hover:scale-110"
+                class="w-60 hidden md:block"
                 alt="Illustration de consultation"
             />
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
             <!-- Carte Informations du Patient -->
             <div
-                class="bg-white shadow-md rounded-xl xl:col-span-1 col-span-full overflow-hidden border border-gray-200 transition-all duration-300"
+                class="bg-white shadow-md rounded-xl lg:col-span-2 col-span-full overflow-hidden border border-gray-200/60"
             >
                 <div
-                    class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 flex items-center justify-between"
+                    class="bg-gradient-to-br from-blue-500 to-blue-600 px-6 py-4 flex items-center justify-between"
                 >
-                    <h2 class="text-lg font-medium text-white">
+                    <h2 class="text-md font-medium text-white">
                         Profil du patient
                     </h2>
                     <span
                         v-if="patient.societe"
-                        class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold shadow-sm"
+                        class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold shadow-sm"
                     >
                         {{ patient.societe.nom }}
                     </span>
                 </div>
-
+                <!-- QR Code pour le patient -->
+                <div class="m-4">
+                    <div
+                        class="flex flex-col items-center bg-gray-50 p-4 rounded-lg border border-gray-200/60"
+                    >
+                        <a-qrcode
+                            :value="qrCodeValue"
+                            :size="150"
+                            class="qr-code"
+                            ref="qrCodeRef"
+                            :bordered="false"
+                            errorLevel="H"
+                        />
+                        <p class="text-xs text-gray-500 mt-2 text-center">
+                            Scannez pour accéder aux<br />informations du
+                            patient
+                        </p>
+                    </div>
+                </div>
                 <div class="p-6">
                     <!-- En-tête avec nom -->
                     <div class="mb-6 pb-4 border-b border-gray-100">
-                        <h3 class="text-lg font-semibold text-gray-600">
+                        <h3 class="text-md font-semibold text-gray-600">
                             {{ patient.nom.toUpperCase() }} {{ patient.prenom }}
                         </h3>
                         <div
@@ -80,9 +95,11 @@
                     <!-- Informations principales -->
                     <div class="space-y-5 mb-7">
                         <div
-                            class="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-300"
+                            class="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-blue-50/50 transition-colors duration-300"
                         >
-                            <span class="text-gray-600 font-medium">Type</span>
+                            <span class="text-gray-600 font-medium text-sm"
+                                >Type</span
+                            >
                             <span
                                 class="text-gray-800 font-medium px-3 py-1 bg-gray-100 rounded-md"
                                 >{{
@@ -93,9 +110,9 @@
                             >
                         </div>
                         <div
-                            class="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-300"
+                            class="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-blue-50/50 transition-colors duration-300"
                         >
-                            <span class="text-gray-600 font-medium"
+                            <span class="text-gray-600 font-medium text-sm"
                                 >Téléphone</span
                             >
                             <span class="text-gray-800">{{
@@ -103,9 +120,9 @@
                             }}</span>
                         </div>
                         <div
-                            class="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-300"
+                            class="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-blue-50/50 transition-colors duration-300"
                         >
-                            <span class="text-gray-600 font-medium"
+                            <span class="text-gray-600 font-medium text-sm"
                                 >Adresse</span
                             >
                             <span class="text-gray-800">{{
@@ -119,11 +136,17 @@
                         <h4
                             class="text-sm uppercase text-gray-600 font-medium mb-4 flex items-center"
                         >
+                            <div class="p-1.5 bg-blue-100 rounded-md mr-2">
+                                <fonta
+                                    icon="heartbeat"
+                                    class="text-blue-500 text-xs"
+                                />
+                            </div>
                             Constantes vitales
                         </h4>
                         <div class="grid grid-cols-2 gap-4">
                             <div
-                                class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:bg-blue-50 transition-all duration-300"
+                                class="bg-gray-50 p-4 rounded-lg border border-gray-200/60 hover:bg-blue-50/30 transition-all duration-300"
                             >
                                 <p class="text-sm text-gray-600 font-medium">
                                     Poids
@@ -138,7 +161,7 @@
                                 </p>
                             </div>
                             <div
-                                class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:bg-blue-50 transition-all duration-300"
+                                class="bg-gray-50 p-4 rounded-lg border border-gray-200/60 hover:bg-blue-50/30 transition-all duration-300"
                             >
                                 <p class="text-sm text-gray-600 font-medium">
                                     Taille
@@ -153,7 +176,7 @@
                                 </p>
                             </div>
                             <div
-                                class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:bg-blue-50 transition-all duration-300"
+                                class="bg-gray-50 p-4 rounded-lg border border-gray-200/60 hover:bg-blue-50/30 transition-all duration-300"
                             >
                                 <p class="text-sm text-gray-600 font-medium">
                                     Fréquence cardiaque
@@ -168,7 +191,7 @@
                                 </p>
                             </div>
                             <div
-                                class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:bg-blue-50 transition-all duration-300"
+                                class="bg-gray-50 p-4 rounded-lg border border-gray-200/60 hover:bg-blue-50/30 transition-all duration-300"
                             >
                                 <p class="text-sm text-gray-600 font-medium">
                                     IMC
@@ -193,18 +216,18 @@
 
             <!-- Carte Historique des Consultations améliorée -->
             <div
-                class="bg-white shadow-md rounded-xl p-6 xl:col-span-2 col-span-full transition-all duration-300 border border-gray-200"
+                class="bg-white shadow-md rounded-xl p-6 lg:col-span-3 col-span-full border border-gray-200/60"
             >
-                <div class="flex items-center gap-4 mb-8">
+                <div class="flex items-center gap-4 mb-6">
                     <div
-                        class="bg-green-100 rounded-full p-3 flex items-center justify-center mb-2 shadow-sm"
+                        class="bg-gradient-to-br from-green-100 to-green-200 rounded-lg p-3 flex items-center justify-center shadow-sm"
                     >
                         <fonta
-                            class="text-2xl text-green-600"
+                            class="text-xl text-green-600"
                             icon="calendar-check"
                         />
                     </div>
-                    <h2 class="text-2xl font-semibold text-gray-600">
+                    <h2 class="text-xl font-semibold text-gray-600">
                         Historique Médical
                     </h2>
                 </div>
@@ -223,7 +246,7 @@
                             />
                         </template>
                         <div
-                            class="group flex items-center justify-between bg-gray-50 hover:bg-blue-50 py-3 px-5 shadow-sm transition-all duration-300 rounded-lg border border-gray-100 hover:border-blue-300 mb-2"
+                            class="group flex items-center justify-between bg-gray-50 hover:bg-blue-50/50 py-3 px-5 shadow-sm rounded-lg border border-gray-200/60 hover:border-blue-200/70 mb-2"
                         >
                             <div class="flex flex-col">
                                 <p
@@ -269,16 +292,18 @@
         <div
             v-if="showConsultationDetails"
             :key="selectedConsultation.id"
-            class="consultation_details_section space-y-8 bg-white rounded-xl p-8 shadow-lg mt-8 border border-gray-200 mx-4"
+            class="consultation_details_section space-y-6 bg-gradient-to-br from-white to-blue-50/20 rounded-xl p-8 shadow-lg mt-8 border border-gray-200/60 mx-4"
         >
             <!-- Section Documents -->
             <div
-                class="border border-gray-200 p-6 rounded-lg bg-white shadow-sm transition-all duration-300"
+                class="border border-gray-200/60 p-6 rounded-lg bg-white shadow-sm"
             >
                 <h3
-                    class="text-lg font-semibold mb-6 text-gray-700 flex items-center gap-2"
+                    class="text-md font-semibold mb-6 text-gray-700 flex items-center gap-2"
                 >
-                    <fonta icon="file-alt" class="text-blue-500" />
+                    <div class="p-2 bg-blue-100 rounded-md">
+                        <fonta icon="file-alt" class="text-blue-500 text-sm" />
+                    </div>
                     Documents associés
                 </h3>
                 <div class="flex sm:flex-row flex-col gap-3 mt-2">
@@ -333,18 +358,24 @@
             </div>
             <!-- Section médicale -->
             <div
-                class="p-8 rounded-xl border border-gray-200 shadow-md transition-all duration-300 bg-white"
+                class="p-6 rounded-xl border border-gray-200/60 shadow-md bg-white"
             >
                 <h3
-                    class="text-lg font-semibold mb-8 text-blue-500 flex items-center gap-4"
+                    class="text-md font-semibold mb-6 text-blue-500 flex items-center gap-2"
                 >
+                    <div class="p-2 bg-blue-100 rounded-md">
+                        <fonta
+                            icon="stethoscope"
+                            class="text-blue-500 text-sm"
+                        />
+                    </div>
                     Détails médicaux
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Motif de consultation -->
                     <div
-                        class="space-y-2 bg-gray-50 p-5 rounded-xl border border-gray-200"
+                        class="space-y-2 bg-gray-50 p-5 rounded-lg border border-gray-200/60"
                     >
                         <InputLabel
                             for="Motif de Consultation"
@@ -359,7 +390,7 @@
 
                     <!-- Diagnostic médical -->
                     <div
-                        class="space-y-2 bg-gray-50 p-5 rounded-xl border border-gray-200"
+                        class="space-y-2 bg-gray-50 p-5 rounded-lg border border-gray-200/60"
                     >
                         <InputLabel
                             for="Diagnostic médical"
@@ -384,7 +415,7 @@
                     hover-color="bg-red-700"
                     focus-color="ring-red-400"
                     active-color="bg-red-800"
-                    class="py-2.5"
+                    class="py-2"
                     @click="
                         confirmDelete(
                             route(
@@ -404,7 +435,7 @@
                     hover-color="bg-green-700"
                     focus-color="ring-green-400"
                     active-color="bg-green-800"
-                    class="py-2.5"
+                    class="py-2"
                     :disabled="!isFormChanged"
                 >
                     <EditFilled />
@@ -413,23 +444,22 @@
             </div>
         </div></transition
     >
-    <!-- Modal de prévisualisation du document - Conservé tel quel -->
+    <!-- Modal de prévisualisation du document -->
     <a-modal
         v-model:open="previewModalVisible"
-        width="700px"
+        width="600px"
         :closable="null"
         style="top: 15px"
         :footer="null"
     >
-        <div
-            id="document-content"
-            class="mt-4"
-            v-html="previewDocumentContent"
-        ></div>
+        <iframe
+            :src="documentPreviewUrl"
+            style="width: 100%; height: 80vh; border: none"
+        ></iframe>
         <div class="flex justify-end gap-4 border-t pt-4">
             <BaseButton @click="printDocument" class="py-2">
                 <fonta icon="print" />
-                <span>imprimer</span>
+                <span>Imprimer</span>
             </BaseButton>
             <BaseButton
                 @click="downloadPDF"
@@ -440,7 +470,7 @@
                 class="py-2"
             >
                 <fonta icon="download" />
-                <span>Telecharger PDF</span>
+                <span>Télécharger PDF</span>
             </BaseButton>
         </div>
     </a-modal>
@@ -454,11 +484,8 @@ import useConfirmDialog from "@/composables/useConfirmDialog";
 import TestLayout from "@/Layouts/TestLayout.vue";
 import { DeleteFilled, EditFilled } from "@ant-design/icons-vue";
 import { Link, useForm } from "@inertiajs/vue3";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import Swal from "sweetalert2";
 import { computed, nextTick, ref } from "vue";
-import logo from "../../../../assets/medicare_dark.svg";
 const { confirmDelete } = useConfirmDialog();
 
 defineOptions({ layout: TestLayout });
@@ -555,587 +582,88 @@ const handleEdit = () => {
         },
     });
 };
-
+// information du badge
+const badge = computed(() => {
+    return props.patient.badge;
+});
+// Ajouter une nouvelle propriété pour le QR code
+const qrCodeValue = computed(() => {
+    return JSON.stringify({
+        id: props.patient.id,
+        nom: props.patient.nom,
+        prenom: props.patient.prenom,
+        numero: props.patient.numero,
+        badge: badge.value.qr_code,
+    });
+});
+const qrCodeRef = ref(null);
 //Pour l'affichage des modals des documents prêts à être imprimé ou telechargé
 const previewModalVisible = ref(false);
-const previewDocumentContent = ref("");
 const previewDocumentTitle = ref("");
-/**
- * Contenu HTML pour une ordonnance
- */
-const getOrdonnanceContent = (consultation) => {
-    const medicaments = consultation.ordonnance?.medicaments || [];
-    const medicamentRows = medicaments
-        .map(
-            (med) => `
-        <tr style="border-bottom: 1px solid #e5e7eb;">
-            <td style="padding: 8px; text-align: left;">${med.designation}</td>
-            <td style="padding: 8px; text-align: left;">${med.forme}</td>
-            <td style="padding: 8px; text-align: left;">${med.posologie}</td>
-            <td style="padding: 8px; text-align: center;">${med.quantite}</td>
-        </tr>
-    `
-        )
-        .join("");
-
-    return `
-    <div style="font-family: Arial, sans-serif; padding: 15px; border: 1px solid #ddd;">
-        <div style="text-align: center; margin-bottom: 1rem;">
-            <h1 style="font-size: 20px; font-weight: bold;display: flex; align-items: center justify-content: center; margin: 0;"><img src="${logo}" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;" /><span style="margin-top:8px;">MEDICARE</span></h1>
-            <p style="font-size: 13px; margin: 2px 0;">Centre Médical Agréé</p>
-            <p style="font-size: 13px; margin: 2px 0;">123 Rue de la Santé, Adresse - Tél: 0000000000</p>
-        </div>
-        <!-- Date et informations médecin -->
-        <div style="text-align: right; font-size: 13px; margin-bottom: 1rem;">
-            <p style="margin: 2px 0;">Le ${formatDateLongue(
-                new Date(consultation.date_consultation)
-            )}</p>
-            <div style="margin-top: 0.5rem;">
-                <p style="margin: 2px 0; font-weight: bold;">Dr. ${props.medecin.nom.toUpperCase()} ${
-        props.medecin.prenom
-    }</p>
-                <p style="margin: 2px 0;">Médecin ${props.medecin.type.toLowerCase()}</p>
-                <p style="margin: 2px 0;">N° RPPS : ________________</p>
-            </div>
-        </div>
-        <h3 style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 16px;">Ordonnance</h3>
-
-         <!-- Informations patient -->
-        <div style="margin-bottom: 15px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                <tr style="background-color: #f3f4f6;">
-                    <th colspan="2" style="padding: 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #e5e7eb;">
-                        Informations du Patient
-                    </th>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600; width: 150px;">Nom et Prénom</td>
-                    <td style="padding: 8px;">${props.patient.nom} ${
-        props.patient.prenom
-    }</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600;">Âge</td>
-                    <td style="padding: 8px;">${calculateAge(
-                        props.patient.date_naissance
-                    )} ans</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600;">Numéro de dossier</td>
-                    <td style="padding: 8px;">${
-                        props.patient.numero || "N/A"
-                    }</td>
-                </tr>
-            </table>
-        </div>
-
-        <hr style="margin: 15px 0;">
-
-        <h4 style="margin-bottom: 10px; font-size: 14px;">Médicaments prescrits :</h4>
-
-        <div style="max-width: 100%; overflow-x: auto; margin-bottom: 15px; border: 1px solid #e5e7eb; border-radius: 8px;">
-            <table style="width: 100%; border-collapse: collapse; white-space: nowrap; min-width: 100%; font-size: 13px;">
-                <thead>
-                    <tr style="background-color: #f3f4f6;">
-                        <th style="padding: 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #e5e7eb;">Désignation</th>
-                        <th style="padding: 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #e5e7eb;">Forme</th>
-                        <th style="padding: 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #e5e7eb;">Posologie</th>
-                        <th style="padding: 8px; text-align: center; font-weight: 600; border-bottom: 1px solid #e5e7eb;">Quantité</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${medicamentRows}
-                </tbody>
-            </table>
-        </div>
-
-        ${
-            consultation.ordonnance.nbr_jours_repos
-                ? `
-        <div style="margin: 15px 0; padding: 8px; background-color: #f3f4f6; border-radius: 8px; border: 1px solid #e5e7eb; font-size: 13px;">
-            <p style="margin: 0;"><strong>Repos prescrit :</strong> ${consultation.ordonnance.nbr_jours_repos} jours</p>
-        </div>
-        `
-                : ""
-        }
-
-        <hr style="margin: 15px 0;">
-
-        <!-- Signature -->
-            <div style="margin-top: 2rem; text-align: right;">
-                <div style="display: inline-block; text-align: center; border-top: 1px solid #666; padding-top: 6px;">
-                    <p style="margin: 2px 0;">
-                        Signature et cachet du médecin
-                    </p>
-                    <p style="margin: 2px 0; font-style: italic; font-size: 11px; color: #666;">
-                        (Article R.4127-76 du code de la santé publique)
-                    </p>
-                </div>
-            </div>
-    </div>
-    `;
-};
-
-/**
- * Contenu HTML pour une demande d'examen
- */
-const getDemandeExamenContent = (consultation) => {
-    const examens = JSON.parse(consultation.demande_examen.liste_examens);
-    const examensList = examens
-        .map(
-            (examen) => `
-        <tr style="border-bottom: 1px solid #e5e7eb;">
-            <td style="padding: 8px;font-wh: bold; text-align: left;">${examen.toUpperCase()}</td>
-        </tr>
-    `
-        )
-        .join("");
-
-    return `
-    <div style="font-family: Arial, sans-serif; padding: 15px; border: 1px solid #ddd;">
-        <div style="text-align: center; margin-bottom: 1rem;">
-            <h1 style="font-size: 20px; font-weight: bold;display: flex; align-items: center justify-content: center; margin: 0;"><img src="${logo}" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;" /><span style="margin-top:8px;">MEDICARE</span></h1>
-            <p style="font-size: 13px; margin: 2px 0;">Centre Médical Agréé</p>
-            <p style="font-size: 13px; margin: 2px 0;">123 Rue de la Santé, Adresse - Tél: 0000000000</p>
-        </div>
-        <!-- Date et informations médecin -->
-        <div style="text-align: right; font-size: 13px; margin-bottom: 1rem;">
-            <p style="margin: 2px 0;">Le ${formatDateLongue(
-                new Date(consultation.date_consultation)
-            )}</p>
-            <div style="margin-top: 0.5rem;">
-                <p style="margin: 2px 0; font-weight: bold;">Dr. ${props.medecin.nom.toUpperCase()} ${
-        props.medecin.prenom
-    }</p>
-                <p style="margin: 2px 0;">Médecin ${props.medecin.type.toLowerCase()}</p>
-                <p style="margin: 2px 0;">N° RPPS : ________________</p>
-            </div>
-        </div>
-        <h3 style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 16px;">Demande d'Examen</h3>
-
-        <!-- Informations patient -->
-        <div style="margin-bottom: 15px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                <tr style="background-color: #f3f4f6;">
-                    <th colspan="2" style="padding: 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #e5e7eb;">
-                        Informations du Patient
-                    </th>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600; width: 150px;">Nom et Prénom</td>
-                    <td style="padding: 8px;">${props.patient.nom} ${
-        props.patient.prenom
-    }</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600;">Âge</td>
-                    <td style="padding: 8px;">${calculateAge(
-                        props.patient.date_naissance
-                    )} ans</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600;">Numéro de dossier</td>
-                    <td style="padding: 8px;">${
-                        props.patient.numero || "N/A"
-                    }</td>
-                </tr>
-            </table>
-        </div>
-
-        <hr style="margin: 15px 0;">
-
-        <h4 style="margin-bottom: 10px; font-size: 14px;">Examens demandés :</h4>
-        <div style="max-width: 100%; overflow-x: auto; margin-bottom: 15px; border: 1px solid #e5e7eb; border-radius: 8px;">
-            <table style="width: 100%; border-collapse: collapse; min-width: 100%; font-size: 13px;">
-                <thead>
-                    <tr style="background-color: #f3f4f6;">
-                        <th style="padding: 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #e5e7eb;">
-                            Désignation de l'examen
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${examensList}
-                </tbody>
-            </table>
-        </div>
-
-        ${
-            consultation.demande_examen.remarques
-                ? `
-        <div style="margin: 15px 0; padding: 8px; background-color: #f3f4f6; border-radius: 8px; border: 1px solid #e5e7eb; font-size: 13px;">
-            <p style="margin: 0;"><strong>Remarques :</strong></p>
-            <p style="margin: 8px 0 0 0; line-height: 1.4;">
-                ${consultation.demande_examen.remarques}
-            </p>
-        </div>
-        `
-                : ""
-        }
-
-        <hr style="margin: 15px 0;">
-
-        <!-- Signature -->
-            <div style="margin-top: 2rem; text-align: right;">
-                <div style="display: inline-block; text-align: center; border-top: 1px solid #666; padding-top: 6px;">
-                    <p style="margin: 2px 0;">
-                        Signature et cachet du médecin
-                    </p>
-                    <p style="margin: 2px 0; font-style: italic; font-size: 11px; color: #666;">
-                        (Article R.4127-76 du code de la santé publique)
-                    </p>
-                </div>
-            </div>
-    </div>
-    `;
-};
-/**
- * Génère le contenu HTML pour une lettre de référence
- */
-const getLettreReferenceContent = (consultation) => {
-    return `
-    <div style="font-family: Arial, sans-serif; padding: 15px; border: 1px solid #ddd;">
-        <!-- En-tête -->
-        <div style="text-align: center; margin-bottom: 1rem;">
-            <h1 style="font-size: 20px; font-weight: bold;display: flex; align-items: center justify-content: center; margin: 0;"><img src="${logo}" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;" /><span style="margin-top:8px;">MEDICARE</span></h1>
-            <p style="font-size: 13px; margin: 2px 0;">Centre Médical Agréé</p>
-            <p style="font-size: 13px; margin: 2px 0;">123 Rue de la Santé, Adresse - Tél: 0000000000</p>
-        </div>
-        <!-- Date et informations médecin -->
-        <div style="text-align: right; font-size: 13px; margin-bottom: 1rem;">
-            <p style="margin: 2px 0;">Le ${formatDateLongue(
-                new Date(consultation.date_consultation)
-            )}</p>
-            <div style="margin-top: 0.5rem;">
-                <p style="margin: 2px 0; font-weight: bold;">Dr. ${props.medecin.nom.toUpperCase()} ${
-        props.medecin.prenom
-    }</p>
-                <p style="margin: 2px 0;">Médecin ${props.medecin.type.toLowerCase()}</p>
-                <p style="margin: 2px 0;">N° RPPS : ________________</p>
-            </div>
-        </div>
-         <h3 style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 16px;">Lettre de Référence</h3>
-        <!-- Date et lieu -->
-
-
-        <!-- Informations patient -->
-        <div style="margin-bottom: 15px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                <tr style="background-color: #f3f4f6;">
-                    <th colspan="2" style="padding: 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #e5e7eb;">
-                        Informations du Patient
-                    </th>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600; width: 150px;">Nom et Prénom</td>
-                    <td style="padding: 8px;">${props.patient.nom} ${
-        props.patient.prenom
-    }</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600;">Âge</td>
-                    <td style="padding: 8px;">${calculateAge(
-                        props.patient.date_naissance
-                    )} ans</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600;">Numéro de dossier</td>
-                    <td style="padding: 8px;">${
-                        props.patient.numero || "N/A"
-                    }</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Destinataire -->
-        <div style="margin-bottom: 15px; font-size: 13px;">
-            <p style="margin: 3px 0;"><strong>Docteur</strong></p>
-            <p style="margin: 3px 0;">${
-                consultation.lettre_reference?.medecin_ref?.nom ||
-                "_________________"
-            }</p>
-            <p style="margin: 3px 0;">${
-                consultation.lettre_reference?.medecin_ref?.specialite ||
-                "_________________"
-            }</p>
-        </div>
-
-        <!-- Objet et Introduction -->
-        <div style="margin-bottom: 15px; font-size: 13px;">
-            <p style="margin: 6px 0;"><strong>Objet :</strong> Lettre de référence médicale</p>
-            <p style="margin: 6px 0;">Cher Confrère, Chère Consœur,</p>
-            <p style="margin: 6px 0;">Je me permets de vous adresser en consultation le patient cité ci-dessus pour les raisons suivantes :</p>
-        </div>
-
-        <!-- Informations médicales -->
-        <div style="margin-bottom: 15px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                <tr style="background-color: #f3f4f6;">
-                    <th colspan="2" style="padding: 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #e5e7eb;">
-                        Informations Médicales
-                    </th>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600; width: 150px;">Motif de référence</td>
-                    <td style="padding: 8px;">${
-                        consultation.lettre_reference?.motif_ref ||
-                        "Non spécifié"
-                    }</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600;">Diagnostic actuel</td>
-                    <td style="padding: 8px;">${
-                        consultation.diagnostic || "Non spécifié"
-                    }</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: 600;">Antécédents notables</td>
-                    <td style="padding: 8px;">${
-                        props.patient?.antecedents || "Aucun antécédent notable"
-                    }</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Conclusion -->
-        <div style="margin-bottom: 15px; font-size: 13px; line-height: 1.4;">
-            <p style="margin: 6px 0;">Je vous remercie de votre attention et vous prie de me tenir informé de vos conclusions.</p>
-            <p style="margin: 6px 0;">Confraternellement,</p>
-        </div>
-
-       <!-- Signature -->
-            <div style="margin-top: 2rem; text-align: right;">
-                <div style="display: inline-block; text-align: center; border-top: 1px solid #666; padding-top: 6px;">
-                    <p style="margin: 2px 0;">
-                        Signature et cachet du médecin
-                    </p>
-                    <p style="margin: 2px 0; font-style: italic; font-size: 11px; color: #666;">
-                        (Article R.4127-76 du code de la santé publique)
-                    </p>
-                </div>
-            </div>
-    </div>
-    `;
-};
-
-const getCertificatMedicalContent = (consultation) => {
-    const joursRepos = consultation.ordonnance?.nbr_jours_repos;
-    return `
-    <div style="font-family: Arial, sans-serif; padding: 15px; border: 1px solid #ddd;">
-        <!-- En-tête -->
-        <div style="text-align: center; margin-bottom: 1rem; border-bottom: 1px solid #666; padding-bottom: 0.5rem;">
-            <h1 style="font-size: 20px; font-weight: bold;display: flex; align-items: center justify-content: center; margin: 0;"><img src="${logo}" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;" /><span style="margin-top:8px;">MEDICARE</span></h1>
-            <p style="font-size: 13px; margin: 2px 0;">Centre Médical Agréé</p>
-            <p style="font-size: 13px; margin: 2px 0;">123 Rue de la Santé, Adresse - Tél: 0000000000</p>
-        </div>
-
-        <!-- Date et informations médecin -->
-        <div style="text-align: right; font-size: 13px; margin-bottom: 1rem;">
-            <p style="margin: 2px 0;">Le ${formatDateLongue(
-                new Date(consultation.date_consultation)
-            )}</p>
-            <div style="margin-top: 0.5rem;">
-                <p style="margin: 2px 0; font-weight: bold;">Dr. ${props.medecin.nom.toUpperCase()} ${
-        props.medecin.prenom
-    }</p>
-                <p style="margin: 2px 0;">Médecin ${props.medecin.type.toLowerCase()}</p>
-                <p style="margin: 2px 0;">N° RPPS : ________________</p>
-            </div>
-        </div>
-
-        <!-- Titre -->
-        <div style="text-align: center; margin: 1rem 0;">
-            <h2 style="font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; padding: 8px 15px; background-color: #263238 ; color: white; display: inline-block;">
-                Certificat Médical
-            </h2>
-        </div>
-
-        <!-- Corps du certificat -->
-        <div style="font-size: 13px; line-height: 1.4;">
-            <p style="margin: 0.5rem 0;">
-                Je soussigné, <strong>Docteur ${props.medecin.nom.toUpperCase()} ${
-        props.medecin.prenom
-    }</strong>,
-                certifie avoir examiné ce jour :
-            </p>
-
-            <!-- Informations patient -->
-            <div style="margin: 0.75rem 0; padding: 0.75rem; background-color: #f8fafc;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                    <tr>
-                        <td style="padding: 4px 0; width: 150px;">Nom</td>
-                        <td style="padding: 4px 0;"><strong>${props.patient.nom.toUpperCase()}</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 4px 0;">Prénom</td>
-                        <td style="padding: 4px 0;"><strong>${
-                            props.patient.prenom
-                        }</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 4px 0;">Né(e) le</td>
-                        <td style="padding: 4px 0;">${formatDateLongue(
-                            props.patient.date_naissance
-                        )} (${calculateAge(
-        props.patient.date_naissance
-    )} ans)</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 4px 0;">Adresse</td>
-                        <td style="padding: 4px 0;">${
-                            props.patient.adresse || "Non renseigné"
-                        }</td>
-                    </tr>
-                </table>
-            </div>
-
-           ${
-               joursRepos
-                   ? `
-        <p style="margin: 0.75rem 0; text-align: justify;">
-            Après examen clinique complet réalisé ce jour, je certifie que l'état de santé
-            du/de la patient(e) nécessite une <strong>interruption temporaire de travail</strong>
-            d'une durée de <strong>${joursRepos} jour${
-                         joursRepos > 1 ? "s" : ""
-                     }</strong> à compter de ce jour.
-        </p>
-        `
-                   : ""
-           }
-
-            <p style="margin: 0.75rem 0; text-align: justify;">
-                Ce certificat est établi à la demande de l'intéressé(e) et lui est remis en main propre
-                pour faire valoir ce que de droit.
-            </p>
-
-            <!-- Signature -->
-            <div style="margin-top: 2rem; text-align: right;">
-                <div style="display: inline-block; text-align: center; border-top: 1px solid #666; padding-top: 6px;">
-                    <p style="margin: 2px 0;">
-                        Signature et cachet du médecin
-                    </p>
-                    <p style="margin: 2px 0; font-style: italic; font-size: 11px; color: #666;">
-                        (Article R.4127-76 du code de la santé publique)
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    `;
-};
-
-const getDocumentContent = (docType, consultation) => {
-    if (docType === "ordonnance") {
-        previewDocumentTitle.value = "Ordonnance";
-        return getOrdonnanceContent(consultation);
-    } else if (docType === "demande_examen") {
-        previewDocumentTitle.value = "Demande d'examen";
-        return getDemandeExamenContent(consultation);
-    } else if (docType === "lettre_reference") {
-        previewDocumentTitle.value = "Lettre de référence";
-        return getLettreReferenceContent(consultation);
-    } else if (docType === "certificat_medical") {
-        previewDocumentTitle.value = "Certificat Médical";
-        return getCertificatMedicalContent(consultation);
-    } else {
-        return "";
-    }
-};
+const documentPreviewUrl = ref("");
+const documentType = ref("");
 
 /**
  * Ouvre le modal apperçu du contenu du document
  */
-const viewDocument = (docType, consultation) => {
-    previewDocumentContent.value = getDocumentContent(docType, consultation);
+const viewDocument = async (docType, consultation) => {
+    selectedConsultation.value = consultation;
+    documentType.value = docType;
+    // Définir le titre du document
+    switch (docType) {
+        case "ordonnance":
+            previewDocumentTitle.value = "Ordonnance";
+            break;
+        case "demande_examen":
+            previewDocumentTitle.value = "Demande d'examen";
+            break;
+        case "lettre_reference":
+            previewDocumentTitle.value = "Lettre de référence";
+            break;
+        case "certificat_medical":
+            previewDocumentTitle.value = "Certificat Médical";
+            break;
+        default:
+            previewDocumentTitle.value = "Document";
+    }
+    // Construire l'URL de prévisualisation
+    documentPreviewUrl.value = route("admin.document.preview", {
+        type: docType,
+        consultation: consultation.id,
+    });
+
+    // Afficher le modal
     previewModalVisible.value = true;
 };
 
 /**
- * Imprime le contenu du document dans une nouvelle fenêtre
+ * Imprime le contenu du document
  */
 const printDocument = () => {
-    const printWindow = window.open("", "_blank");
-    printWindow.document.write(`
-    <html>
-      <head>
-        <title>${previewDocumentTitle.value}</title>
-        <style>
-          body { font-family: Arial, sans-serif; margin: 20px; }
-          h2 { text-align: center; }
-        </style>
-      </head>
-      <body>${previewDocumentContent.value}</body>
-    </html>
-  `);
-    printWindow.document.close();
-    // Attendre que le contenu soit chargé avant d'imprimer
-    setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
-        // Fermer la fenêtre après l'impression
-        printWindow.onafterprint = function () {
-            printWindow.close();
-        };
-    }, 200);
+    const iframe = document.querySelector("iframe");
+    iframe.contentWindow.print();
 };
 
 /**
- * Télécharge le contenu du document en PDF
+ * Télécharge le document PDF
  */
-const downloadPDF = async () => {
-    try {
-        // Capture le contenu HTML
-        const element = document.getElementById("document-content");
-        const canvas = await html2canvas(element, {
-            scale: 3,
-            useCORS: true,
-            logging: true,
-            backgroundColor: "#FFFFFF",
-        });
+const downloadPDF = () => {
+    // Fermer le modal de prévisualisation
+    previewModalVisible.value = false;
 
-        // Création du PDF
-        const doc = new jsPDF({
-            format: "a4",
-            unit: "mm",
-            hotfixes: ["px_scaling"],
-        });
+    // Utiliser la route de téléchargement
+    const downloadUrl = route("admin.document.download", {
+        type: documentType.value,
+        consultation: selectedConsultation.value.id,
+    });
 
-        const imgData = canvas.toDataURL("image/png", 1.0);
-        const imgWidth = doc.internal.pageSize.getWidth();
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-
-        // Métadonnées du PDF
-        const patientNumber = props.patient?.numero || "unknown";
-        const docType = previewDocumentTitle.value
-            .toLowerCase()
-            .replace(" ", "_");
-        const consultationDate = selectedConsultation.value?.date_consultation
-            ? formatDateLongue(selectedConsultation.value.date_consultation)
-            : "unknown";
-        const filename = `Consultation_${consultationDate}_${docType}_${patientNumber}.pdf`;
-
-        doc.setProperties({
-            title: `${previewDocumentTitle.value} - ${selectedConsultation.id}- ${patientNumber}`,
-            subject: "Document médical officiel",
-            author: "Medicare",
-            keywords: "medical,certificat,medecin,ordonnance",
-        });
-
-        Swal.fire({
-            title: "Telechargé !",
-            text: "PDF telecharger avec succès",
-            icon: "success",
-            confirmButtonColor: "#3b82f6",
-        });
-        previewModalVisible.value = false;
-
-        // Téléchargement
-        doc.save(filename);
-    } catch (error) {
-        console.error("Erreur de génération PDF :", error);
-    }
+    // Créer un lien temporaire pour le téléchargement
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `${previewDocumentTitle.value}_${selectedConsultation.value.id}.pdf`; // Force le téléchargement
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 };
 </script>
 

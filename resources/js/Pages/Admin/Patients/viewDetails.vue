@@ -2,10 +2,10 @@
     <div class="mx-auto bg-white rounded-lg shadow-md p-8 space-y-8">
         <!-- En-tête avec dégradé -->
         <div
-            class="patient-header bg-gray-50 p-8 rounded-2xl shadow-sm border border-blue-100"
+            class="patient-header bg-gradient-to-br from-white to-blue-50/30 p-8 rounded-xl shadow-sm border border-blue-100/60"
         >
             <div
-                class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-all duration-300"
+                class="bg-white p-6 rounded-xl shadow-sm border border-gray-100/60"
             >
                 <div
                     class="flex flex-col lg:flex-row items-center justify-between gap-8"
@@ -17,14 +17,14 @@
                         <!-- Avatar avec badge numéro -->
                         <div class="relative flex-shrink-0">
                             <div
-                                class="w-40 h-40 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 border-8 border-white shadow-lg flex items-center justify-center transform transition-all duration-500 hover:scale-105"
+                                class="w-40 h-40 rounded-full bg-gradient-to-br from-blue-200 to-blue-400 border-8 border-white shadow-lg flex items-center justify-center"
                             >
-                                <span class="text-4xl font-bold text-white">{{
+                                <span class="text-3xl font-bold text-white">{{
                                     initials
                                 }}</span>
                             </div>
                             <div
-                                class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg min-w-32 text-center"
+                                class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-br from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg min-w-32 text-center"
                             >
                                 {{ patient.numero }}
                             </div>
@@ -34,14 +34,14 @@
                         <div
                             class="text-center flex flex-col gap-4 md:text-left mt-10 md:mt-3"
                         >
-                            <h1 class="text-xl font-bold text-gray-600 mb-2">
+                            <h1 class="text-lg font-bold text-gray-600 mb-2">
                                 {{ patient.nom }} {{ patient.prenom }}
                             </h1>
                             <div
                                 class="flex flex-wrap items-center gap-2 justify-center md:justify-start"
                             >
                                 <span
-                                    class="px-3 py-1 rounded-full bg-blue-100 text-blue-600 border border-blue-200 font-normal"
+                                    class="px-2 py-1 rounded-full bg-blue-100 text-blue-600 border border-blue-200/70 font-semibold text-sm"
                                 >
                                     <fonta icon="user-tag" class="mr-1" />{{
                                         patient.type
@@ -49,7 +49,7 @@
                                 </span>
                                 <span
                                     v-if="patient.telephone"
-                                    class="px-3 py-1 rounded-full bg-green-50 text-green-700 font-medium border border-green-200"
+                                    class="px-3 py-1 rounded-full bg-green-50 text-green-700 font-medium text-sm border border-green-200/70"
                                 >
                                     <fonta icon="phone" class="mr-1" />{{
                                         patient.telephone
@@ -58,15 +58,14 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Colonne droite QR Code -->
                     <div
-                        class="flex flex-col items-center bg-gray-50 p-4 rounded-xl border border-gray-100"
+                        class="flex flex-col items-center bg-gray-50 p-4 rounded-xl border border-gray-100/60"
                     >
                         <a-qrcode
                             :value="qrCodeValue"
-                            :size="100"
+                            :size="150"
                             class="qr-code"
+                            :ref="qrCodeRef"
                             :bordered="false"
                             errorLevel="H"
                         />
@@ -81,7 +80,7 @@
             <!-- Statistiques -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
                 <div
-                    class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4"
+                    class="bg-white p-4 rounded-xl border border-gray-100/60 shadow-sm flex items-center gap-4"
                 >
                     <div
                         class="bg-gradient-to-br from-blue-100 to-blue-200 p-4 rounded-xl shadow-sm"
@@ -95,46 +94,46 @@
                         <p class="text-sm font-medium text-gray-500">
                             Consultations
                         </p>
-                        <p class="text-xl font-bold text-blue-700">
+                        <p class="text-lg font-bold text-blue-700">
                             {{ patient.consultations_count }}
                         </p>
                     </div>
                 </div>
 
                 <div
-                    class="bg-white p-5 rounded-xl border borde-graborder-gray-100 shadow-sm flex items-center gap-4"
+                    class="bg-white p-4 rounded-xl border border-gray-100/60 shadow-sm flex items-center gap-4"
                 >
                     <div
                         class="bg-gradient-to-br from-green-100 to-green-200 p-4 rounded-xl shadow-sm"
                     >
                         <fonta
                             icon="file-medical"
-                            class="text-green-600 text-xl"
+                            class="text-green-600 text-lg"
                         />
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">
                             Dossiers actifs
                         </p>
-                        <p class="text-xl font-bold text-green-700">
+                        <p class="text-lg font-bold text-green-700">
                             {{ totalDossiers }}
                         </p>
                     </div>
                 </div>
 
                 <div
-                    class="bg-white p-5 rounded-xl border border-graborder-gray-100 shadow-sm flex items-center gap-4"
+                    class="bg-white p-4 rounded-xl border border-gray-100/60 shadow-sm flex items-center gap-4"
                 >
                     <div
                         class="bg-gradient-to-br from-purple-100 to-purple-200 p-4 rounded-xl shadow-sm"
                     >
-                        <fonta icon="user-md" class="text-purple-600 text-xl" />
+                        <fonta icon="user-md" class="text-purple-600 text-lg" />
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">
                             Dernière visite
                         </p>
-                        <p class="text-xl font-bold text-purple-700">
+                        <p class="text-lg font-bold text-purple-700">
                             {{
                                 lastConsultationDate
                                     ? formatDate(lastConsultationDate)
@@ -158,13 +157,13 @@
                     </template>
 
                     <div
-                        class="bg-white rounded-xl shadow-md border border-gray-100 p-8"
+                        class="bg-white rounded-xl shadow-md border border-gray-100/60 p-8"
                     >
                         <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
                             <!-- Colonne 1 - Identité -->
                             <div class="space-y-5">
                                 <h3
-                                    class="text-xl font-semibold text-blue-500 flex items-center gap-2 pb-2 border-b border-blue-100"
+                                    class="text-lg font-semibold text-blue-500 flex items-center gap-2 pb-2 border-b border-blue-100/70"
                                 >
                                     <fonta
                                         icon="user-circle"
@@ -177,7 +176,7 @@
                                     class="grid grid-cols-1 sm:grid-cols-2 gap-6"
                                 >
                                     <div
-                                        class="info-card bg-blue-50 p-5 rounded-xl border border-gray-100"
+                                        class="info-card bg-blue-50/70 p-5 rounded-xl border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-600 font-medium block mb-2"
@@ -195,7 +194,7 @@
                                     </div>
 
                                     <div
-                                        class="info-card bg-blue-50 p-5 rounded-xl border border-gray-100"
+                                        class="info-card bg-blue-50/70 p-5 rounded-xl border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-600 font-medium block mb-2"
@@ -218,7 +217,7 @@
                             <!-- Colonne 2 - Contacts -->
                             <div class="space-y-5">
                                 <h3
-                                    class="text-xl font-semibold text-blue-500 flex items-center gap-2 pb-2 border-b border-blue-100"
+                                    class="text-lg font-semibold text-blue-500 flex items-center gap-2 pb-2 border-b border-blue-100/70"
                                 >
                                     <fonta
                                         icon="address-book"
@@ -229,7 +228,7 @@
 
                                 <div class="space-y-4">
                                     <div
-                                        class="info-card bg-green-50 p-5 rounded-xl border border-gray-100"
+                                        class="info-card bg-green-50/70 p-5 rounded-xl border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-600 font-medium block mb-2"
@@ -246,7 +245,7 @@
                                     </div>
 
                                     <div
-                                        class="info-card bg-green-50 p-5 rounded-xl border border-gray-100"
+                                        class="info-card bg-green-50/70 p-5 rounded-xl border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-600 font-medium block mb-2"
@@ -262,7 +261,7 @@
                                     </div>
 
                                     <div
-                                        class="info-card bg-green-50 p-5 rounded-xl border border-gray-100"
+                                        class="info-card bg-green-50/70 p-5 rounded-xl border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-600 font-medium block mb-2"
@@ -286,7 +285,7 @@
                                 v-if="patient.type === 'FAMILLE'"
                             >
                                 <h3
-                                    class="text-xl font-semibold text-blue-500 flex items-center gap-2 pb-2 border-b border-blue-100"
+                                    class="text-lg font-semibold text-blue-500 flex items-center gap-2 pb-2 border-b border-blue-100/70"
                                 >
                                     <fonta icon="users" class="text-blue-500" />
                                     Référent Familial
@@ -294,7 +293,7 @@
 
                                 <div class="space-y-4">
                                     <div
-                                        class="info-card bg-gray-50 p-4 rounded-lg border border-gray-100"
+                                        class="info-card bg-gray-50/70 p-4 rounded-lg border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-500 block mb-1"
@@ -313,7 +312,7 @@
                                     </div>
 
                                     <div
-                                        class="info-card bg-gray-50 p-4 rounded-lg border border-gray-100"
+                                        class="info-card bg-gray-50/70 p-4 rounded-lg border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-500 block mb-1"
@@ -337,7 +336,7 @@
                                 v-if="patient.type === 'SALARIE'"
                             >
                                 <h3
-                                    class="text-xl font-semibold text-blue-500 flex items-center gap-2 pb-2 border-b border-blue-100"
+                                    class="text-lg font-semibold text-blue-500 flex items-center gap-2 pb-2 border-b border-blue-100/70"
                                 >
                                     Situation Professionnelle
                                 </h3>
@@ -346,7 +345,7 @@
                                     class="grid grid-cols-1 sm:grid-cols-2 gap-4"
                                 >
                                     <div
-                                        class="info-card bg-gray-50 p-4 rounded-lg border border-gray-100"
+                                        class="info-card bg-gray-50/70 p-4 rounded-lg border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-500 block mb-1"
@@ -360,7 +359,7 @@
                                     </div>
 
                                     <div
-                                        class="info-card bg-gray-50 p-4 rounded-lg border border-gray-100"
+                                        class="info-card bg-gray-50/70 p-4 rounded-lg border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-500 block mb-1"
@@ -374,7 +373,7 @@
                                     </div>
 
                                     <div
-                                        class="info-card bg-gray-50 p-4 rounded-lg border border-gray-100"
+                                        class="info-card bg-gray-50/70 p-4 rounded-lg border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-500 block mb-1"
@@ -409,7 +408,7 @@
                                                 patient.statut_emploi
                                             )
                                         "
-                                        class="info-card bg-gray-50 p-4 rounded-lg border border-gray-100"
+                                        class="info-card bg-gray-50/70 p-4 rounded-lg border border-gray-100/60"
                                     >
                                         <label
                                             class="text-sm text-gray-500 block mb-1"
@@ -443,10 +442,10 @@
                     </template>
 
                     <div
-                        class="bg-white rounded-xl shadow-md border border-gray-100 p-8"
+                        class="bg-white rounded-xl shadow-md border border-gray-100/60 p-8"
                     >
                         <h3
-                            class="text-xl font-semibold text-blue-500 flex items-center gap-2 pb-4 mb-6 border-b border-blue-100"
+                            class="text-xl font-semibold text-blue-500 flex items-center gap-2 pb-4 mb-6 border-b border-blue-100/70"
                         >
                             <fonta
                                 icon="clipboard-list"
@@ -460,7 +459,7 @@
                         >
                             <!-- Poids -->
                             <div
-                                class="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border border-blue-100 transition-all duration-300 hover:border-blue-300"
+                                class="bg-gradient-to-br from-white to-blue-50 p-6 rounded-xl border border-blue-100/70 transition-all duration-300 hover:border-blue-300"
                             >
                                 <div class="flex items-center gap-4">
                                     <div
@@ -479,7 +478,7 @@
                                         </p>
                                         <div class="flex items-end gap-2">
                                             <p
-                                                class="font-bold text-lg text-gray-600"
+                                                class="font-semibold text-lg text-gray-600"
                                             >
                                                 {{
                                                     patient.poids
@@ -505,7 +504,7 @@
 
                             <!-- Taille -->
                             <div
-                                class="bg-gradient-to-br from-white to-green-50 p-6 rounded-xl border border-green-100 transition-all duration-300 hover:border-green-300"
+                                class="bg-gradient-to-br from-white to-green-50 p-6 rounded-xl border border-green-100/70 transition-all duration-300 hover:border-green-300"
                             >
                                 <div class="flex items-center gap-4">
                                     <div
@@ -524,7 +523,7 @@
                                         </p>
                                         <div class="flex items-end gap-2">
                                             <p
-                                                class="font-bold text-lg text-gray-600"
+                                                class="font-semibold text-lg text-gray-600"
                                             >
                                                 {{
                                                     patient.taille
@@ -550,7 +549,7 @@
 
                             <!-- Rythme cardiaque -->
                             <div
-                                class="bg-gradient-to-br from-white to-red-50 p-6 rounded-xl border border-red-100 transition-all duration-300 hover:border-red-300"
+                                class="bg-gradient-to-br from-white to-red-50 p-6 rounded-xl border border-red-100/70 transition-all duration-300 hover:border-red-300"
                             >
                                 <div class="flex items-center gap-4">
                                     <div
@@ -569,7 +568,7 @@
                                         </p>
                                         <div class="flex items-end gap-2">
                                             <p
-                                                class="font-bold text-lg text-gray-600"
+                                                class="font-semibold text-lg text-gray-600"
                                             >
                                                 {{
                                                     patient.freq_card
@@ -595,7 +594,7 @@
 
                             <!-- Température -->
                             <div
-                                class="bg-gradient-to-br from-white to-orange-50 p-6 rounded-xl border border-orange-100 transition-all duration-300 hover:border-orange-300"
+                                class="bg-gradient-to-br from-white to-orange-50 p-6 rounded-xl border border-orange-100/70 transition-all duration-300 hover:border-orange-300"
                             >
                                 <div class="flex items-center gap-4">
                                     <div
@@ -614,7 +613,7 @@
                                         </p>
                                         <div class="flex items-end gap-2">
                                             <p
-                                                class="font-bold text-lg text-gray-600"
+                                                class="font-semibold text-lg text-gray-600"
                                             >
                                                 {{
                                                     patient.temperature
@@ -642,7 +641,7 @@
                         <!-- Section supplémentaire pour IMC si la valeur est disponible -->
                         <div class="mt-8" v-if="patient.imc">
                             <div
-                                class="bg-gray-50 p-6 rounded-xl border border-gray-200"
+                                class="bg-gray-50 p-6 rounded-xl border border-gray-200/70"
                             >
                                 <div class="flex items-center">
                                     <div>
@@ -682,7 +681,7 @@
 
                         <!-- Note informative -->
                         <div
-                            class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100 text-sm text-gray-600"
+                            class="mt-6 p-4 bg-blue-50/70 rounded-lg border border-blue-100/70 text-sm text-gray-600"
                         >
                             <p class="flex items-start gap-2">
                                 <fonta
@@ -703,16 +702,16 @@
                 <a-tab-pane key="3">
                     <template #tab>
                         <span class="flex items-center gap-2">
-                            <fonta icon="file-medical" class="text-xl" />
+                            <fonta icon="file-medical" class="text-lg" />
                             Consultations & Dossiers Medicaux
                         </span>
                     </template>
 
                     <div
-                        class="bg-white rounded-xl shadow-md border border-gray-100 p-8"
+                        class="bg-white rounded-xl shadow-md border border-gray-100/60 p-6"
                     >
                         <h3
-                            class="text-xl font-semibold text-blue-500 flex items-center gap-2 pb-4 mb-6 border-b border-blue-100"
+                            class="text-lg font-semibold text-blue-500 flex items-center gap-2 pb-4 mb-6 border-b border-blue-100/70"
                         >
                             <fonta icon="history" class="text-blue-500" />
                             Historique médical du patient
@@ -732,7 +731,7 @@
                                     <template #dot>
                                         <fonta
                                             icon="calendar-check"
-                                            class="text-green-600 text-sm"
+                                            class="text-green-600 text-lg"
                                         />
                                     </template>
 
@@ -742,10 +741,10 @@
                                     >
                                         <!-- En-tête de la consultation (toujours visible) -->
                                         <div
-                                            class="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-gradient-to-r from-gray-50 to-blue-50 border border-gray-200 rounded-t-lg"
+                                            class="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-gradient-to-r from-gray-50 to-blue-50 border border-gray-200 rounded-t-lg"
                                         >
                                             <div
-                                                class="flex items-center gap-3"
+                                                class="flex items-center gap-2"
                                             >
                                                 <div>
                                                     <h4 class="text-blue-600">
@@ -760,7 +759,7 @@
 
                                             <div class="mt-3 md:mt-0">
                                                 <p
-                                                    class="text-md font-semibold text-blue-600 flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-lg"
+                                                    class="text-md font-semibold text-blue-600 flex items-center gap-2 px-2 py-1 bg-blue-50 border border-blue-100 rounded-lg"
                                                 >
                                                     <fonta icon="user-md" />
                                                     Dr.
@@ -783,7 +782,7 @@
                                             <a-collapse-panel key="1">
                                                 <template #header>
                                                     <div
-                                                        class="text-md font-medium text-gray-700 flex items-center gap-2"
+                                                        class="text-md font-medium text-gray-600 flex items-center gap-2"
                                                     >
                                                         <fonta
                                                             icon="folder-open"
@@ -794,9 +793,7 @@
                                                     </div>
                                                 </template>
 
-                                                <div
-                                                    class="p-6 space-y-5 bg-gray-50"
-                                                >
+                                                <div class="p-6 space-y-5">
                                                     <!-- Diagnostic si disponible -->
                                                     <div
                                                         v-if="
@@ -805,7 +802,7 @@
                                                         class="p-5 bg-white rounded-lg shadow-sm border border-gray-200"
                                                     >
                                                         <h5
-                                                            class="font-medium text-gray-700 mb-3 flex items-center gap-2"
+                                                            class="font-medium text-sm text-gray-600 mb-2 flex items-center gap-2"
                                                         >
                                                             Diagnostic
                                                         </h5>
@@ -818,93 +815,85 @@
                                                         </p>
                                                     </div>
 
-                                                    <!-- Documents médicaux -->
+                                                    <!-- Section Documents -->
                                                     <div
-                                                        class="space-y-3 bg-white p-5 border border-gray-200 rounded-lg shadow-sm"
+                                                        class="border border-gray-200 p-6 rounded-lg bg-white shadow-sm transition-all duration-300"
                                                     >
-                                                        <h5
-                                                            class="font-medium text-gray-700 mb-3 flex items-center gap-2"
+                                                        <h3
+                                                            class="text-sm font-medium mb-6 text-gray-700 flex items-center gap-2"
                                                         >
-                                                            <fonta
-                                                                icon="file-medical"
-                                                                class="text-blue-500"
-                                                            />
-                                                            Documents médicaux
-                                                        </h5>
+                                                            Documents associés
+                                                        </h3>
                                                         <div
-                                                            class="flex flex-wrap gap-2"
+                                                            class="flex sm:flex-row flex-col gap-3 mt-2"
                                                         >
-                                                            <!-- Certificat Médical - toujours disponible -->
                                                             <button
+                                                                class="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                                                                 @click="
                                                                     viewDocument(
                                                                         'certificat_medical',
                                                                         consultation
                                                                     )
                                                                 "
-                                                                class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-xs font-medium hover:bg-blue-100 transition-colors duration-200"
                                                             >
                                                                 <fonta
                                                                     icon="file-medical"
-                                                                    class="mr-1"
+                                                                    class="text-blue-500"
                                                                 />
                                                                 Certificat
                                                                 Médical
                                                             </button>
-
                                                             <button
                                                                 v-if="
                                                                     consultation.ordonnance
                                                                 "
+                                                                class="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                                                                 @click="
                                                                     viewDocument(
                                                                         'ordonnance',
                                                                         consultation
                                                                     )
                                                                 "
-                                                                class="inline-flex items-center px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-xs font-medium hover:bg-green-100 transition-colors duration-200"
                                                             >
                                                                 <fonta
                                                                     icon="prescription"
-                                                                    class="mr-1"
+                                                                    class="text-green-600"
                                                                 />
                                                                 Ordonnance
                                                             </button>
-
                                                             <button
                                                                 v-if="
                                                                     consultation.demande_examen
                                                                 "
+                                                                class="flex items-center gap-2 px-4 py-2.5 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                                                                 @click="
                                                                     viewDocument(
                                                                         'demande_examen',
                                                                         consultation
                                                                     )
                                                                 "
-                                                                class="inline-flex items-center px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-md text-xs font-medium hover:bg-indigo-100 transition-colors duration-200"
                                                             >
                                                                 <fonta
                                                                     icon="microscope"
-                                                                    class="mr-1"
+                                                                    class="text-blue-600"
                                                                 />
-                                                                Demande d'examen
+                                                                Examen
                                                             </button>
-
                                                             <button
                                                                 v-if="
                                                                     consultation.lettre_reference
                                                                 "
+                                                                class="flex items-center gap-2 px-4 py-2.5 bg-white text-gray-700 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gray-50 border border-gray-300 shadow-sm"
                                                                 @click="
                                                                     viewDocument(
                                                                         'lettre_reference',
                                                                         consultation
                                                                     )
                                                                 "
-                                                                class="inline-flex items-center px-3 py-1.5 bg-purple-50 text-purple-700 rounded-md text-xs font-medium hover:bg-purple-100 transition-colors duration-200"
                                                             >
                                                                 <fonta
                                                                     icon="envelope-open-text"
-                                                                    class="mr-1"
+                                                                    class="text-blue-600"
                                                                 />
                                                                 Lettre de
                                                                 référence
@@ -922,7 +911,7 @@
                         <!-- Message si aucune consultation -->
                         <div
                             v-if="patient.consultations_count === 0"
-                            class="flex flex-col items-center justify-center py-16 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-blue-100"
+                            class="flex flex-col items-center justify-center py-16 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-blue-100/70"
                         >
                             <div class="mb-4">
                                 <a-empty :description="null" />
@@ -939,7 +928,7 @@
                         <!-- Note informative pour les consultations -->
                         <div
                             v-if="patient.consultations_count > 0"
-                            class="mt-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 text-sm text-gray-600"
+                            class="mt-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100/70 text-sm text-gray-600"
                         >
                             <p class="flex items-start gap-2">
                                 <fonta
@@ -961,22 +950,15 @@
     <!-- Modal de prévisualisation du document -->
     <a-modal
         v-model:open="previewModalVisible"
-        width="800px"
-        :closable="true"
+        width="600px"
+        :closable="null"
         style="top: 15px"
         :footer="null"
-        :title="previewDocumentTitle"
+        class="document-preview-modal"
     >
         <iframe
-            v-if="documentPreviewUrl"
             :src="documentPreviewUrl"
-            style="
-                width: 100%;
-                height: 650px;
-                border: none;
-                overflow-y: auto;
-                background-color: white;
-            "
+            style="width: 100%; height: 80vh; border: none"
         ></iframe>
         <div class="flex justify-end gap-4 border-t pt-4">
             <BaseButton @click="printDocument" class="py-2">
@@ -1000,7 +982,6 @@
 <script setup>
 import BaseButton from "@/Components/BaseButton.vue";
 import TestLayout from "@/Layouts/TestLayout.vue";
-import Swal from "sweetalert2";
 import { computed, defineOptions, defineProps, ref } from "vue";
 
 defineOptions({
@@ -1021,21 +1002,6 @@ const initials = computed(() => {
         init += props.patient.prenom.charAt(0).toUpperCase();
     }
     return init;
-});
-// information du badge
-const badge = computed(() => {
-    return props.patient.badge;
-});
-
-// Create a computed property for the QR code value
-const qrCodeValue = computed(() => {
-    return JSON.stringify({
-        nom: props.patient.nom,
-        prenom: props.patient.prenom,
-        numero: props.patient.numero,
-        qr_code: badge.value.qr_code,
-        // Add any other information you want to include
-    });
 });
 const formatDate = (date) => {
     return new Date(date).toLocaleDateString("fr-FR", {
@@ -1081,6 +1047,23 @@ const getIMCColor = (imc) => {
     if (imc < 35) return "text-orange-600"; // Obésité modérée
     return "text-red-600"; // Obésité sévère/morbide
 };
+// information du badge
+const badge = computed(() => {
+    return props.patient.badge;
+});
+
+// Create a computed property for the QR code value
+const qrCodeValue = computed(() => {
+    return JSON.stringify({
+        id: props.patient.id,
+        nom: props.patient.nom,
+        prenom: props.patient.prenom,
+        numero: props.patient.numero,
+        qr_code: badge.value.qr_code,
+        // Add any other information you want to include
+    });
+});
+const qrCodeRef = ref(null);
 //Pour l'affichage des modals des documents prêts à être imprimé ou telechargé
 const previewModalVisible = ref(false);
 const previewDocumentTitle = ref("");
@@ -1091,10 +1074,9 @@ const documentType = ref("");
 /**
  * Ouvre le modal apperçu du contenu du document
  */
-const viewDocument = (docType, consultation) => {
+const viewDocument = async (docType, consultation) => {
     selectedConsultation.value = consultation;
     documentType.value = docType;
-
     // Définir le titre du document
     switch (docType) {
         case "ordonnance":
@@ -1151,16 +1133,6 @@ const downloadDocument = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    // Afficher une notification de succès après un délai pour laisser le temps à l'utilisateur de gérer la boîte de dialogue de téléchargement
-    setTimeout(() => {
-        Swal.fire({
-            title: "Téléchargement",
-            text: "Téléchargement du PDF en cours...",
-            icon: "success",
-            confirmButtonColor: "#3b82f6",
-        });
-    }, 1000); // Délai d'une seconde
 };
 </script>
 
@@ -1195,10 +1167,6 @@ const downloadDocument = () => {
     @apply bg-white rounded-none border-0 border-t border-gray-200 mb-0 hover:shadow-sm transition-all duration-200 !important;
 }
 
-.custom-collapse .ant-collapse-content {
-    @apply border-0 rounded-b-lg shadow-sm !important;
-}
-
 .ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow {
     @apply text-gray-400 !important;
 }
@@ -1208,6 +1176,6 @@ const downloadDocument = () => {
 }
 
 .custom-collapse .ant-collapse-content-box {
-    @apply bg-gray-50 !important;
+    @apply bg-gradient-to-br from-gray-50 border border-gray-200 rounded-xl  rounded-t-none to-blue-50 !important;
 }
 </style>

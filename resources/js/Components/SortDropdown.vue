@@ -1,7 +1,7 @@
 <template>
     <a-dropdown :trigger="['click']" overlay-class-name="sort-dropdown">
         <div
-            class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 transition-all duration-300 px-4 py-3 rounded-lg border border-gray-200 cursor-pointer shadow-sm hover:shadow"
+            class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 transition-all duration-300 px-4 py-2 rounded-lg border border-gray-200 cursor-pointer shadow-sm hover:shadow"
         >
             <component
                 :is="getSortIcon()"

@@ -10,11 +10,11 @@
                         class="text-3xl text-blue-500 transition-transform hover:scale-105"
                     />
                 </div>
-                <h1 class="font-bold text-2xl text-gray-600">
+                <h1 class="font-bold text-xl text-gray-600">
                     <span class="text-blue-500">Paramètres du Compte</span>
                 </h1>
             </div>
-            <p class="text-gray-400 font-medium">
+            <p class="text-gray-400 font-medium text-sm">
                 Gestion des informations professionnelles
             </p>
         </header>
@@ -91,7 +91,6 @@
         <form @submit.prevent="updateParameters" class="space-y-6">
             <!-- Email -->
             <div class="mb-6">
-
                 <div
                     class="bg-white p-5 rounded-lg border border-gray-200/60 hover:shadow-sm transition-shadow"
                 >
@@ -99,19 +98,19 @@
                         <InputLabel
                             for="email"
                             value="Email"
-                            class="text-gray-700 font-medium"
+                            class="text-gray-700"
                         />
                         <div class="relative">
                             <fonta
                                 icon="envelope"
                                 class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm z-10"
                             />
-                            <input
+                            <BaseInput
                                 id="email"
                                 v-model="form.email"
                                 type="email"
                                 required
-                                class="mt-1 block w-full pl-10 p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                class="pl-10"
                             />
                             <InputError
                                 :message="form.errors.email"
@@ -135,24 +134,50 @@
                 <div
                     class="bg-white p-5 rounded-lg border border-gray-200/60 hover:shadow-sm transition-shadow"
                 >
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Mot de passe actuel -->
+                    <div class="mb-4">
+                        <InputLabel
+                            for="current_password"
+                            value="Mot de passe actuel"
+                            class="text-gray-700"
+                        />
+                        <div class="relative">
+                            <BaseInput
+                                id="current_password"
+                                v-model="form.current_password"
+                                type="password"
+                                :required="isPasswordChanging"
+                            />
+                            <InputError
+                                :message="form.errors.current_password"
+                                class="mt-1"
+                            />
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Requis pour changer votre mot de passe
+                        </p>
+                    </div>
+
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-100"
+                    >
                         <!-- Nouveau mot de passe -->
                         <div>
                             <InputLabel
                                 for="password"
                                 value="Nouveau mot de passe"
-                                class="text-gray-600 mb-1 font-medium"
+                                class="text-gray-700"
                             />
                             <div class="relative">
                                 <fonta
                                     icon="lock"
                                     class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm z-10"
                                 />
-                                <input
+                                <BaseInput
                                     id="password"
                                     v-model="form.password"
                                     type="password"
-                                    class="mt-1 block w-full pl-10 p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                    class="pl-10"
                                     placeholder="••••••••"
                                 />
                                 <InputError
@@ -167,14 +192,18 @@
                             <InputLabel
                                 for="password_confirmation"
                                 value="Confirmation"
-                                class="text-gray-600 mb-1 font-medium"
+                                class="text-gray-700"
                             />
                             <div class="relative">
-                                <input
+                                <fonta
+                                    icon="lock"
+                                    class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm z-10"
+                                />
+                                <BaseInput
                                     id="password_confirmation"
                                     v-model="form.password_confirmation"
                                     type="password"
-                                    class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                    class="pl-10"
                                 />
                                 <InputError
                                     :message="form.errors.password_confirmation"
@@ -199,8 +228,8 @@
                 </Button>
                 <BaseButton
                     type="submit"
-                    :disabled="!isEmailChanged && !isPasswordChanged"
-                    class="px-6 bg-blue-500 group disabled:opacity-70 disabled:bg-gray-400 disabled:bg-none"
+                    :disabled="!hasFormChanges"
+                    class="px-6 bg-blue-500 group"
                 >
                     <div class="flex items-center gap-2">
                         <fonta
@@ -222,13 +251,14 @@
 
 <script setup>
 import BaseButton from "@/Components/BaseButton.vue";
+import BaseInput from "@/Components/BaseInput.vue";
 import Button from "@/Components/Button.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TestLayout from "@/Layouts/TestLayout.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
-import { computed, defineOptions, ref } from "vue";
+import { computed, defineOptions, ref, watch } from "vue";
 
 const page = usePage();
 
@@ -244,13 +274,21 @@ const form = useForm({
     email: page.props.auth.user.email || "",
     password: "",
     password_confirmation: "",
+    current_password: "",
 });
 
 // Stocker l'email d'origine
 const originalEmail = ref(form.email);
+console.log("Email original:", originalEmail.value);
 
 // Computed property pour vérifier si l'email a changé
 const isEmailChanged = computed(() => {
+    console.log(
+        "Vérification email - Actuel:",
+        form.email,
+        "Original:",
+        originalEmail.value
+    );
     return form.email !== originalEmail.value;
 });
 
@@ -259,15 +297,70 @@ const isPasswordChanged = computed(() => {
     return form.password !== "" || form.password_confirmation !== "";
 });
 
+// Vérifie si la modification du mot de passe est valide
+const isPasswordChangeValid = computed(() => {
+    // Si aucun changement de mot de passe n'est demandé (les deux champs sont vides), c'est valide
+    if (!form.password && !form.password_confirmation) {
+        return true;
+    }
+
+    // Si un seul des champs est rempli, c'est invalide
+    if (
+        (!form.password && form.password_confirmation) ||
+        (form.password && !form.password_confirmation)
+    ) {
+        return false;
+    }
+
+    // Si on essaie de changer le mot de passe, vérifier les conditions
+    return (
+        form.current_password !== "" && // Mot de passe actuel requis
+        form.password === form.password_confirmation && // Les mots de passe doivent correspondre
+        form.password.length >= 8 // Longueur minimale
+    );
+});
+
+// Vérifie si le formulaire est valide pour être soumis
+const isFormValid = computed(() => {
+    // Cas 1: Modification d'email uniquement
+    if (isEmailChanged.value && !isPasswordChanged.value) {
+        return isEmailValid.value;
+    }
+
+    // Cas 2: Modification de mot de passe uniquement
+    if (!isEmailChanged.value && isPasswordChanged.value) {
+        return isPasswordChangeValid.value;
+    }
+
+    // Cas 3: Modification des deux
+    if (isEmailChanged.value && isPasswordChanged.value) {
+        return isEmailValid.value && isPasswordChangeValid.value;
+    }
+
+    // Si aucune modification n'a été faite
+    return false;
+});
+
+// Ajouter une computed property pour valider l'email
+const isEmailValid = computed(() => {
+    // Expression régulière simple pour l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(form.email);
+});
+
+const isPasswordChanging = computed(() => {
+    return form.current_password !== "";
+});
+
 const reset = () => {
     form.email = originalEmail.value;
-    form.reset("password", "password_confirmation");
+    form.reset("password", "password_confirmation", "current_password");
 };
 
 const updateParameters = () => {
     form.post(route("medecin.parametre.update"), {
         onSuccess: () => {
-            form.reset("password", "password_confirmation");
+            form.reset("password", "password_confirmation", "current_password");
             originalEmail.value = form.email;
             Swal.fire({
                 title: "Mise à jour !",
@@ -277,11 +370,27 @@ const updateParameters = () => {
             });
         },
         onError: (e) => {
-            form.reset("password", "password_confirmation");
+            form.reset("password", "password_confirmation", "current_password");
             console.log(e);
         },
     });
 };
+
+// Pour le débogage
+watch(isFormValid, (newVal) => {
+    console.log("isFormValid changé à:", newVal);
+    console.log("Email changé:", isEmailChanged.value);
+    console.log("Email valide:", isEmailValid.value);
+    console.log("Mot de passe changé:", isPasswordChanged.value);
+    console.log(
+        "Changement de mot de passe valide:",
+        isPasswordChangeValid.value
+    );
+});
+
+const hasFormChanges = computed(() => {
+    return isEmailChanged.value || isPasswordChanged.value;
+});
 </script>
 
 <style scoped>

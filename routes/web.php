@@ -10,6 +10,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\DocumentController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -36,10 +37,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
-
-
-
+// Routes pour les documents PDF (accessibles aux admin et medecin)
+Route::middleware(['auth'])->group(function () {
+    Route::get('documents/{type}/{consultation}/preview', [DocumentController::class, 'previewDocument'])->name('admin.document.preview');
+    Route::get('documents/{type}/{consultation}/download', [DocumentController::class, 'downloadDocument'])->name('admin.document.download');
+});
 
 //Route pour User admin
 Route::middleware(['auth','role:admin'])->group(function () {
@@ -70,12 +72,8 @@ Route::middleware(['auth','role:admin'])->group(function () {
     // Route pour les paramètres
     Route::get('admin/parametres', [AdminController::class, 'showParametres'])->name('admin.parametres');
     Route::post('user/store', [AdminController::class, 'storeUser'])->name('register.store');
-
-    // Routes pour les documents PDF
-    Route::get('admin/documents/{type}/{consultation}/preview', [AdminController::class, 'previewDocument'])->name('admin.document.preview');
-    Route::get('admin/documents/{type}/{consultation}/download', [AdminController::class, 'downloadDocument'])->name('admin.document.download');
-}
-);
+    Route::patch('admin/profile/update', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
+});
 
 //Route pour User medecin
 Route::middleware(['auth','role:medecin'])->group(function () {

@@ -16,9 +16,9 @@
                         class="w-16 h-16 text-red-400 transition-transform hover:scale-105 logo-animation"
                     />
                     <span
-                        class="text-4xl font-bold text-blue-500 logo-animation"
+                        class="text-4xl font-bold text-gray-600 logo-animation"
                     >
-                        medicare
+                        <span class="text-blue-500">Medi</span>care
                     </span>
                 </div>
 

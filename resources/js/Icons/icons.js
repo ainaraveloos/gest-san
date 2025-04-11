@@ -1,6 +1,6 @@
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
-import {  faAddressBook, faArrowRight, faBed,  faBedPulse,  faCalendarAlt, faCalendarCheck, faCapsules, faChevronDown, faChevronRight, faChevronUp, faCircleInfo, faClipboard, faClipboardList, faDownload, faEllipsis, faEnvelope, faEnvelopeCircleCheck, faEnvelopeOpenText, faFileMedical, faFilePen, faFileWaveform, faFilter, faFloppyDisk, faFolderOpen, faHeartPulse, faHistory, faHospitalUser, faIdBadge, faIdCard, faLock, faMagnifyingGlass, faMicroscope, faNotesMedical, faPaperPlane, faPhone, faPlusCircle, faPrescription, faPrint, faRuler, faShuffle,  faSignInAlt,  faSpinner, faStethoscope,  faTemperatureHigh,  faTrash,faUser,faUserCircle,faUserDoctor,faUserInjured,faUserMd, faUserPlus, faUsers, faUserTag, faVialCircleCheck, faWeight } from '@fortawesome/free-solid-svg-icons'
+import {  faAddressBook, faArrowRight, faBed,  faBedPulse,  faCalendarAlt, faCalendarCheck, faCapsules, faChartLine, faChevronDown, faChevronRight, faChevronUp, faCircleInfo, faClipboard, faClipboardList, faDownload, faEllipsis, faEnvelope, faEnvelopeCircleCheck, faEnvelopeOpenText, faEye, faFileAlt, faFileMedical, faFilePen, faFileWaveform, faFilter, faFloppyDisk, faFolderOpen, faHeartPulse, faHistory, faHospitalUser, faIdBadge, faIdCard, faLock, faMagnifyingGlass, faMicroscope, faNotesMedical, faPaperPlane, faPhone, faPlusCircle, faPrescription, faPrint, faRuler, faShuffle,  faSignInAlt,  faSpinner, faStethoscope,  faTemperatureHigh,  faTrash,faUser,faUserCircle,faUserDoctor,faUserInjured,faUserMd, faUserPlus, faUsers, faUserTag, faVialCircleCheck, faWeight } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
     faMagnifyingGlass,
@@ -13,9 +13,9 @@ library.add(
     faClipboardList,
     faArrowRight,
     faFilter,
-
     faPlusCircle,
     faPhone,
+    faFileAlt,
     faAddressBook,
     faUserCircle,
     faBed,
@@ -59,6 +59,7 @@ library.add(
     faIdBadge,
     faUserTag,
     faPaperPlane,
-    faHeartPulse
+    faHeartPulse,
+    faChartLine
 
 )

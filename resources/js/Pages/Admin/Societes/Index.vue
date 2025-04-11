@@ -1,11 +1,13 @@
 <template>
     <!-- Card Liste des Sociétés -->
-    <div class="bg-white rounded-lg shadow p-6">
+    <div
+        class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6"
+    >
         <div
             class="flex items-center justify-between mb-4 gap-4 lg:flex-row flex-col"
         >
             <div>
-                <h1 class="font-bold text-2xl text-gray-600">
+                <h1 class="font-bold text-xl text-gray-600">
                     Liste des Societes
                 </h1>
             </div>
@@ -20,7 +22,10 @@
                 />
 
                 <!-- Bouton pour ouvrir le formulaire dans une modal -->
-                <BaseButton @click="openModal">
+                <BaseButton
+                    @click="openModal"
+                    class="transition-transform duration-500 hover:scale-105"
+                >
                     <span>Ajouter un societe</span>
                     <AppstoreAddOutlined class="text-lg" />
                 </BaseButton>
@@ -29,71 +34,72 @@
 
         <div class="overflow-x-auto mb-4">
             <table
-                class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden"
+                class="min-w-full divide-y divide-gray-200/60 rounded-lg overflow-hidden shadow-sm"
             >
-                <thead class="bg-blue-500 text-center">
+                <thead
+                    class="bg-gradient-to-br from-blue-500 to-blue-600 text-center"
+                >
                     <tr>
                         <th
-                            class="px-4 py-4 text-left texte-center text-sm font-bold text-gray-200 uppercase tracking-wider"
+                            class="px-4 py-2.5 text-start texte-center text-sm font-bold text-gray-200 tracking-wider"
                         >
                             Nom
                         </th>
                         <th
-                            class="px-4 py-4 text-center hidden lg:table-cell text-sm font-bold text-gray-200 uppercase tracking-wider"
+                            class="px-4 py-2.5 text-start hidden lg:table-cell text-sm font-bold text-gray-200 tracking-wider"
                         >
                             Nombre de patients
                         </th>
                         <th
-                            class="px-4 py-4 text-center text-sm font-bold text-gray-200 uppercase tracking-wider"
+                            class="px-4 py-2.5 text-start text-sm font-bold text-gray-200 tracking-wider sm:table-cell hidden"
                         >
                             Date d'adhésion
                         </th>
                         <th
-                            class="px-4 py-4 text-center text-sm font-bold text-gray-200 uppercase tracking-wider"
+                            class="px-4 py-2.5 text-start text-sm font-bold text-gray-200 tracking-wider "
                         >
                             Actions
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white divide-y divide-gray-200/60">
                     <tr
                         v-for="(societe, index) in societes.data"
                         :key="index"
-                        :class="[index % 2 === 0 ? 'bg-gray-50' : 'bg-white']"
+                        :class="[
+                            index % 2 === 0 ? 'bg-gray-50/80' : 'bg-white',
+                        ]"
+                        class="hover:bg-blue-50/50 transition-colors duration-300"
                     >
-                        <td class="px-4 py-4 whitespace-nowrap">
+                        <td class="px-4 py-2 text-start whitespace-nowrap">
                             <div class="text-base font-semibold text-gray-600">
                                 {{ societe.nom }}
                             </div>
                         </td>
                         <td
-                            class="px-4 py-4 hidden lg:table-cell whitespace-nowrap"
+                            class="px-4 py-2 text-start hidden lg:table-cell whitespace-nowrap"
                         >
-                            <div
-                                class="text-sm font-bold text-gray-600 text-center"
-                            >
+                            <div class="text-sm font-bold text-gray-600">
                                 {{ societe.patients_count }}
                             </div>
                         </td>
-                        <td
-                            class="px-4 py-4 whitespace-nowrap place-items-center"
-                        >
+                        <td class="px-4 py-2 text-start whitespace-nowrap sm:table-cell hidden">
                             <div class="text-sm text-green-600">
                                 {{ societe.date_adhesion }}
                             </div>
                         </td>
                         <td
-                            class="px-4 py-4 whitespace-nowrap place-items-center text-sm text-gray-500"
+                            class="px-4 py-2 text-start whitespace-nowrap text-sm text-gray-500"
                         >
                             <!-- Version desktop -->
                             <div class="hidden md:flex space-x-4 items-center">
                                 <!-- Lien de modification -->
                                 <button
                                     @click="editSociete(societe)"
-                                    class="text-blue-500 hover:bg-gray-100 group px-2 py-1 hover:scale-110 overflow-hidden hover:shadow-sm transition-all duration-300 rounded-md hover:underline"
+                                    class="text-blue-500 hover:bg-blue-50/80 group px-2 py-1 hover:scale-105 overflow-hidden hover:shadow-sm transition-all duration-300 rounded-md"
                                 >
                                     <EditFilled
-                                        class="text-lg group-hover:scale-125 duration-500"
+                                        class="text-lg group-hover:scale-110 duration-300"
                                     />
                                 </button>
                                 <!-- Bouton de suppression -->
@@ -106,10 +112,10 @@
                                             )
                                         )
                                     "
-                                    class="text-red-500 hover:bg-gray-100 group hover:scale-110 overflow-hidden px-2 py-1 hover:shadow-sm transition-all duration-500 rounded-md hover:underline"
+                                    class="text-red-500 hover:bg-red-50/80 group hover:scale-105 overflow-hidden px-2 py-1 hover:shadow-sm transition-all duration-300 rounded-md"
                                 >
                                     <DeleteFilled
-                                        class="text-lg group-hover:scale-125 duration-500"
+                                        class="text-base group-hover:scale-110 duration-300"
                                     />
                                 </button>
                             </div>
@@ -121,11 +127,11 @@
                                     :trigger="['click']"
                                 >
                                     <button
-                                        class="text-blue-500 hover:bg-blue-100 bg-blue-50 group px-2 py-1 hover:scale-110 overflow-hidden hover:shadow-sm transition-all duration-300 rounded-md hover:underline"
+                                        class="text-blue-500 hover:bg-blue-100/80 bg-blue-50/70 group px-2 py-1 hover:scale-105 overflow-hidden hover:shadow-sm transition-all duration-300 rounded-md"
                                     >
                                         <fonta
                                             icon="ellipsis"
-                                            class="text-lg text-gray-400"
+                                            class="text-base text-gray-400"
                                         />
                                     </button>
                                     <template #overlay>
@@ -181,23 +187,23 @@
             </table>
             <!-- Pagination -->
             <div v-if="societes.data.length > 0 && societes.links.length > 3">
-                <div class="flex flex-wrap mt-4 items-center justify-end">
+                <div class="flex flex-wrap mt-6 items-center justify-end">
                     <div
                         v-for="(link, linkIndex) in societes.links"
                         :key="linkIndex"
                     >
                         <div
                             v-if="link.url === null"
-                            class="mr-1 mb-1 shadow-sm transition-colors duration-300 px-4 py-3 leading-4 text-gray-400 border rounded"
+                            class="mr-1 mb-1 shadow-sm transition-colors duration-300 px-4 py-2 leading-4 text-gray-400 border border-gray-300/60 rounded"
                             v-html="link.label"
                         ></div>
                         <Link
                             v-else
                             :preserve-state="true"
                             :preserve-scroll="true"
-                            class="mr-1 shadow-sm transition-all duration-300 hover:scale-110 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block focus:text-blue-500"
+                            class="mr-1 shadow-sm transition-all duration-300 hover:scale-105 mb-1 px-4 py-2 text-sm leading-4 border border-gray-300/60 rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block focus:text-blue-500"
                             :class="{
-                                'bg-slate-600 !text-white border-none':
+                                'bg-gradient-to-br from-blue-500 to-blue-600 !text-white border-none':
                                     link.active,
                             }"
                             :href="link.url"
@@ -219,7 +225,9 @@
         width="700px"
         class="rounded-lg"
     >
-        <div class="modal-header bg-blue-500 -mt-6 -mx-6 py-4 px-6 mb-6">
+        <div
+            class="modal-header bg-gradient-to-br from-blue-500 to-blue-600 -mt-6 -mx-6 py-4 px-6 mb-6"
+        >
             <h1 class="text-white text-lg">
                 {{ isEditing ? "Modifier la société" : "Ajouter une société" }}
             </h1>
@@ -233,7 +241,7 @@
                         Informations générales
                     </h2>
                     <div
-                        class="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                        class="bg-gray-50/80 p-5 rounded-lg border border-gray-200/60"
                     >
                         <div>
                             <InputLabel for="nom" value="Nom de l'entreprise" />
@@ -243,6 +251,7 @@
                                 v-model="form.nom"
                                 required
                                 autofocus
+                                class="transition-all duration-300 hover:border-blue-300 focus:border-blue-500"
                             />
                             <InputError
                                 class="mt-1"
@@ -258,7 +267,7 @@
                         Informations de contact
                     </h2>
                     <div
-                        class="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                        class="bg-gray-50/80 p-5 rounded-lg border border-gray-200/60"
                     >
                         <div>
                             <InputLabel for="email" value="Email" />
@@ -267,6 +276,7 @@
                                 type="email"
                                 v-model="form.email"
                                 required
+                                class="transition-all duration-300 hover:border-blue-300 focus:border-blue-500"
                             />
                             <InputError
                                 class="mt-1"
@@ -282,7 +292,7 @@
                         Description de l'entreprise
                     </h2>
                     <div
-                        class="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                        class="bg-gray-50/80 p-5 rounded-lg border border-gray-200/60"
                     >
                         <div>
                             <InputLabel for="description" value="Description" />
@@ -290,7 +300,7 @@
                                 name="description"
                                 id="description"
                                 v-model="form.description"
-                                class="mt-1 block w-full p-3 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                class="mt-1 block w-full p-3 border rounded-lg border-gray-300/70 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 hover:border-blue-300"
                                 rows="4"
                             ></textarea>
                             <InputError
@@ -303,15 +313,18 @@
 
                 <!-- Boutons d'action -->
                 <div
-                    class="flex justify-end space-x-3 pt-4 border-t border-gray-200"
+                    class="flex justify-end space-x-3 pt-4 border-t border-gray-200/60"
                 >
                     <Button
                         @click="handleCancel"
-                        class="bg-white hover:bg-gray-50 border-gray-300 text-gray-700 hover:text-gray-900"
+                        class="bg-white hover:bg-gray-50 border-gray-300/70 text-gray-700 hover:text-gray-900"
                     >
                         Annuler
                     </Button>
-                    <BaseButton @click="submitForm" class="px-6">
+                    <BaseButton
+                        @click="submitForm"
+                        class="px-6 transition-transform duration-300 hover:scale-105"
+                    >
                         {{ isEditing ? "Mettre à jour" : "Ajouter" }}
                     </BaseButton>
                 </div>
@@ -357,8 +370,6 @@ const props = defineProps({
         default: () => ({}),
     },
 });
-
-
 
 //Variable d'affichage du modal
 const showModal = ref(false);

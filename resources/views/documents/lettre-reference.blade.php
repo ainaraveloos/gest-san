@@ -5,16 +5,15 @@
 @endsection
 
 @section('content')
-    <div style="margin-bottom: 20px;">
-        <p><strong>Docteur</strong></p>
-        <p>{{ $consultation->lettre_reference->refereMed->nom ?? '_________________' }}</p>
-        <p>{{ $consultation->lettre_reference->refereMed->specialite ?? '_________________' }}</p>
+    <div style="margin-bottom: 10px;">
+        <p style="margin: 0 0 3px 0;"><strong>Docteur</strong></p>
+        <p style="margin: 0;">{{ $consultation->lettre_reference->refereMed->prenom ?? '_________________' }} {{ $consultation->lettre_reference->refereMed->nom ?? '_________________' }} ({{ $consultation->lettre_reference->refereMed->specialite ?? '_________________' }})</p>
     </div>
 
-    <div style="margin-bottom: 20px;">
-        <p><strong>Objet :</strong> Lettre de référence médicale</p>
-        <p>Cher Confrère, Chère Consœur,</p>
-        <p>Je me permets de vous adresser en consultation le patient cité ci-dessus pour les raisons suivantes :</p>
+    <div style="margin-bottom: 10px;">
+        <p style="margin: 0 0 3px 0;"><strong>Objet :</strong> Lettre de référence médicale</p>
+        <p style="margin: 0 0 3px 0;">Cher Confrère, Chère Consœur,</p>
+        <p style="margin: 0;">Je me permets de vous adresser en consultation le patient cité ci-dessus pour les raisons suivantes :</p>
     </div>
 
     <table>
@@ -29,14 +28,10 @@
             <td><strong>Diagnostic actuel</strong></td>
             <td>{{ $consultation->diagnostic ?? 'Non spécifié' }}</td>
         </tr>
-        <tr>
-            <td><strong>Antécédents notables</strong></td>
-            <td>{{ $consultation->patient->antecedents ?? 'Aucun antécédent notable' }}</td>
-        </tr>
     </table>
 
-    <div style="margin: 20px 0;">
-        <p>Je vous remercie de votre attention et vous prie de me tenir informé de vos conclusions.</p>
-        <p>Confraternellement,</p>
+    <div style="margin: 10px 0;">
+        <p style="margin: 0 0 3px 0;">Je vous remercie de votre attention et vous prie de me tenir informé de vos conclusions.</p>
+        <p style="margin: 0;">Confraternellement,</p>
     </div>
 @endsection

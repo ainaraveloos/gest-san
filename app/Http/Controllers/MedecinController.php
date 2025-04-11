@@ -14,12 +14,130 @@ use Illuminate\Http\Request;
 use Illuminate\Support\ViewErrorBag;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class MedecinController extends Controller
 {
     public function index(Request $request)    {
-        return inertia("Medecin/dashboard");
+        $medecin = Auth::user()->medecin;
+        $medecinId = $medecin->id;
+
+        // Get the period from request or default to 'month'
+        $period = $request->input('period', 'month');
+
+        // Log pour le débogage
+        Log::info('MedecinController dashboard - period reçue: ' . $period);
+        Log::info('Paramètres de la requête: ', $request->all());
+
+        // Define date range based on selected period
+        $startDate = null;
+        $endDate = now();
+
+        switch ($period) {
+            case 'today':
+                $startDate = now()->startOfDay();
+                break;
+            case 'week':
+                $startDate = now()->startOfWeek();
+                break;
+            case 'month':
+                $startDate = now()->startOfMonth();
+                break;
+            case 'year':
+                $startDate = now()->startOfYear();
+                break;
+            default:
+                $startDate = now()->startOfMonth();
+                break;
+        }
+
+        // Query patients with consultations by this doctor
+        $totalPatients = Patient::whereHas('consultations', function($query) use ($medecinId) {
+            $query->where('medecin_id', $medecinId);
+        })->count();
+
+        // Query consultations in the selected period
+        $consultationsQuery = Consultation::where('medecin_id', $medecinId);
+
+        if ($startDate) {
+            $consultationsQuery->whereBetween('date_consultation', [$startDate, $endDate]);
+        }
+
+        $consultations = $consultationsQuery->get();
+        $totalConsultations = $consultations->count();
+
+        // Consultations by type
+        $consultationsByType = $consultations->groupBy('type')
+            ->map(function ($group) {
+                return $group->count();
+            })
+            ->toArray();
+
+        // Medical follow-up data (ordonnances, examens, references)
+        $ordonnances = Ordonnance::whereIn('consultation_id', $consultations->pluck('id'))->count();
+        $examens = Demande_examen::whereIn('consultation_id', $consultations->pluck('id'))->count();
+        $references = Lettre_reference::whereIn('consultation_id', $consultations->pluck('id'))->count();
+
+        // Monthly trends (last 6 months)
+        $monthlyTrends = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $monthName = $month->translatedFormat('F');
+            $monthStart = $month->copy()->startOfMonth();
+            $monthEnd = $month->copy()->endOfMonth();
+
+            $count = Consultation::where('medecin_id', $medecinId)
+                ->whereBetween('date_consultation', [$monthStart, $monthEnd])
+                ->count();
+
+            $monthlyTrends[] = [
+                'month' => $monthName,
+                'count' => $count
+            ];
+        }
+
+        // Recent consultations
+        $recentConsultations = Consultation::with(['patient', 'ordonnance', 'demande_examen', 'lettre_reference'])
+            ->where('medecin_id', $medecinId)
+            ->orderBy('date_consultation', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($consultation) {
+                return [
+                    'id' => $consultation->id,
+                    'patient' => [
+                        'nom_complet' => $consultation->patient->nom . ' ' . $consultation->patient->prenom,
+                    ],
+                    'patient_id' => $consultation->patient_id,
+                    'date_consultation' => $consultation->date_consultation,
+                    'type' => $consultation->type,
+                ];
+            });
+
+        // Compile all stats
+        $stats = [
+            'totalPatients' => $totalPatients,
+            'totalConsultations' => $totalConsultations,
+            'totalOrdonnances' => $ordonnances,
+            'totalExamens' => $examens,
+            'consultationsByType' => $consultationsByType,
+            'medicalFollowUp' => [
+                'ordonnances' => $ordonnances,
+                'examens' => $examens,
+                'references' => $references,
+                'certificats' => Consultation::where('medecin_id', $medecinId)
+                    ->where('type', 'visite_aptitude')
+                    ->count(), // Estimation for certificates
+            ],
+            'monthlyTrends' => $monthlyTrends,
+            'recentConsultations' => $recentConsultations,
+        ];
+
+        return inertia("Medecin/dashboard", [
+            'stats' => $stats,
+            'period' => $period
+        ]);
     }
    public function patientDossier(Request $request)
 {
@@ -111,7 +229,7 @@ public function showDossier($id)
      $medecin = Auth::user()->medecin;
      $medecinId = $medecin->id;
     // Récupérer le patient avec ses consultations et les documents associés
-    $patient = Patient::with(['consultations' => function($query) use ($medecinId) {
+    $patient = Patient::with(['badge','consultations' => function($query) use ($medecinId) {
         // Consultations du medecin authentifié
         $query->where('medecin_id', $medecinId)
               ->with(['ordonnance' => function($query) {
@@ -258,26 +376,24 @@ public function showDossier($id)
     // Validation des données
     $request->validate([
         'email' => 'required|email|unique:users,email,' . Auth::id(),
-        'password' => 'nullable|string|min:8',
-        'password_confirmation' => 'nullable|string|same:password',
+        'current_password' => 'nullable|required_with:password|current_password',
+        'password' => 'nullable|string|min:8|confirmed',
+        'password_confirmation' => 'nullable|same:password',
     ]);
-
 
     $user = $request->user();
 
-
+    // Mise à jour de l'email
     $user->email = $request->email;
 
-
-    if ($request->filled('password')) {
+    // Mise à jour du mot de passe uniquement si le mot de passe actuel a été fourni et validé
+    if ($request->filled('password') && $request->filled('current_password')) {
         $user->password = bcrypt($request->password);
     }
 
-
     $user->save();
 
-
-    return redirect()->to('medecin/dashboard');
+    return redirect()->back();
 }
 public function destroyConsultation(Request $request, $id)
 {

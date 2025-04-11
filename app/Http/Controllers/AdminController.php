@@ -13,16 +13,16 @@ use App\Models\User;
 use App\Models\Medecin;
 use App\Models\Badge;
 use Illuminate\Validation\Rule;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use App\Models\Consultation;
 use App\Models\Ordonnance;
 use App\Models\Demande_examen;
 use App\Models\Lettre_reference;
-use App\Models\Medicament;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class AdminController extends Controller
 {
@@ -45,8 +45,6 @@ class AdminController extends Controller
             case 'year':
                 return $now->copy()->subYear();
             default:
-                // Retourne le début du mois par défaut si la période n'est pas reconnue
-                Log::warning("Période de tableau de bord non reconnue: {$period}. Utilisation de 'month' par défaut.");
                 return $now->copy()->subMonth();
         }
     }
@@ -530,9 +528,37 @@ public function updatePatient(Request $request, Patient $patient)
     $patient->update($validatedData);
     return to_route('admin.patient.index')->with('success','PAtient mis à jour avec success');
 }
-public function showParametres(Request $request, Patient $patient)
+public function showParametres(Request $request)
 {
     return inertia('Admin/parametre');
+}
+
+public function updateProfile(Request $request): RedirectResponse
+{
+    $user = $request->user();
+
+    // Validation des données
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'prenom' => 'required|string|max:255',
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+        'current_password' => 'nullable|required_with:password|current_password',
+        'password' => 'nullable|confirmed|min:8',
+    ]);
+
+    // Mise à jour des informations basiques
+    $user->name = $validated['name'];
+    $user->prenom = $validated['prenom'];
+    $user->email = $validated['email'];
+
+    // Mise à jour du mot de passe si présent
+    if ($request->filled('password')) {
+        $user->password = Hash::make($validated['password']);
+    }
+
+    $user->save();
+
+    return redirect()->back()->with('success', 'Profil mis à jour avec succès');
 }
 
  public function storeUser(Request $request): RedirectResponse
@@ -659,51 +685,6 @@ public function deleteMedecin(Medecin $medecin)
                      ->with('success', 'Médecin supprimé avec succès');
 }
 
-/**
- * Prévisualise un document
- */
-public function previewDocument($type, $consultation)
-{
-    $consultation = Consultation::with(['medecin', 'ordonnance.medicaments', 'demande_examen', 'lettre_reference.refereMed', 'patient'])
-        ->findOrFail($consultation);
 
-    $view = match($type) {
-        'ordonnance' => 'documents.ordonnance',
-        'demande_examen' => 'documents.demande-examen',
-        'lettre_reference' => 'documents.lettre-reference',
-        'certificat_medical' => 'documents.certificat-medical',
-        default => abort(404)
-    };
-
-    // Renvoyer la vue directement pour l'aperçu
-    return view($view, compact('consultation'));
-}
-
-/**
- * Télécharge un document PDF
- */
-public function downloadDocument($type, $consultation)
-{
-    $consultation = Consultation::with(['medecin', 'ordonnance.medicaments', 'demande_examen', 'lettre_reference.refereMed', 'patient'])
-        ->findOrFail($consultation);
-
-    $view = match($type) {
-        'ordonnance' => 'documents.ordonnance',
-        'demande_examen' => 'documents.demande-examen',
-        'lettre_reference' => 'documents.lettre-reference',
-        'certificat_medical' => 'documents.certificat-medical',
-        default => abort(404)
-    };
-
-    $filename = sprintf(
-        '%s_%s_%s.pdf',
-        ucfirst($type),
-        $consultation->patient->numero,
-        Carbon::parse($consultation->date_consultation)->format('Y-m-d')
-    );
-
-    $pdf = Pdf::loadView($view, compact('consultation'));
-    return $pdf->download($filename);
-}
 }
 ?>

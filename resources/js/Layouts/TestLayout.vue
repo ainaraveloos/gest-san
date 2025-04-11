@@ -25,7 +25,9 @@
                     class="text-3xl mt-4 flex items-center justify-center font-semibold text-slate-600"
                 >
                     <img src="../../assets/logo.svg" alt="" class="w-16" />
-                    <span v-if="!collapsed">medicare</span>
+                    <span v-if="!collapsed">
+                        <span class="text-blue-500">Medi</span>care</span
+                    >
                 </h1>
             </div>
 
@@ -86,39 +88,61 @@
     <a-layout :class="['transition-all duration-300 ease-in-out']">
         <!-- Header  -->
         <a-layout-header
-            class="fixed top-0 right-0 h-20 bg-white shadow-md z-40 flex items-center justify-between px-6 border-b"
+            class="fixed top-0 right-0 h-20 bg-gradient-to-r from-white to-blue-50 shadow-md z-40 flex items-center justify-between px-8 border-b border-blue-100"
             :style="{
                 width: `calc(100% - ${collapsed ? 80 : 240}px)`,
                 left: `${collapsed ? 80 : 240}px`,
             }"
         >
-            <button
-                @click="toggleCollapse"
-                class="hover:bg-gray-100 flex items-center hover:scale-125 py-1 px-2 rounded-md text-xl transition-all duration-300"
-            >
-                <menu-unfold-outlined v-if="collapsed" class="text-gray-600" />
-                <menu-fold-outlined v-else class="text-gray-600" />
-            </button>
+            <div class="flex items-center gap-4">
+                <button
+                    @click="toggleCollapse"
+                    class="bg-blue-50 hover:bg-blue-100 flex items-center hover:scale-110 p-2 rounded-lg text-xl transition-all duration-300"
+                >
+                    <menu-unfold-outlined
+                        v-if="collapsed"
+                        class="text-blue-600"
+                    />
+                    <menu-fold-outlined v-else class="text-blue-600" />
+                </button>
+
+                <div
+                    v-if="collapsed"
+                    class="block text-lg font-medium text-gray-700"
+                >
+                    <span class="text-blue-500">Med</span>icare
+                    <span class="text-sm font-normal text-gray-500"
+                        >| Gestion Sanitaire</span
+                    >
+                </div>
+            </div>
 
             <a-dropdown trigger="click">
                 <a-button
                     type="text"
-                    class="flex items-center hover:!bg-gray-50 gap-4 text-xl !py-6"
+                    class="flex items-center hover:!bg-blue-50 gap-4 text-xl !py-6 !px-4 rounded-lg"
                 >
-                    <fonta icon="user" class="text-gray-600 text-2xl" />
+                    <div
+                        class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full text-blue-600 text-xl"
+                    >
+                        {{ $page.props.auth.user.name.charAt(0) }}
+                    </div>
                     <div class="flex flex-col items-start justify-center">
-                        <span class="text-gray-600 text-xl">{{
-                            $page.props.auth.user.name
-                        }}</span>
-                        <span class="text-xs font-medium text-gray-500">{{
+                        <span class="text-gray-700 font-medium text-base">
+                            {{ $page.props.auth.user.prenom }}
+                            {{ $page.props.auth.user.name.toUpperCase() }}</span
+                        >
+                        <span class="text-xs font-medium text-blue-500">{{
                             $page.props.auth.user.role
                         }}</span>
                     </div>
                 </a-button>
                 <template #overlay>
-                    <a-menu class="!mt-1 !min-w-[200px]">
+                    <a-menu
+                        class="!mt-1 !min-w-[250px] !rounded-xl !shadow-lg !border !border-gray-100"
+                    >
                         <!-- Informations utilisateur -->
-                        <div class="px-4 py-3 border-gray-100">
+                        <div class="px-4 py-3">
                             <div class="font-semibold text-gray-700">
                                 {{ $page.props.auth.user.name }}
                                 {{ $page.props.auth.user.prenom }}
@@ -127,23 +151,17 @@
                                 {{ $page.props.auth.user.email }}
                             </div>
                         </div>
-
-                        <!-- Option profil -->
-                        <a-menu-item
-                            key="profile"
-                            v-if="$page.props.auth.user.role == 'admin'"
-                            class="!flex !items-center !text-sm !p-2 !font-semibold !text-blue-500 hover:!bg-blue-50"
-                        >
-                            <span>Modifier mon profil</span>
-                        </a-menu-item>
-
                         <!-- Option paramètres -->
                         <a-menu-item
                             v-if="$page.props.auth.user.role == 'admin'"
                             key="settings"
-                            class="!flex !items-center !text-sm !p-2 !font-semibold !text-gray-600 hover:!bg-gray-50"
+                            class="!flex !items-center !text-sm !p-3 !font-semibold border-t border-gray-100 !text-gray-600 hover:!bg-gray-50"
                         >
-                            <Link :href="route('admin.parametres')">
+                            <Link
+                                :href="route('admin.parametres')"
+                                class="flex items-center"
+                            >
+                                <SettingOutlined class="mr-2" />
                                 <span>Paramètres</span>
                             </Link>
                         </a-menu-item>
@@ -155,9 +173,9 @@
                         <a-menu-item
                             key="logout"
                             @click="logout"
-                            class="!flex !items-center !justify-center !text-sm !p-2 !font-semibold !text-red-600 hover:!bg-red-50"
+                            class="!flex !items-center !text-sm !p-3 !font-semibold !text-red-600 hover:!bg-red-50"
                         >
-                            <LogoutOutlined class="mr-2 text-lg" />
+                            <LogoutOutlined class="mr-2" />
                             <span>Déconnexion</span>
                         </a-menu-item>
                     </a-menu>
@@ -172,23 +190,33 @@
             width: `calc(100% - ${collapsed ? 80 : 240}px)`,
             left: `${collapsed ? 80 : 240}px`,
         }"
-        class="relative transition-all duration-300 bg-gray-100 mt-16 min-h-[calc(100vh-120px)] p-4"
+        class="relative transition-all duration-300 bg-gray-100 mt-16 min-h-[calc(100vh-142px)] p-4"
     >
         <slot />
         <a-back-top :visibility-height="15" :duration="800" />
     </a-layout-content>
 
-    <!-- Footer corrigé -->
+    <!-- Footer -->
     <a-layout-footer
-        class="relative flex shadow-md items-center transition-all duration-300 justify-center p-4 bg-white border-t-2 border-gray-200"
+        class="relative flex shadow-lg transition-all p-4 duration-300 bg-white border-t border-gray-200"
         :style="{
             width: `calc(100% - ${collapsed ? 80 : 240}px)`,
             left: `${collapsed ? 80 : 240}px`,
         }"
     >
-        <h1 class="text-lg font-light text-gray-400">
-            ©2025 Gestion Sanitaire Inter-Entreprise
-        </h1>
+        <div
+            class="w-full flex flex-col md:flex-row items-center justify-between px-6 py-2"
+        >
+            <div class="flex items-center gap-2 mb-2 md:mb-0">
+                <span class="text-gray-600 font-semibold text-xl"
+                    ><span class="text-blue-500">Medi</span>care</span
+                >
+            </div>
+
+            <div class="text-sm text-gray-400 mt-2 md:mt-0">
+                ©2025 Gestion Sanitaire Inter-Entreprise
+            </div>
+        </div>
     </a-layout-footer>
     <!-- Drawer de modification -->
 </template>
@@ -202,6 +230,7 @@ import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     SettingFilled,
+    SettingOutlined,
     UsergroupAddOutlined,
 } from "@ant-design/icons-vue";
 import { Link, router, usePage } from "@inertiajs/vue3";

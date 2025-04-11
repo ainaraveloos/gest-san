@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <h4 style="margin-bottom: 10px;">Examens demandés :</h4>
+    <h4 style="margin-bottom: 6px;">Examens demandés :</h4>
 
     <table>
         <thead>
@@ -23,9 +23,9 @@
     </table>
 
     @if($consultation->demande_examen->remarques)
-        <div style="margin: 15px 0; padding: 10px; background-color: #f8f8f8; border: 1px solid #ddd;">
-            <p style="margin: 0 0 5px 0;"><strong>Remarques :</strong></p>
-            <p style="margin: 0; line-height: 1.4;">{{ $consultation->demande_examen->remarques }}</p>
+        <div style="margin: 10px 0; padding: 6px; background-color: #f8f8f8; border: 1px solid #ddd;">
+            <p style="margin: 0 0 3px 0;"><strong>Remarques :</strong></p>
+            <p style="margin: 0; line-height: 1.3;">{{ $consultation->demande_examen->remarques }}</p>
         </div>
     @endif
 @endsection

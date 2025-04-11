@@ -3,7 +3,7 @@
         <span class="mr-1">{{ label }}</span>
         <a-dropdown v-model:open="dropdownVisible" :trigger="['click']">
             <FilterFilled
-                class="hover:text-white hover:shadow-md transition-colors duration-300 text-gray-300"
+                class="hover:text-white hover:shadow-md text-xs transition-colors duration-300 text-gray-300"
             />
 
             <template #overlay>

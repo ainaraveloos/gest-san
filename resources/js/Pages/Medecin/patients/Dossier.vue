@@ -1,14 +1,16 @@
 <template>
     <div>
-        <div class="bg-white rounded-md sm:px-6 lg:px-2 py-8">
+        <div
+            class="bg-white rounded-xl sm:px-6 lg:px-2 py-8 shadow-sm hover:shadow-md transition-all duration-300"
+        >
             <!-- En-tête -->
-            <div class="flex justify-center flex-col mx-4 mb-4">
-                <div class="flex items-center gap-4 mb-6">
+            <div class="flex justify-center flex-col mx-4 mb-2">
+                <div class="flex items-center gap-4 mb-4">
                     <div
-                        class="bg-blue-100 rounded-lg p-2 flex items-center justify-center mb-2"
+                        class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg p-2 flex items-center justify-center mb-2 shadow-sm"
                     >
                         <fonta
-                            class="text-2xl text-blue-600"
+                            class="text-xl text-blue-600"
                             icon="hospital-user"
                         />
                     </div>
@@ -22,21 +24,19 @@
             </div>
 
             <div class="mb-1 p-6">
-                <div
-                    class="flex justify-between items-center  gap-4"
-                >
+                <div class="flex justify-between items-center gap-4">
                     <div class="relative flex-1">
-                        <input
+                        <BaseInput
                             type="text"
                             v-model="search"
-                            class="mt-1 block w-full pl-10 p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            class="mt-1 pl-10 transition-all duration-300 hover:border-blue-300 focus:border-blue-500"
                             placeholder="Rechercher un nom, prenom, numero ..."
                         />
                         <div
                             class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"
                         >
                             <fonta
-                                class="fas fa-search text-blue-500"
+                                class="fas fa-search text-blue-500 transition-transform duration-300 hover:scale-110"
                                 icon="magnifying-glass"
                             />
                         </div>
@@ -56,72 +56,74 @@
             </div>
 
             <!-- Table Container avec scroll horizontal -->
-            <div class="flow-root">
+            <div class="mx-4">
                 <div class="overflow-x-auto">
-                    <div class="inline-block min-w-full py-2 align-middle">
+                    <div class="inline-block min-w-full align-middle">
                         <table
-                            class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden"
+                            class="min-w-full divide-y divide-gray-200/60 rounded-lg overflow-hidden shadow-sm"
                         >
-                            <thead class="bg-blue-500 text-white">
+                            <thead
+                                class="bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+                            >
                                 <tr>
                                     <th
                                         scope="col"
-                                        class="py-4 pl-4 pr-3 text-left text-md font-semibold sm:pl-6"
+                                        class="py-2.5 pl-4 text-start text-sm font-bold sm:pl-6"
                                     >
                                         Patient
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-4 py-3.5 text-left text-md lg:table-cell hidden font-semibold"
+                                        class="px-4 py-2.5 text-start text-sm lg:table-cell hidden font-bold"
                                     >
                                         Numéro
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-4 py-3.5 text-left text-md font-semibold hidden xl:table-cell"
+                                        class="px-4 py-2.5 text-start text-sm font-bold hidden xl:table-cell"
                                     >
                                         Societe
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-4 py-3.5 text-center text-md hidden md:table-cell font-semibold"
+                                        class="px-4 py-2.5 text-start text-sm hidden md:table-cell font-bold"
                                     >
                                         Dernière consultation
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-4 py-3.5 text-center text-md font-semibold"
+                                        class="px-4 py-2.5 text-start text-sm font-bold"
                                     >
                                         Nombre de consultations
                                     </th>
                                     <th
                                         scope="col"
-                                        class="relative py-3.5 pl-3 pr-4 sm:pr-6"
+                                        class="relative py-2.5 pl-3"
                                     >
                                         <span class="sr-only">Actions</span>
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
+                            <tbody class="divide-y divide-gray-200/60 bg-white">
                                 <tr
                                     v-for="(patient, index) in patients.data"
                                     :key="index"
                                     :class="
                                         index % 2 === 0
                                             ? 'bg-white'
-                                            : 'bg-gray-50'
+                                            : 'bg-gray-50/80'
                                     "
-                                    class="hover:bg-gray-100 transition-colors duration-300"
+                                    class="hover:bg-blue-50/50 transition-colors duration-300"
                                 >
                                     <td
-                                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6"
+                                        class="whitespace-nowrap text-start py-2 pl-4 text-sm"
                                     >
                                         <div class="flex items-center">
                                             <div
                                                 class="h-10 w-10 flex-shrink-0"
                                             >
                                                 <span
-                                                    class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-300"
+                                                    class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-300 to-blue-400 shadow-sm transform transition-transform duration-300 hover:scale-110"
                                                 >
                                                     <span
                                                         class="font-medium leading-none text-white"
@@ -151,20 +153,20 @@
                                         </div>
                                     </td>
                                     <td
-                                        class="whitespace-nowrap px-3 hidden lg:table-cell py-4 text-sm"
+                                        class="whitespace-nowrap px-3 py-2 text-start hidden lg:table-cell text-sm"
                                     >
                                         <span
-                                            class="p-1 bg-green-50 rounded-full text-green-600 text-xs border border-green-600"
+                                            class="p-1 bg-green-50/80 rounded-full text-green-600 text-xs border border-green-600/60"
                                             >{{ patient.numero }}</span
                                         >
                                     </td>
                                     <td
-                                        class="whitespace-nowrap px-3 hidden xl:table-cell py-4 font-medium text-gray-500"
+                                        class="whitespace-nowrap px-3 py-2 text-start hidden xl:table-cell font-medium text-gray-500"
                                     >
                                         {{ patient.societe?.nom || "N/A" }}
                                     </td>
                                     <td
-                                        class="whitespace-nowrap px-3 py-4 text-sm text-center hidden md:table-cell text-gray-500"
+                                        class="whitespace-nowrap px-3 py-2 text-start text-sm hidden md:table-cell text-gray-500"
                                     >
                                         {{
                                             patient.consultations[0]
@@ -176,16 +178,16 @@
                                         }}
                                     </td>
                                     <td
-                                        class="whitespace-nowrap px-3 py-4 text-md text-center text-gray-500"
+                                        class="whitespace-nowrap px-3 py-2 text-start text-md text-gray-500"
                                     >
                                         {{ patient.consultations.length }}
                                     </td>
                                     <td
-                                        class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                                        class="relative whitespace-nowrap py-2 text-start text-sm font-medium"
                                     >
                                         <button
                                             @click="viewDossier(patient)"
-                                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 hover:scale-110 transition-all duration-500 ease-in-out border border-blue-200"
+                                            class="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-gradient-to-br from-blue-50 to-blue-100/80 text-blue-600 font-semibold hover:from-blue-100 hover:to-blue-200/80 hover:scale-105 transition-all duration-300 border border-blue-200/60"
                                         >
                                             <fonta
                                                 icon="folder-open"
@@ -202,46 +204,31 @@
             </div>
 
             <!-- Pagination -->
-            <div
-                v-if="patients.data.length > 0 && patients.links.length > 3"
-                class="bg-white border-t border-gray-200"
-            >
-                <div
-                    class="flex flex-wrap px-4 py-3 items-center justify-between sm:px-6"
-                >
-                    <div class="flex items-center space-x-2">
-                        <span class="text-base font-semibold text-gray-500">
-                            Page {{ patients.current_page }} sur
-                            {{ patients.last_page }}
-                        </span>
-                    </div>
-                    <div class="flex">
+            <div v-if="patients.data.length > 0 && patients.links.length > 3">
+                <div class="flex flex-wrap mt-6 items-center justify-end">
+                    <div
+                        v-for="(link, linkIndex) in patients.links"
+                        :key="linkIndex"
+                    >
                         <div
-                            v-for="(link, linkIndex) in patients.links"
-                            :key="linkIndex"
+                            v-if="link.url === null"
+                            class="mr-1 mb-1 shadow-sm transition-colors duration-300 px-4 py-2 leading-4 text-gray-400 border border-gray-300/60 rounded"
+                            v-html="link.label"
+                        ></div>
+                        <Link
+                            v-else
+                            :preserve-state="true"
+                            :preserve-scroll="true"
+                            class="mr-1 shadow-sm transition-all duration-300 hover:scale-105 mb-1 px-4 py-2 text-sm leading-4 border border-gray-300/60 rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block focus:text-blue-500"
+                            :class="{
+                                'bg-gradient-to-br from-blue-500 to-blue-600 !text-white border-none':
+                                    link.active,
+                            }"
+                            :href="link.url"
+                            @click.prevent="navigateToPage(link.url)"
                         >
-                            <div
-                                class="flex flex-wrap mt-4 items-center justify-end"
-                            >
-                                <div
-                                    v-if="link.url === null"
-                                    class="mr-1 mb-1 shadow-sm transition-colors duration-300 px-4 py-3 leading-4 text-gray-400 border rounded"
-                                    v-html="link.label"
-                                ></div>
-                                <Link
-                                    v-else
-                                    preserve-scroll
-                                    class="mr-1 shadow-sm transition-all duration-300 hover:scale-110 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-green-700 hover:text-white focus:border-green-500 inline-block px-4 py-3 focus:text-green-500"
-                                    :class="{
-                                        'bg-blue-500 text-white': link.active,
-                                    }"
-                                    :href="link.url"
-                                    @click.prevent="navigateToPage(link.url)"
-                                >
-                                    <span v-html="link.label"></span>
-                                </Link>
-                            </div>
-                        </div>
+                            <span v-html="link.label"></span>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -250,6 +237,7 @@
 </template>
 
 <script setup>
+import BaseInput from "@/Components/BaseInput.vue";
 import SortDropdown from "@/Components/SortDropdown.vue";
 import TestLayout from "@/Layouts/TestLayout.vue";
 import {

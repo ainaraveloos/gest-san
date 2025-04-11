@@ -3,13 +3,11 @@
         <div
             class="flex flex-col md:flex-row justify-between items-center mb-6 px-4"
         >
-            <h1 class="font-bold text-2xl text-gray-600">
-                Liste des Patients <fonta class="ml-4" icon="users" />
-            </h1>
+            <h1 class="font-bold text-xl text-gray-600">Liste des Patients</h1>
             <!-- Boutton ouvrir modal de registre patient -->
-            <BaseButton class="py-2.5" @click="showFormModal">
+            <BaseButton class="py-2" @click="showFormModal">
                 <span>Ajouter nouveau patient</span>
-                <fonta icon="user-plus" class="text-md" />
+                <fonta icon="user-plus" />
             </BaseButton>
         </div>
 
@@ -40,15 +38,13 @@
             <table
                 class="min-w-[97%] divide-y divide-gray-200 rounded-lg overflow-hidden"
             >
-                <thead class="bg-blue-500">
-                    <tr
-                        class="text-sm text-gray-200 font-bold uppercase tracking-tight"
-                    >
-                        <th class="px-4 py-4 text-left hidden sm:table-cell">
+                <thead class="bg-gradient-to-br from-blue-500 to-blue-600">
+                    <tr class="text-sm text-gray-200 font-bold tracking-tight">
+                        <th class="px-4 py-2.5 text-left hidden sm:table-cell">
                             Numéro
                         </th>
-                        <th class="py-4 px-4 text-left">Nom Complet</th>
-                        <th class="py-4 px-4 text-left">
+                        <th class="py-2.5 px-4 text-left">Nom Complet</th>
+                        <th class="py-2.5 px-4 text-left">
                             <TableFilterHeader
                                 label="societe"
                                 filter-title="Filtrer par société"
@@ -62,7 +58,7 @@
                                 width-class="w-64"
                             />
                         </th>
-                        <th class="py-4 px-4 hidden lg:table-cell">
+                        <th class="py-2.5 px-4 text-start hidden md:table-cell">
                             <TableFilterHeader
                                 label="Type"
                                 filter-title="Filtrer par type"
@@ -71,7 +67,7 @@
                                 width-class="w-52"
                             />
                         </th>
-                        <th class="py-4 text-center hidden md:table-cell">
+                        <th class="py-2.5 text-center hidden lg:table-cell">
                             <TableFilterHeader
                                 label="Statut badge"
                                 filter-title="Filtrer par statut"
@@ -82,7 +78,7 @@
                             />
                         </th>
 
-                        <th class="py-4 px-4 text-center">Actions</th>
+                        <th class="py-2.5 px-4 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -94,25 +90,25 @@
                             index % 2 === 0 ? 'bg-gray-50' : 'bg-white',
                         ]"
                     >
-                        <td class="p-4 whitespace-nowrap sm:table-cell hidden">
+                        <td
+                            class="px-4 py-2 whitespace-nowrap sm:table-cell hidden text-start"
+                        >
                             <div class="text-sm text-gray-900">
                                 {{ patient.numero }}
                             </div>
                         </td>
-                        <td
-                            class="p-4 whitespace-nowrap text-left font-semibold text-sm text-gray-600"
-                        >
-                            <div>{{ patient.nom }} {{ patient.prenom }}</div>
+                        <td class="px-4 whitespace-nowrap text-start">
+                            <div class="font-semibold text-sm text-gray-600">
+                                {{ patient.nom }} {{ patient.prenom }}
+                            </div>
                         </td>
-                        <td
-                            class="p-4 whitespace-nowrap text-sm font-medium text-gray-600 text-left"
-                        >
-                            <div>
+                        <td class="px-4 py-2 whitespace-nowrap text-start">
+                            <div class="text-sm font-medium text-gray-600">
                                 {{ patient.societe?.nom }}
                             </div>
                         </td>
                         <td
-                            class="p-4 whitespace-nowrap hidden lg:table-cell text-center"
+                            class="px-4 py-2 whitespace-nowrap hidden md:table-cell text-start"
                         >
                             <span
                                 :class="[
@@ -125,15 +121,14 @@
                                 {{ patient.type.toUpperCase() }}
                             </span>
                         </td>
-                        <td class="text-center hidden md:table-cell">
+                        <td class="text-start py-2 hidden lg:table-cell">
                             <a-dropdown
                                 :trigger="['click']"
                                 overlay-class-name="badge-dropdown"
-                                placement="bottomLeft"
                             >
                                 <span
                                     :class="[
-                                        'px-4 py-2 rounded-full  text-sm font-semibold cursor-pointer  hover:shadow transition-all duration-300 flex items-center gap-2 justify-center',
+                                        'px-2 py-1 rounded-full  text-sm  cursor-pointer  hover:shadow transition-all inline duration-500  gap-2 ',
                                         patient.badge.status === 'actif' &&
                                         !isExpired(patient.badge.validite)
                                             ? 'bg-green-100 hover:bg-green-200 text-green-500'
@@ -185,7 +180,7 @@
                                             class="!my-2 !mx-2 !rounded-lg !hover:bg-blue-50"
                                         >
                                             <div
-                                                class="flex items-center gap-3 font-medium text-blue-600 px-3 py-2"
+                                                class="flex items-center gap-3 font-medium text-blue-600 px-3 py-1"
                                             >
                                                 <div
                                                     class="w-4 h-4 rounded-full bg-blue-500 pulse-blue"
@@ -294,7 +289,9 @@
                                 </template>
                             </a-dropdown>
                         </td>
-                        <td class="py-4 whitespace-nowrap text-sm font-medium">
+                        <td
+                            class="px-4 py-2 whitespace-nowrap text-sm font-medium"
+                        >
                             <!-- Version desktop -->
                             <div
                                 class="hidden lg:flex gap-2 justify-center items-center"
@@ -326,7 +323,7 @@
 
                                 <button
                                     @click="viewDossier(patient)"
-                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 hover:scale-110 transition-all duration-500 ease-in-out border border-blue-200"
+                                    class="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:scale-110 transition-all duration-500 ease-in-out border border-blue-200"
                                 >
                                     <fonta
                                         icon="folder-open"
@@ -352,17 +349,16 @@
                                     </button>
                                     <template #overlay>
                                         <a-menu
-                                            class="!min-w-[120px] space-y-4"
+                                            class="!min-w-[120px] space-y-2"
                                         >
                                             <a-menu-item
                                                 @click="editingPatient(patient)"
-                                                class="!py-2"
                                             >
                                                 <div
                                                     class="flex items-center gap-2"
                                                 >
                                                     <EditFilled
-                                                        class="text-blue-500 text-lg"
+                                                        class="text-blue-500"
                                                     />
                                                     <span
                                                         class="text-blue-500 font-medium"
@@ -379,13 +375,12 @@
                                                         )
                                                     )
                                                 "
-                                                class="!py-2"
                                             >
                                                 <div
                                                     class="flex items-center gap-2"
                                                 >
                                                     <DeleteFilled
-                                                        class="text-red-500 text-lg"
+                                                        class="text-red-500"
                                                     />
                                                     <span
                                                         class="text-red-500 font-medium"
@@ -395,14 +390,13 @@
                                             </a-menu-item>
                                             <a-menu-item
                                                 @click="viewDossier(patient)"
-                                                class="!py-2"
                                             >
                                                 <div
                                                     class="flex items-center gap-2"
                                                 >
                                                     <fonta
                                                         icon="folder-open"
-                                                        class="text-blue-500 text-lg"
+                                                        class="text-blue-500"
                                                     />
                                                     <span
                                                         class="text-blue-500 font-medium"
@@ -422,21 +416,21 @@
 
         <!-- Pagination -->
         <div v-if="patients.data.length > 0 && patients.links.length > 3">
-            <div class="flex flex-wrap mt-4 items-center justify-end">
+            <div class="flex flex-wrap mt-6 items-center justify-end">
                 <div
                     v-for="(link, linkIndex) in patients.links"
                     :key="linkIndex"
                 >
                     <div
                         v-if="link.url === null"
-                        class="mr-1 mb-1 shadow-sm transition-colors duration-300 px-4 py-3 leading-4 text-gray-400 border rounded"
+                        class="mr-1 mb-1 shadow-sm transition-colors duration-300 px-4 py-2 leading-4 text-gray-400 border rounded"
                         v-html="link.label"
                     ></div>
                     <Link
                         v-else
                         :preserve-state="true"
                         :preserve-scroll="true"
-                        class="mr-1 shadow-sm transition-all duration-300 hover:scale-110 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block focus:text-blue-500"
+                        class="mr-1 shadow-sm transition-all duration-300 hover:scale-110 mb-1 px-4 py-2 text-sm leading-4 border rounded hover:bg-blue-500 hover:text-white focus:border-blue-500 inline-block focus:text-blue-500"
                         :class="{
                             'bg-slate-600 !text-white border-none': link.active,
                         }"
@@ -503,7 +497,7 @@
                                     v-model:value="form.societe_id"
                                     placeholder="Sélectionner une société"
                                     class="w-full societe_select !shadow-inner"
-                                    :style="{ height: '42px' }"
+                                    :style="{ height: '38px' }"
                                     :disabled="isEditing"
                                 >
                                     <a-select-option
@@ -721,7 +715,7 @@
                                 <a-select
                                     v-model:value="form.statut_emploi"
                                     class="w-full"
-                                    :style="{ height: '42px' }"
+                                    :style="{ height: '38px' }"
                                     placeholder="Sélectionner un statut"
                                 >
                                     <a-select-option value="Permanent"
@@ -812,8 +806,8 @@ const props = defineProps({
     patients: Object,
     societes: Array,
     salaries: Array,
-    filters:{
-        type:Object,
+    filters: {
+        type: Object,
         default: () => ({}),
     },
     badge: Array,
@@ -858,9 +852,6 @@ const employeeSearchTerm = ref("");
 const dropdownVisible = ref(false);
 const filteredSalaries = ref([]);
 const selectedTypes = ref(props.filters.types || []);
-const resetSelection = () => {
-    selectedTypes.value = [];
-};
 function selectSalarie(salarie) {
     form.parent_id = salarie.id;
     employeeSearchTerm.value = `${salarie.nom} ${salarie.prenom}`;
@@ -873,7 +864,7 @@ const searchSalaries = async () => {
     }
 
     const response = await fetch(
-        //sinon on retourne une correspondance
+        //retourne une correspondance pour rechercher un salarié si il y en a
         `/admin/salaries/search?search=${employeeSearchTerm.value}`
     );
     const data = await response.json();
@@ -1111,8 +1102,6 @@ const navigateToPage = (url) => {
     );
 };
 
-
-
 const getAdditionalParams = () => {
     return {
         search: searchTerm.value,
@@ -1138,7 +1127,7 @@ const getAdditionalParams = () => {
     @apply text-base;
 }
 .ant-segmented .ant-segmented-item-label {
-    @apply py-2 text-base font-semibold;
+    @apply py-1.5 text-base font-semibold;
 }
 .ant-segmented .ant-segmented-item-selected {
     @apply bg-blue-500 text-white transition-all duration-500;

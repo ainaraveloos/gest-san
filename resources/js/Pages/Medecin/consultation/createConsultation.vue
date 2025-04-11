@@ -1,11 +1,11 @@
 <template>
-    <div class="p-2 rounded-md transform transition-all duration-300">
+    <div class="p-2 rounded-md">
         <!-- En-tête avec recherche de patient -->
         <div
-            class="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-700 p-6 rounded-t-xl shadow-md"
+            class="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-xl shadow-md transition-shadow duration-300 hover:shadow-lg"
         >
             <div class="flex items-center gap-3 text-white mb-6">
-                <h1 class="text-2xl font-semibold">Nouvelle Consultation</h1>
+                <h1 class="text-xl font-medium">Nouvelle Consultation</h1>
             </div>
 
             <div
@@ -14,7 +14,10 @@
                 <div class="relative w-full flex-1 z-50 group">
                     <div class="relative flex items-center">
                         <span class="absolute left-3 text-blue-200">
-                            <fonta icon="search" />
+                            <fonta
+                                icon="search"
+                                class="transition-transform duration-300 group-hover:scale-110"
+                            />
                         </span>
                         <BaseInput
                             type="text"
@@ -22,7 +25,7 @@
                             placeholder="Rechercher un patient par nom, prénom ou numéro..."
                             @focus="dropdownVisible = true"
                             @blur="dropdownVisible = false"
-                            class="pl-10 py-2 text-md bg-white/95 border-blue-300 hover:bg-white focus:bg-white transition-all duration-300"
+                            class="pl-10 text-md bg-white/95 border-blue-300 hover:bg-white focus:bg-white transition-all duration-300"
                         />
                     </div>
 
@@ -37,18 +40,18 @@
                             v-if="
                                 dropdownVisible && filteredPatients.length > 0
                             "
-                            class="absolute w-full bg-white shadow-lg p-2 flex flex-col gap-1 rounded-md mt-2 max-h-64 overflow-y-auto custom-scroll border border-blue-100"
+                            class="absolute w-full bg-white shadow-lg p-2 flex flex-col gap-1 rounded-md mt-2 max-h-64 overflow-y-auto custom-scroll border border-blue-100/60"
                         >
                             <div
                                 v-for="(patient, index) in filteredPatients"
                                 :key="patient.id"
                                 @click="selectPatient(patient)"
-                                class="px-4 py-3 hover:bg-blue-50 rounded-md transition-all duration-300 cursor-pointer hover:shadow-sm"
+                                class="px-4 py-3 hover:bg-blue-50/70 rounded-md cursor-pointer hover:shadow-sm transition-all duration-300"
                                 :style="{ transitionDelay: `${index * 30}ms` }"
                             >
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-2">
                                     <div
-                                        class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center transition-all duration-300 group-hover:bg-blue-200"
+                                        class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-blue-200 shadow-sm"
                                     >
                                         <span
                                             class="text-blue-500 font-medium text-sm"
@@ -56,11 +59,11 @@
                                         >
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-800">
+                                        <p class="font-medium text-gray-600">
                                             {{ patient.nom }}
                                             {{ patient.prenom }}
                                         </p>
-                                        <p class="text-xs text-gray-500 mt-0.5">
+                                        <p class="text-xs text-gray-400 mt-0.5">
                                             {{ patient.numero }}
                                         </p>
                                     </div>
@@ -78,7 +81,7 @@
                             v-if="
                                 dropdownVisible && filteredPatients.length === 0
                             "
-                            class="absolute z-50 w-full bg-white shadow-lg p-4 rounded-md mt-2 border border-blue-100"
+                            class="absolute z-50 w-full bg-white shadow-lg p-4 rounded-md mt-2 border border-blue-100/60"
                         >
                             <div
                                 class="text-gray-500 text-center py-4 animate-pulse"
@@ -97,7 +100,7 @@
 
                 <BaseButton
                     @click="handleAdd"
-                    class="py-3 px-2"
+                    class="py-2 transition-transform duration-500 hover:scale-105"
                     bg-color="bg-green-600"
                     hover-color="bg-green-700"
                     focus-color="ring-green-400"
@@ -111,7 +114,9 @@
         </div>
 
         <!-- Section des 4 dernières consultations -->
-        <div class="bg-white rounded-b-xl px-6 py-8 shadow-md">
+        <div
+            class="bg-white rounded-b-xl px-6 py-8 shadow-md transition-all duration-300 hover:shadow-lg"
+        >
             <div class="flex items-center justify-between mb-6">
                 <h2
                     class="text-lg text-blue-500 font-medium flex items-center gap-2"
@@ -121,7 +126,7 @@
                 </h2>
 
                 <span
-                    class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full"
+                    class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full shadow-inner"
                 >
                     Les 4 dernières consultations
                 </span>
@@ -137,20 +142,22 @@
                             consultation.patient.id
                         )
                     "
-                    class="group transition-all duration-300"
+                    class="group"
                 >
                     <div
-                        class="bg-blue-50 rounded-xl p-5 border border-blue-100 hover:bg-blue-100 hover:shadow-md duration-500 transition-all hover:border-blue-300 cursor-pointer flex items-start gap-3"
+                        class="bg-blue-50/70 rounded-xl p-5 border border-blue-100/60 hover:bg-blue-100/50 hover:shadow-md hover:border-blue-300/60 cursor-pointer flex items-start gap-3 transform transition-all duration-500 hover:-translate-y-0.5"
                     >
                         <div
-                            class="bg-blue-100 p-3 rounded-full group-hover:bg-blue-200 transition-colors duration-500"
+                            class="bg-blue-100 p-3 rounded-full group-hover:bg-blue-200/70 transition-all duration-300 transform group-hover:scale-110"
                         >
                             <fonta icon="user" class="text-blue-500 text-lg" />
                         </div>
 
                         <div class="space-y-2">
                             <!-- Date -->
-                            <div class="text-base font-medium text-blue-500">
+                            <div
+                                class="text-base font-medium text-blue-500 group-hover:text-blue-600 transition-colors duration-300"
+                            >
                                 {{
                                     new Date(
                                         consultation.date_consultation
@@ -166,10 +173,10 @@
                             <div class="flex items-center gap-2">
                                 <fonta
                                     icon="id-card"
-                                    class="text-blue-400 text-xs"
+                                    class="text-blue-400 text-xs group-hover:text-blue-500 transition-colors duration-300"
                                 />
                                 <span
-                                    class="text-xs font-semibold text-gray-600"
+                                    class="text-xs font-semibold text-gray-600 group-hover:text-gray-700 transition-colors duration-300"
                                 >
                                     {{ consultation.patient.numero }}
                                 </span>
@@ -180,7 +187,7 @@
 
                 <div
                     v-if="consultations.length === 0"
-                    class="col-span-full bg-gray-50 p-8 rounded-xl border border-gray-200 flex flex-col items-center justify-center"
+                    class="col-span-full bg-gray-50/70 p-8 rounded-xl border border-gray-200/60 flex flex-col items-center justify-center transition-all duration-300 hover:bg-gray-100/50"
                 >
                     <a-empty :description="null" />
 
@@ -200,7 +207,7 @@
         <div
             v-if="showConsultation"
             :key="addedPatient.id"
-            class="card-container consultation-section py-4 my-6 rounded-md shadow-md bg-white"
+            class="card-container consultation-section py-4 my-6 rounded-md shadow-md bg-white transition-all duration-500"
         >
             <form @submit.prevent="submitConsultation">
                 <div
@@ -208,7 +215,7 @@
                 >
                     <div>
                         <span
-                            class="text-md bg-blue-100 text-blue-800 px-4 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm"
+                            class="text-md bg-gradient-to-br from-blue-100 to-blue-200 text-blue-800 px-4 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-300 hover:from-blue-200 hover:to-blue-300"
                         >
                             <fonta icon="id-card" class="text-blue-500" />
                             {{ addedPatient.numero }}
@@ -218,7 +225,7 @@
                     <div class="flex items-center justify-center">
                         <BaseButton
                             type="submit"
-                            class="py-3 px-6 text-base"
+                            class="py-2  transition-transform duration-500 hover:scale-105"
                             bg-color="bg-green-600"
                             hover-color="bg-green-700"
                             focus-color="ring-green-400"
@@ -239,7 +246,7 @@
                             </span>
                         </template>
                         <div
-                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-4"
+                            class="mt-4 mx-4 border-2 border-gray-200/60 rounded-md p-4 transition-all duration-300 hover:border-blue-200/60 hover:shadow-sm"
                         >
                             <div
                                 class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"
@@ -249,7 +256,7 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
+                                    class="flex w-full items-center justify-start bg-gray-50/70 col-span-3 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner transition-all duration-300 hover:bg-blue-50/30"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
@@ -263,7 +270,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
+                                    class="w-full bg-gray-50/70 md:col-span-1 col-span-2 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner flex items-center gap-2 transition-all duration-300 hover:bg-blue-50/30"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600"
@@ -275,7 +282,7 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300/70 border text-gray-600 bg-gray-50/70 px-4 py-1 rounded-lg text-base font-semibold shadow-inner transition-all duration-300 hover:bg-blue-50/30"
                                 >
                                     <span>{{
                                         new Date().toLocaleDateString()
@@ -284,13 +291,13 @@
                             </div>
                         </div>
                         <div
-                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-6"
+                            class="mt-4 mx-4 border-2 border-gray-200/60 rounded-md p-6 transition-all duration-300 hover:shadow hover:border-blue-200/60"
                         >
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 <!-- Section Gauche - Informations Générales -->
                                 <div class="space-y-6">
                                     <h3
-                                        class="text-lg font-semibold text-blue-500 mb-4 pb-2 border-b border-blue-100 flex items-center gap-2"
+                                        class="text-lg font-semibold text-blue-500 mb-4 pb-2 border-b border-blue-100/70 flex items-center gap-2"
                                     >
                                         <fonta
                                             icon="clipboard-list"
@@ -327,7 +334,7 @@
                                         <textarea
                                             v-model="form.motif"
                                             required
-                                            class="mt-1 block w-full p-3 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner bg-white"
+                                            class="mt-1 block w-full p-3 border rounded-lg border-gray-300/70 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner bg-white transition-all duration-300 hover:border-blue-300/70"
                                             placeholder="Décrire le motif de la consultation..."
                                         ></textarea>
                                     </div>
@@ -345,7 +352,7 @@
                                         </InputLabel>
                                         <textarea
                                             v-model="form.diagnostic"
-                                            class="mt-1 block w-full p-3 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner bg-white"
+                                            class="mt-1 block w-full p-3 border rounded-lg border-gray-300/70 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner bg-white transition-all duration-300 hover:border-blue-300/70"
                                             placeholder="Rédiger le diagnostique..."
                                             required
                                         ></textarea>
@@ -355,11 +362,11 @@
                                 <!-- Section Droite - Constantes Vitales -->
                                 <div class="space-y-6">
                                     <h3
-                                        class="text-lg font-semibold text-blue-500 mb-4 pb-2 border-b border-blue-100 flex items-center gap-2"
+                                        class="text-lg font-semibold text-blue-500 mb-4 pb-2 border-b border-blue-100/70 flex items-center gap-2"
                                     >
                                         <fonta
                                             icon="heart-pulse"
-                                            class="text-blue-500"
+                                            class="text-blue-500 animate-pulse"
                                         />
                                         Constantes Vitales
                                     </h3>
@@ -377,7 +384,7 @@
                                                 type="number"
                                                 v-model.number="form.poids"
                                                 required
-                                                class="bg-white"
+                                                class="bg-white transition-all duration-300 hover:border-blue-300"
                                             />
                                         </div>
 
@@ -393,7 +400,7 @@
                                                 v-model.number="form.taille"
                                                 min="0"
                                                 required
-                                                class="bg-white"
+                                                class="bg-white transition-all duration-300 hover:border-blue-300"
                                             />
                                         </div>
 
@@ -407,7 +414,7 @@
                                             <BaseInput
                                                 type="number"
                                                 v-model.number="form.freq_card"
-                                                class="bg-white"
+                                                class="bg-white transition-all duration-300 hover:border-blue-300"
                                                 min="0"
                                                 required
                                             />
@@ -427,7 +434,7 @@
                                                 "
                                                 min="0"
                                                 required
-                                                class="bg-white"
+                                                class="bg-white transition-all duration-300 hover:border-blue-300"
                                             />
                                         </div>
                                     </div>
@@ -443,7 +450,7 @@
                             </span>
                         </template>
                         <div
-                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-4"
+                            class="mt-4 mx-4 border-2 border-gray-200/60 rounded-md p-4"
                         >
                             <div
                                 class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"
@@ -453,7 +460,7 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
+                                    class="flex w-full items-center justify-start bg-gray-50/70 col-span-3 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
@@ -467,7 +474,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
+                                    class="w-full bg-gray-50/70 md:col-span-1 col-span-2 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600"
@@ -479,7 +486,7 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300/70 border text-gray-600 bg-gray-50/70 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
                                     <span>{{
                                         new Date().toLocaleDateString()
@@ -489,17 +496,17 @@
                         </div>
                         <!-- medicament -->
                         <div
-                            class="max-w-full mx-4 mt-4 p-6 space-y-6 bg-white rounded-md border-2 border-gray-200 shadow-sm"
+                            class="max-w-full mx-4 mt-4 p-6 space-y-6 bg-white rounded-md border-2 border-gray-200/60 shadow-sm"
                         >
                             <!-- En-tête du tableau -->
                             <div
-                                class="font-semibold text-lg text-blue-500 flex items-center gap-2 pb-4 mb-2 border-b border-blue-100"
+                                class="font-semibold text-lg text-blue-500 flex items-center gap-2 pb-4 mb-2 border-b border-blue-100/70"
                             >
                                 <fonta icon="capsules" class="text-blue-500" />
                                 <h1>Médicaments prescrits</h1>
                             </div>
                             <div
-                                class="grid grid-cols-4 text-base gap-4 font-medium text-gray-700 bg-gray-50 py-3 px-2 rounded-lg"
+                                class="grid grid-cols-4 text-base gap-4 font-medium text-gray-700 bg-gray-50/70 py-3 px-2 rounded-lg"
                             >
                                 <div class="flex items-center gap-2">
                                     <span>Désignation</span>
@@ -519,7 +526,7 @@
                             <div
                                 v-for="(med, index) in form.medicament"
                                 :key="index"
-                                class="grid grid-cols-4 gap-4 items-center group transition-all duration-300 ease-in-out py-3 px-2 border-b border-gray-100"
+                                class="grid grid-cols-4 gap-4 items-center group py-3 px-2 border-b border-gray-100/70"
                             >
                                 <div>
                                     <BaseInput
@@ -555,7 +562,7 @@
                                     <button
                                         type="button"
                                         @click="removeMed(index)"
-                                        class="text-red-500 hover:text-red-700 group-hover:scale-110 transition-all duration-500 bg-red-50 p-2 rounded-full"
+                                        class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full"
                                     >
                                         <fonta icon="trash" class="text-lg" />
                                     </button>
@@ -585,7 +592,7 @@
                             </span>
                         </template>
                         <div
-                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-4"
+                            class="mt-4 mx-4 border-2 border-gray-200/60 rounded-md p-4"
                         >
                             <div
                                 class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"
@@ -595,7 +602,7 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
+                                    class="flex w-full items-center justify-start bg-gray-50/70 col-span-3 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
@@ -609,7 +616,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
+                                    class="w-full bg-gray-50/70 md:col-span-1 col-span-2 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600"
@@ -621,7 +628,7 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300/70 border text-gray-600 bg-gray-50/70 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
                                     <span>{{
                                         new Date().toLocaleDateString()
@@ -631,10 +638,10 @@
                         </div>
                         <!-- Conteneur input -->
                         <div
-                            class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mx-4 border-2 border-gray-200 rounded-md p-6"
+                            class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mx-4 border-2 border-gray-200/60 rounded-md p-6"
                         >
                             <div
-                                class="font-semibold text-lg text-blue-500 flex items-center gap-2 pb-4 mb-2 col-span-full border-b border-blue-100"
+                                class="font-semibold text-lg text-blue-500 flex items-center gap-2 pb-4 mb-2 col-span-full border-b border-blue-100/70"
                             >
                                 <fonta icon="bed-pulse" class="text-blue-500" />
                                 <h1>Jour de repos</h1>
@@ -727,7 +734,7 @@
                             </span>
                         </template>
                         <div
-                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-4"
+                            class="mt-4 mx-4 border-2 border-gray-200/60 rounded-md p-4"
                         >
                             <div
                                 class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"
@@ -737,7 +744,7 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
+                                    class="flex w-full items-center justify-start bg-gray-50/70 col-span-3 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
@@ -751,7 +758,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
+                                    class="w-full bg-gray-50/70 md:col-span-1 col-span-2 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600"
@@ -763,7 +770,7 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300/70 border text-gray-600 bg-gray-50/70 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
                                     <span>{{
                                         new Date().toLocaleDateString()
@@ -772,10 +779,10 @@
                             </div>
                         </div>
                         <div
-                            class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mx-4 border-2 border-gray-200 rounded-md p-6"
+                            class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mx-4 border-2 border-gray-200/60 rounded-md p-6"
                         >
                             <div
-                                class="font-semibold text-lg text-blue-600 flex items-center gap-2 pb-4 mb-2 col-span-full border-b border-blue-100"
+                                class="font-semibold text-lg text-blue-600 flex items-center gap-2 pb-4 mb-2 col-span-full border-b border-blue-100/70"
                             >
                                 <fonta
                                     icon="vial-circle-check"
@@ -797,7 +804,7 @@
                                     Examens à réaliser
                                 </InputLabel>
                                 <div
-                                    class="shadow-inner bg-white rounded-lg border border-gray-300"
+                                    class="shadow-inner bg-white rounded-lg border border-gray-300/70"
                                 >
                                     <a-select
                                         v-model:value="form.liste_examens"
@@ -825,7 +832,7 @@
 
                                 <textarea
                                     v-model="form.remarques"
-                                    class="mt-1 block w-full p-2 border rounded-lg border-gray-300 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner"
+                                    class="mt-1 block w-full p-2 border rounded-lg border-gray-300/70 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-inner"
                                     rows="4"
                                     placeholder="Ajouter des remarques concernant les examens..."
                                 ></textarea>
@@ -841,7 +848,7 @@
                             </span>
                         </template>
                         <div
-                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-4"
+                            class="mt-4 mx-4 border-2 border-gray-200/60 rounded-md p-4"
                         >
                             <div
                                 class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4"
@@ -851,7 +858,7 @@
                                     class="col-span-1"
                                 />
                                 <div
-                                    class="flex w-full items-center justify-start bg-gray-50 col-span-3 py-1 px-4 border-gray-300 border rounded-lg shadow-inner"
+                                    class="flex w-full items-center justify-start bg-gray-50/70 col-span-3 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600 flex items-center gap-2"
@@ -865,7 +872,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <InputLabel value="Age" class="col-span-1" />
                                 <div
-                                    class="w-full bg-gray-50 md:col-span-1 col-span-2 py-1 px-4 border-gray-300 border rounded-lg shadow-inner flex items-center gap-2"
+                                    class="w-full bg-gray-50/70 md:col-span-1 col-span-2 py-1 px-4 border-gray-300/70 border rounded-lg shadow-inner flex items-center gap-2"
                                 >
                                     <span
                                         class="font-semibold text-lg text-gray-600"
@@ -877,7 +884,7 @@
                                     <h1>Date :</h1>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300 border text-gray-600 bg-gray-50 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
+                                    class="flex items-center gap-2 md:col-span-1 w-full border-gray-300/70 border text-gray-600 bg-gray-50/70 px-4 py-1 rounded-lg text-base font-semibold shadow-inner"
                                 >
                                     <span>{{
                                         new Date().toLocaleDateString()
@@ -886,10 +893,10 @@
                             </div>
                         </div>
                         <div
-                            class="mt-4 mx-4 border-2 border-gray-200 rounded-md p-6"
+                            class="mt-4 mx-4 border-2 border-gray-200/60 rounded-md p-6"
                         >
                             <div
-                                class="font-semibold text-lg text-blue-500 flex items-center gap-2 pb-4 mb-2 border-b border-blue-100"
+                                class="font-semibold text-lg text-blue-500 flex items-center gap-2 pb-4 mb-2 border-b border-blue-100/70"
                             >
                                 <fonta
                                     icon="envelope-circle-check"
@@ -968,7 +975,6 @@
                         </div>
                     </a-tab-pane>
                 </a-tabs>
-                <!-- Boutton enregistrer consultation -->
             </form>
         </div>
     </transition>
